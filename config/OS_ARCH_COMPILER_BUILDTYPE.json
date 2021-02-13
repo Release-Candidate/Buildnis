@@ -1,4 +1,6 @@
 {
+    "file_name": "build_config",
+    "file_version": "1.0",
     "stages": 
     [
         {

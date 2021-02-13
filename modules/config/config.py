@@ -1,0 +1,141 @@
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2021 Roland Csaszar
+#
+# Project:  Buildnis
+# File:     Config.py
+# Date:     13.Feb.2021
+###############################################################################
+
+import json, io, sys, pathlib
+from modules.config import MODULE_FILE_NAME, PROJECT_FILE_NAME, VERSION
+import os.path as ospath
+from types import SimpleNamespace
+
+
+class Config:
+    '''
+    Loads all JSON configurations.
+
+    Parses the project's JSON configuration, all module JSON configurations and
+    all build tool JSON configurations.
+
+    Attributes:
+
+    config_path the path to the project'S main JSON configuration.
+    project_cfg_dir The directory part of `config_path`
+    project_cfg the project's JSON configuration stored in a Python class.
+    module_cfgs the module JSON configurations (mentioned in project_cfg)
+    build_cfgs the build JSON configurations (mentioned in the module JSONs)
+
+    Methods:
+
+    parseModuleCfgs Parses the module JSON configurations setup in the project
+                    JSON
+    parseBuildCfgs Parses the build JSON configurations setup in the module
+                    JSONs
+    '''
+    ###########################################################################
+    def __init__(self, project_config):
+        '''
+        Constructor of class Config.
+
+        Parses the project's JSON configuration and stores it to project_cfg.
+
+        Parameters:
+        project_config the path to the project's JSON configuration file.
+        '''
+        self.config_path = project_config
+
+        try:
+            with io.open(self.config_path, mode= "r", encoding="utf-8") as file:
+                self.project_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
+
+        except Exception as exp:
+            print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=self.config_path))
+            sys.exit(4)
+
+        if self.project_cfg.file_name != PROJECT_FILE_NAME:
+            print("ERROR: project file \"{path}\" is not a valid project file!".format(path=self.config_path))
+            print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+                    .format(should=PROJECT_FILE_NAME,but_is=self.project_cfg.file_name))
+            sys.exit(5)
+
+        file_major, file_minor = self.project_cfg.file_version.split(sep=".")
+        if file_major < VERSION.major or file_minor < VERSION.minor:
+            print("ERROR: project file \"{path}\" is not a valid project file!".format(
+                path=self.config_path))
+            print("ERROR: project file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+                  .format(old=self.project_cfg.file_version, new=".".join(VERSION)))
+            sys.exit(5)
+
+        self.project_cfg_dir = ospath.dirname(self.config_path)
+
+        self.module_cfgs = dict()
+
+        self.build_cfgs = dict()
+
+        self.parseModuleCfgs()
+
+        self.parseBuildCfgs()
+
+    ###########################################################################
+    def parseModuleCfgs(self) -> None:
+        '''
+        Parses the module JSON configurations.
+
+        Parses and stores all module JSON configurations configured in the
+        project's setup stored in self.project_cfg. Stores the configurations
+        in module_cfgs.
+        '''
+        for target in self.project_cfg.target:
+            
+            module_path = "/".join([self.project_cfg_dir, target.module_file])           
+
+            if not pathlib.Path(module_path).is_file():
+                print("ERROR: module configuration file \"{config}\" not found or is not a file!".format(
+                    config=module_path))
+                sys.exit(2)
+            try:
+                with io.open(module_path, mode= "r", encoding="utf-8") as file:
+                    module_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
+
+            except Exception as exp:
+                print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=self.module_path))
+                sys.exit(4)
+
+            if module_cfg.file_name != MODULE_FILE_NAME:
+                print("ERROR: module file \"{path}\" is not a valid module file!".format(path=module_path))
+                print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+                     .format(should=MODULE_FILE_NAME,but_is=module_cfg.file_name))
+                sys.exit(5)
+
+            file_major, file_minor = module_cfg.file_version.split(sep=".")
+            
+            if file_major < VERSION.major or file_minor < VERSION.minor:
+                print("ERROR: module file \"{path}\" is not a valid module file!".format(
+                    path=module_path))
+                print("ERROR: module file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+                  .format(old=module_cfg.file_version, new=".".join(VERSION)))
+                sys.exit(5)
+
+            target.module_file = module_path      
+
+            self.module_cfgs[module_path] = module_cfg
+
+        for module_key in self.module_cfgs:
+            print(module_key, self.module_cfgs[module_key].__dict__)
+
+    ###########################################################################
+    def parseBuildCfgs(self) -> None:
+        '''
+        Parses the build JSON configurations.
+
+        Parses and stores all module JSON configurations configured in the
+        modules setups stored in self.module_cfgs. Stores the configurations
+        in build_cfgs.
+        '''
+
+
+
+
+

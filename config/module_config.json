@@ -1,4 +1,6 @@
 {
+    "file_name": "module_config",
+    "file_version": "1.0",
     "name": "MODULE_NAME",
     "version": "VERSION_STRING",
     "author": "MODULE_AUTHORS_STRING",

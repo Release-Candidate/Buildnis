@@ -1,4 +1,6 @@
 {
+    "file_name": "project_config",
+    "file_version": "1.0",
 	"name": "PROJECT_NAME",
     "version": "VERSION_STRING",
     "author": "PROJECT_AUTHORS_STRING",
@@ -12,11 +14,11 @@
     [
         {
             "name": "TARGET1_NAME",
-            "module_file": "PATH_TO_MODULE_FILE1"
+            "module_file": "PATH1/module_config.json"
         },
         {
             "name": "TARGET2_NAME",
-            "module_file": "PATH_TO_MODULE_FILE2"
+            "module_file": "PATH2/module_config.json"
         }
     ]
 } 
