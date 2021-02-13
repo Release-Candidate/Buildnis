@@ -1,0 +1,44 @@
+{
+    "name": "MODULE_NAME",
+    "version": "VERSION_STRING",
+    "author": "MODULE_AUTHORS_STRING",
+    "company": "COMPANY_NAME",
+    "date": "MODULE_START_DATE",
+    "description": "SHORT_MODULE_DESCRIPTION",
+    "copyright_info": "COPYRIGHT_INFO",
+    "web_url": "MODULE_WEBSITE",
+    "email": "MAINTAINER_EMAILS",
+    "supported_builds": 
+    [
+        {
+            "os_name": "Linux",
+            "architecture": "x64",
+            "build_tool": "g++",
+            "build_result": "EXECUTABLE_NAME",
+            "build_type": "executable_debug",            
+            "build_config_file": "./Linux_x64_gpp_executable.json"            
+        },
+        {
+            "os_name": "Windows",
+            "architecture": "x64",
+            "build_tool": "cl",
+            "build_result": "EXECUTABLE_NAME.exe",
+            "build_type": "executable_release",
+            "build_config_file": "./Windows_x64_cl_executable.json"
+        },
+        {
+            "os_name": "Windows",
+            "architecture": "x32",
+            "build_tool": "clang",
+            "build_result": "EXECUTABLE_NAME.exe",
+            "build_type": "executable_debug",
+            "build_config_file": "./Windows_x32_clang_executable.json"
+        }
+    ],
+    "possible_targets": 
+    [
+        "executable_release",
+        "executable_debug",
+        "documentation"
+    ]
+}

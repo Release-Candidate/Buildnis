@@ -1,0 +1,64 @@
+{
+    "stages": 
+    [
+        {
+            "name": "STAGE 1",
+            "description": "WHAT_DOES_THIS_STAGE_DO",
+            "sources":
+            [
+                {
+                    "type": "wildcard",
+                    "path_or_regexp": "REGEXP_TO_FILES1"
+                },
+                {
+                    "type": "single_file",
+                    "path_or_regexp": "PATH_TO_FILE2"
+                }
+            ],
+            "results": 
+            [
+                {
+                    "type": "file_per_source",
+                    "source_name": "SOURCE_FILE1",
+                    "path_or_regexp": "REGEXP_TO_RESULT1"
+                }
+            ],
+            "build_tool_working_dir": "BUILD_TOOL_WD",
+            "build_tool_env_script": "PATH_TO_BUILD_TOOL_ENV",            
+            "build_tool_executable": "BUILD_TOOL_PATH",
+            "build_tool_arguments":
+            [
+                "BUILD_TOOL_ARG1",
+                "BUILD_TOOL_ARG2"
+            ]
+        },
+        {
+            "name": "STAGE 2",
+            "description": "WHAT_DOES_THIS_STAGE_2_DO",
+            "sources": [
+                {
+                    "type": "wildcard",
+                    "path_or_regexp": "REGEXP_TO_FILES1"
+                },
+                {
+                    "type": "single_file",
+                    "path_or_regexp": "PATH_TO_FILE2"
+                }
+            ],
+            "results": [
+                {
+                    "type": "single_file",
+                    "source_name": "OBJECT_FILES",
+                    "path_or_regexp": "REGEXP_TO_RESULT1"
+                }
+            ],
+            "build_tool_working_dir": "BUILD_TOOL_WD",
+            "build_tool_env_script": "PATH_TO_BUILD_TOOL_ENV",
+            "build_tool_executable": "BUILD_TOOL_PATH",
+            "build_tool_arguments": [
+                "BUILD_TOOL_ARG1",
+                "BUILD_TOOL_ARG2"
+            ]
+        }
+    ]    
+}

@@ -1,0 +1,22 @@
+{
+	"name": "PROJECT_NAME",
+    "version": "VERSION_STRING",
+    "author": "PROJECT_AUTHORS_STRING",
+    "company": "COMPANY_NAME",
+    "date": "PROJECT_START_DATE",
+    "description": "SHORT_PROJECT_DESCRIPTION",
+    "copyright_info": "COPYRIGHT_INFO",
+    "web_url": "PROJECT_WEBSITE",
+    "email": "MAINTAINER_EMAILS",
+    "target": 
+    [
+        {
+            "name": "TARGET1_NAME",
+            "module_file": "PATH_TO_MODULE_FILE1"
+        },
+        {
+            "name": "TARGET2_NAME",
+            "module_file": "PATH_TO_MODULE_FILE2"
+        }
+    ]
+} 
