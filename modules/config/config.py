@@ -6,9 +6,8 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
-import json, io, sys, pathlib
-from modules.config import MODULE_FILE_NAME, PROJECT_FILE_NAME, VERSION
-import os.path as ospath
+import json, io, sys, pathlib, os
+from modules.config import BUILD_FILE_NAME, MODULE_FILE_NAME, PROJECT_FILE_NAME, VERSION
 from types import SimpleNamespace
 
 
@@ -68,7 +67,7 @@ class Config:
                   .format(old=self.project_cfg.file_version, new=".".join(VERSION)))
             sys.exit(5)
 
-        self.project_cfg_dir = ospath.dirname(self.config_path)
+        self.project_cfg_dir = os.path.normpath(os.path.dirname(self.config_path))
 
         self.module_cfgs = dict()
 
@@ -89,7 +88,8 @@ class Config:
         '''
         for target in self.project_cfg.target:
             
-            module_path = "/".join([self.project_cfg_dir, target.module_file])           
+            module_path = os.path.normpath(os.path.join(
+                self.project_cfg_dir, target.module_file))
 
             if not pathlib.Path(module_path).is_file():
                 print("ERROR: module configuration file \"{config}\" not found or is not a file!".format(
@@ -100,7 +100,7 @@ class Config:
                     module_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
 
             except Exception as exp:
-                print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=self.module_path))
+                print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=module_path))
                 sys.exit(4)
 
             if module_cfg.file_name != MODULE_FILE_NAME:
@@ -118,12 +118,12 @@ class Config:
                   .format(old=module_cfg.file_version, new=".".join(VERSION)))
                 sys.exit(5)
 
-            target.module_file = module_path      
+            target.module_file = module_path
 
-            self.module_cfgs[module_path] = module_cfg
+            module_cfg.module_path = os.path.normpath(os.path.dirname(
+                module_path))
 
-        for module_key in self.module_cfgs:
-            print(module_key, self.module_cfgs[module_key].__dict__)
+            self.module_cfgs[module_path] = module_cfg       
 
     ###########################################################################
     def parseBuildCfgs(self) -> None:
@@ -134,8 +134,69 @@ class Config:
         modules setups stored in self.module_cfgs. Stores the configurations
         in build_cfgs.
         '''
+        for mdl_key in self.module_cfgs:
+            module_cfg = self.module_cfgs[mdl_key]
+
+            for module_build_cfg in module_cfg.supported_builds:                                
+                build_cfg_path = os.path.normpath(os.path.join(module_cfg.module_path,
+                            module_build_cfg.build_config_file))
+
+                if build_cfg_path in self.build_cfgs:
+                    continue
+               
+                if not pathlib.Path(build_cfg_path).is_file():
+                    print("ERROR: build configuration file \"{config}\" not found or is not a file!".format(
+                        config=build_cfg_path))
+                    sys.exit(2)
+                try:
+                    with io.open(build_cfg_path, mode="r", encoding="utf-8") as file:
+                        build_cfg = json.load(
+                            file, object_hook=lambda dict: SimpleNamespace(**dict))
+
+                except Exception as exp:
+                    print("ERROR: error \"{error}\" parsing file \"{path}\"".format(
+                        error=exp, path=build_cfg_path))
+                    sys.exit(4)
+
+                if build_cfg.file_name != BUILD_FILE_NAME:
+                    print("ERROR: build config file \"{path}\" is not a valid build config file!".format(
+                        path=build_cfg_path))
+                    print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+                          .format(should=BUILD_FILE_NAME, but_is=build_cfg.file_name))
+                    sys.exit(5)
+
+                file_major, file_minor = build_cfg.file_version.split(sep=".")
+
+                if file_major < VERSION.major or file_minor < VERSION.minor:
+                    print("ERROR: build config file \"{path}\" is not a valid build config file!".format(
+                        path=build_cfg_path))
+                    print("ERROR: build config file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+                          .format(old=build_cfg.file_version, new=".".join(VERSION)))
+                    sys.exit(5)            
+
+                build_cfg.build_cfg_path = os.path.normpath(os.path.dirname(
+                    build_cfg_path))
+
+                module_build_cfg.build_config_file = build_cfg_path          
+
+                self.build_cfgs[build_cfg_path] = build_cfg
+
+        print(self.project_cfg.__dict__)
+
+        print("=======================================================")
+
+        for module_key in self.module_cfgs:
+            print(module_key, self.module_cfgs[module_key].__dict__)
+            print("")
+
+        print("=======================================================")
+        
+        for build_key in self.build_cfgs:
+            print(build_key, self.build_cfgs[build_key].__dict__)
+            print("")
 
 
+                
 
 
 

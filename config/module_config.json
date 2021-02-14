@@ -17,7 +17,7 @@
             "architecture": "x64",
             "build_tool": "g++",
             "build_result": "EXECUTABLE_NAME",
-            "build_type": "executable_debug",            
+            "build_target": "executable_debug",            
             "build_config_file": "./Linux_x64_gpp_executable.json"            
         },
         {
@@ -25,7 +25,7 @@
             "architecture": "x64",
             "build_tool": "cl",
             "build_result": "EXECUTABLE_NAME.exe",
-            "build_type": "executable_release",
+            "build_target": "executable_release",
             "build_config_file": "./Windows_x64_cl_executable.json"
         },
         {
@@ -33,7 +33,7 @@
             "architecture": "x32",
             "build_tool": "clang",
             "build_result": "EXECUTABLE_NAME.exe",
-            "build_type": "executable_debug",
+            "build_target": "executable_debug",
             "build_config_file": "./Windows_x32_clang_executable.json"
         }
     ],
