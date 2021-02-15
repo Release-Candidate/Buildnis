@@ -202,7 +202,7 @@ class Host:
 
 ################################################################################
 def printHostInfo() -> None:
-    """To test the gathering of the host's information, print all to stdout.
+    """To test the collection of the host's information, print all to stdout.
     """
     print(Host())
 
