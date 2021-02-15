@@ -9,7 +9,7 @@
 __all__ = ["Config", "Host", "PROJECT_FILE_NAME",
            "MODULE_FILE_NAME", "BUILD_FILE_NAME", "HOST_FILE_NAME", "VERSION", 
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", "AMD64_ARCH_STRING",
-           "I86_ARCH_STRING"]
+           "I86_ARCH_STRING", "CONFIGURE_SCRIPTS_PATH"]
 
 import collections 
 
@@ -35,3 +35,5 @@ AMD64_ARCH_STRING = "x64"
 I86_ARCH_STRING = "x86"
 
 FilePath = str
+
+CONFIGURE_SCRIPTS_PATH = "./configure_scripts"
