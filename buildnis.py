@@ -7,6 +7,7 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
+from modules.config import HOST_FILE_NAME
 import sys
 import platform
 
@@ -16,7 +17,9 @@ if sys.version_info.major < 3 or sys.version_info.minor < 9:
     sys.exit(3)
 
 try:
-    import getopt, pathlib, typing
+    import getopt
+    import pathlib
+    import typing
 
 except ImportError as exp:
     print("ERROR: error \"{error}\" importing modules".format(error=exp))
@@ -24,6 +27,7 @@ except ImportError as exp:
 
 try:
     import modules.config.config as json_config
+    import modules.config.host as host_config
 except ImportError as exp:
     print("ERROR: error \"{error}\" importing modules".format(error=exp))
     sys.exit(3)
@@ -35,9 +39,8 @@ DEFAULT_CONFIG_FILE="./project_config.json"
 
 ################################################################################
 def printUsage() -> None:
-    '''
-    Prints usage information about this program to stdout.
-    '''
+    """Prints usage information about this program to stdout.
+    """
     usage_string = """Usage: buildnis.py [-h|--help] PROJECT_CONFIG
 
 Buildnis is a build system used to build software.
@@ -53,19 +56,18 @@ Arguments:
 
 ################################################################################
 def parseCommandLine(arguments) -> CommandlineArguments:
-    '''
-    Parses the command line arguments.
+    """Parses the command line arguments.
 
     Parses the command line arguments, exits the program if an illegal argument
     has been given.
 
     Parameters: 
-    arguments: the command line arguments passed to the program
+        arguments: the command line arguments passed to the program
 
     Returns: 
-    a dictionary of command line arguments.
-    ["Config"] holds the path to the project's JSON configuration
-    '''
+        a dictionary of command line arguments.
+        ["Config"] holds the path to the project's JSON configuration
+    """
     try:
         opts, args = getopt.getopt(arguments, "h", ["help"])
     except getopt.GetoptError as excp:
@@ -104,19 +106,40 @@ def parseCommandLine(arguments) -> CommandlineArguments:
 
 ################################################################################
 def main(arguments):
-    '''
-    Main entry point of Buildnis.
+    """Main entry point of Buildnis.
 
     Parses commandline arguments and runs the program.
 
     Parameters:
     arguments: the command line arguments passed to the program
-    '''
-    commandline_dict = parseCommandLine(arguments)
+    """
+    commandline_dict = parseCommandLine(arguments=arguments)
     print("Using project config \"{config}\"".format(config=commandline_dict["Config"]))
 
-    cfg = json_config.Config(commandline_dict["Config"])
+    host_cfg = host_config.Host()
     
+    host_cfg_filename = "_".join([host_cfg.host_name, HOST_FILE_NAME])
+    host_cfg_filename = ".".join([host_cfg_filename, "json"])
+
+    host_cfg.writeJSON(json_path=host_cfg_filename)
+
+    cfg = json_config.Config(project_config=commandline_dict["Config"])        
+
+    # print(cfg.project_cfg.__dict__)
+
+    # print("=======================================================")
+
+    # for module_key in cfg.module_cfgs:
+    #     print(module_key, cfg.module_cfgs[module_key].__dict__)
+    #     print("")
+
+    #     print("=======================================================")
+
+    #     for build_key in cfg.build_cfgs:
+    #         print(build_key, cfg.build_cfgs[build_key].__dict__)
+    #         print("")
+
+    print(host_cfg)
 
 
 ################################################################################

@@ -6,14 +6,18 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
-import json, io, sys, pathlib, os
-from modules.config import BUILD_FILE_NAME, MODULE_FILE_NAME, PROJECT_FILE_NAME, VERSION
+import json
+import io
+import sys
+import pathlib
+import os
+import pprint
+from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, VERSION
 from types import SimpleNamespace
 
 
 class Config:
-    '''
-    Loads all JSON configurations.
+    """Loads all JSON configurations.
 
     Parses the project's JSON configuration, all module JSON configurations and
     all build tool JSON configurations.
@@ -32,18 +36,19 @@ class Config:
                     JSON
     parseBuildCfgs Parses the build JSON configurations setup in the module
                     JSONs
-    '''
+    """
     ###########################################################################
-    def __init__(self, project_config):
-        '''
-        Constructor of class Config.
+    def __init__(self, project_config: FilePath):
+        """Constructor of class Config.
 
         Parses the project's JSON configuration and stores it to project_cfg.
 
         Parameters:
-        project_config the path to the project's JSON configuration file.
-        '''
+            project_config: the path to the project's JSON configuration file.
+        """
         self.config_path = project_config
+
+        print("Parsing project config file \"{path}\"".format(path=project_config))
 
         try:
             with io.open(self.config_path, mode= "r", encoding="utf-8") as file:
@@ -79,17 +84,18 @@ class Config:
 
     ###########################################################################
     def parseModuleCfgs(self) -> None:
-        '''
-        Parses the module JSON configurations.
+        """Parses the module JSON configurations.
 
         Parses and stores all module JSON configurations configured in the
         project's setup stored in self.project_cfg. Stores the configurations
         in module_cfgs.
-        '''
+        """
         for target in self.project_cfg.target:
             
             module_path = os.path.normpath(os.path.join(
                 self.project_cfg_dir, target.module_file))
+
+            print("Parsing module config file \"{path}\"".format(path=module_path))
 
             if not pathlib.Path(module_path).is_file():
                 print("ERROR: module configuration file \"{config}\" not found or is not a file!".format(
@@ -127,19 +133,21 @@ class Config:
 
     ###########################################################################
     def parseBuildCfgs(self) -> None:
-        '''
-        Parses the build JSON configurations.
+        """Parses the build JSON configurations.
 
         Parses and stores all module JSON configurations configured in the
         modules setups stored in self.module_cfgs. Stores the configurations
         in build_cfgs.
-        '''
+        """
         for mdl_key in self.module_cfgs:
             module_cfg = self.module_cfgs[mdl_key]
 
             for module_build_cfg in module_cfg.supported_builds:                                
                 build_cfg_path = os.path.normpath(os.path.join(module_cfg.module_path,
                             module_build_cfg.build_config_file))
+
+                print("Parsing build config file \"{path}\"".format(
+                    path=build_cfg_path))
 
                 if build_cfg_path in self.build_cfgs:
                     continue
@@ -181,19 +189,14 @@ class Config:
 
                 self.build_cfgs[build_cfg_path] = build_cfg
 
-        print(self.project_cfg.__dict__)
+    ###########################################################################
+    def __repr__(self) -> str:
+        """Returns a string representing the object.
 
-        print("=======================================================")
-
-        for module_key in self.module_cfgs:
-            print(module_key, self.module_cfgs[module_key].__dict__)
-            print("")
-
-        print("=======================================================")
-        
-        for build_key in self.build_cfgs:
-            print(build_key, self.build_cfgs[build_key].__dict__)
-            print("")
+        Returns:
+            str: A strings representation of the objects data
+        """
+        return pprint.pformat(vars(self))
 
 
                 

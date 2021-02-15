@@ -130,3 +130,5 @@ dmypy.json
 
 # ignore local tests
 local_test/**
+
+/Wintermute_host_config.json
