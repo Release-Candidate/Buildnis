@@ -98,6 +98,8 @@ if defined RESULT[!LOOP_IDX!].install_path (
     goto :LOOP1
 )
 
+:: get the compilers (clang and clang++) version strings.
+
 :: JSON output
 echo {
 echo "build_tools":

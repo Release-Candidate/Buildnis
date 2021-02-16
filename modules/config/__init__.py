@@ -30,6 +30,10 @@ LINUX_OS_STRING = "Linux"
 
 OSX_OS_STRING = "OSX"
 
+Arch = str
+
+OSName = str
+
 AMD64_ARCH_STRING = "x64"
 
 I86_ARCH_STRING = "x86"
