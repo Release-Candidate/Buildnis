@@ -29,15 +29,21 @@ set ICX_VERSION=
 set IFORT_VERSION=
 set IFX_VERSION=
 set PYTHON_VERSION=
+set ENV_SCRIPT=
+
 
 :: search for the environment script setvars.bat
 if exist "%ONEAPI_ROOT%setvars.bat" (
     set ENV_SCRIPT="%ONEAPI_ROOT%setvars.bat"
-   
+    goto :HAVE_ENV_SCRIPT
 ) else if exist "%ProgramFiles(x86)%\Intel\oneAPI\setvars.bat" (
     set ENV_SCRIPT="%ProgramFiles(x86)%\Intel\oneAPI\setvars.bat"
-   
+    goto :HAVE_ENV_SCRIPT
 )
+
+set ENV_SCRIPT=""
+
+:HAVE_ENV_SCRIPT
 
 if /i "%ICL_VERSION%"=="" set ICL_VERSION=""
 if /i "%ICX_VERSION%"=="" set ICX_VERSION=""
@@ -91,7 +97,6 @@ echo         "env_script": %ENV_SCRIPT:\=\\%
 echo     }
 echo ]
 echo }
-
 
 
 GOTO :EOF
