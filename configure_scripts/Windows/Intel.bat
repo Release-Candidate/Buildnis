@@ -24,6 +24,16 @@ if /i "%1"=="x64" (set CMD_ARG=%X64_ARGUMENT%) & shift & goto :PARSE_ARGS
 if /i "%1"=="x86" (set CMD_ARG=%I86_ARGUMENT%) & shift & goto :PARSE_ARGS
 :END_PARSE_ARGS
 
+:: search for the environment script setvars.bat
+if exist "%ONEAPI_ROOT%setvars.bat" (
+    set ENV_SCRIPT="%ONEAPI_ROOT%setvars.bat"
+    echo %ENV_SCRIPT%
+) else if exist "%ProgramFiles(x86)%\Intel\oneAPI\setvars.bat" (
+    set ENV_SCRIPT="%ProgramFiles(x86)%\Intel\oneAPI\setvars.bat"
+    echo %ENV_SCRIPT%
+)
+
+
 :: JSON output
 echo {
 echo "build_tools": 
@@ -34,7 +44,7 @@ echo         "name_long": "",
 echo         "version": "",
 echo         "build_tool_exe": "icl",
 echo         "install_path": "",
-echo         "env_script": ""
+echo         "env_script": %ENV_SCRIPT:\=\\%
 echo     },
 echo     {
 echo         "name": "Intel DPC++/C++",
@@ -42,7 +52,7 @@ echo         "name_long": "",
 echo         "version": "",
 echo         "build_tool_exe": "icx",
 echo         "install_path": "",
-echo         "env_script": ""
+echo         "env_script": %ENV_SCRIPT:\=\\%
 echo     },
 echo     {
 echo         "name": "Intel Fortran Classic",
@@ -50,7 +60,7 @@ echo         "name_long": "",
 echo         "version": "",
 echo         "build_tool_exe": "ifort",
 echo         "install_path": "",
-echo         "env_script": ""
+echo         "env_script": %ENV_SCRIPT:\=\\%
 echo     },
 echo     {
 echo         "name": "Intel Fortran (ifx)",
@@ -58,7 +68,7 @@ echo         "name_long": "",
 echo         "version": "",
 echo         "build_tool_exe": "ifx",
 echo         "install_path": "",
-echo         "env_script": ""
+echo         "env_script": %ENV_SCRIPT:\=\\%
 echo     },
 echo     {
 echo         "name": "Intel Python",
@@ -66,7 +76,7 @@ echo         "name_long": "",
 echo         "version": "",
 echo         "build_tool_exe": "python",
 echo         "install_path": "",
-echo         "env_script": ""
+echo         "env_script": %ENV_SCRIPT:\=\\%
 echo     }
 echo ]
 echo }

@@ -95,10 +95,14 @@ if defined RESULT[!LOOP_IDX!].install_path (
     call echo         "name_long": "%%RESULT[!LOOP_IDX!].name_long%% %%RESULT[!LOOP_IDX!].version%%",
     call echo         "version": "",
     call echo         "build_tool_exe": "cl",
-    call echo         "install_path": "%%RESULT[!LOOP_IDX!].install_path%%",
-    call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script%%",
+    call echo         "install_path": "",
+    call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script:\=\\%%"
     set /a "LOOP_IDX+=1"
-    echo     },
+    if defined RESULT[!LOOP_IDX!].install_path (
+        echo     },
+    ) else (
+        echo     }
+    )
     goto :LOOP
 )
 echo ]
@@ -110,10 +114,10 @@ GOTO :EOF
 :: trim spaces off the strings
 :TRIM
 SetLocal EnableDelayedExpansion
-Call :TRIMSUB %%%1%%
-EndLocal & set %1=%tempvar%
+Call :TRIMHELPER %%%1%%
+EndLocal & set %1=%helper_tmp%
 GOTO :EOF
 
-:TRIMSUB
-set tempvar=%*
+:TRIMHELPER
+set helper_tmp=%*
 GOTO :EOF
