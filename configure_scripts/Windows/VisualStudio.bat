@@ -24,8 +24,8 @@ set I86_ARGUMENT=-arch=x86
 :: parse command line arguments
 :PARSE_ARGS
 if /i "%1"==""    goto :END_PARSE_ARGS
-if /i "%1"=="x64" (set CMD_ARG=%X64_ARGUMENT%) & shift & goto :PARSE_ARGS
-if /i "%1"=="x86" (set CMD_ARG=%I86_ARGUMENT%) & shift & goto :PARSE_ARGS
+if /i "%1"=="x64" (set CMD_ARG=%X64_ARGUMENT%) & (set CLANG_PATH=x64) & shift & goto :PARSE_ARGS
+if /i "%1"=="x86" (set CMD_ARG=%I86_ARGUMENT%) & (set CLANG_PATH=)& shift & goto :PARSE_ARGS
 :END_PARSE_ARGS
 
 setlocal enabledelayedexpansion
@@ -78,6 +78,21 @@ if defined RESULT[!LOOP_IDX!].install_path (
     if exist "!a!" (
         set RESULT[!LOOP_IDX!].env_script=!a!
         call :TRIM RESULT[!LOOP_IDX!].env_script
+        call set RESULT[!LOOP_IDX!].env_script=%%RESULT[!LOOP_IDX!].env_script:\=\\%%
+    )
+    set /a "LOOP_IDX+=1"
+    goto :LOOP1
+)
+
+:: check if clang is installed
+set /a LOOP_IDX=0
+:LOOP1
+if defined RESULT[!LOOP_IDX!].install_path (
+    call set a=%%RESULT[!LOOP_IDX!].install_path%%\VC\Tools\Llvm\%%CLANG_PATH%%\bin
+    if exist "!a!" (
+        set RESULT[!LOOP_IDX!].clang_path=!a!
+        call :TRIM RESULT[!LOOP_IDX!].clang_path
+        call set RESULT[!LOOP_IDX!].clang_path=%%RESULT[!LOOP_IDX!].clang_path:\=\\%%
     )
     set /a "LOOP_IDX+=1"
     goto :LOOP1
@@ -91,12 +106,20 @@ set /a LOOP_IDX=0
 :LOOP
 if defined RESULT[!LOOP_IDX!].install_path (
     echo     {
+    call echo         "name": "Clang (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
+    call echo         "name_long": "Clang (%%RESULT[!LOOP_IDX!].name_long%% %%RESULT[!LOOP_IDX!].version%%)",
+    call echo         "version": "",
+    call echo         "build_tool_exe": "clang",
+    call echo         "install_path": "%%RESULT[!LOOP_IDX!].clang_path%%",
+    call echo         "env_script": ""
+    echo     },
+    echo     {
     call echo         "name": "%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%",
     call echo         "name_long": "%%RESULT[!LOOP_IDX!].name_long%% %%RESULT[!LOOP_IDX!].version%%",
     call echo         "version": "",
     call echo         "build_tool_exe": "cl",
     call echo         "install_path": "",
-    call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script:\=\\%%"
+    call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script%%"    
     set /a "LOOP_IDX+=1"
     if defined RESULT[!LOOP_IDX!].install_path (
         echo     },
