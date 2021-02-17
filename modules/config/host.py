@@ -6,6 +6,7 @@
 # Date:     15.Feb.2021
 ###############################################################################
 
+from modules import EXT_ERR_WR_FILE
 from modules.config import AMD64_ARCH_STRING, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
 import platform
 import pprint
@@ -104,7 +105,7 @@ class Host:
             except Exception as excp:
                 print("ERROR: error \"{error}\" trying to write host configuration to file \"{file}\""
                     .format(error=excp,file=self.json_path))
-                sys.exit(2)
+                sys.exit(EXT_ERR_WR_FILE)
 
     #############################################################################  
     def collectWindowsConfig(self) -> None:
