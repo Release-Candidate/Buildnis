@@ -17,24 +17,19 @@ import subprocess
 import pprint
 from types import SimpleNamespace
 
-class BuildToolCfg:
-    """Helper class to encode Check.build_tools_cfgs to JSON.
-    """
-    def __init__(self, src: object) -> None:
-        self.name = src.name
-        self.name_long = src.name_long
-        self.version = src.version
-        self.build_tool_exe = src.build_tool_exe
-        self.install_path = src.install_path
-        self.env_script = src.env_script   
-  
-
 class WriteCfg:
     """Helper class to encode Check.build_tools_cfgs to JSON.
     """
-    def __init__(self, json_path: FilePath, cfg_list: list) -> None: 
+
+    ############################################################################
+    def __init__(self, cfg_list: list) -> None: 
+        """[summary]
+
+        Args:           
+            cfg_list (list): the list of generated build tool configs
+        """
         
-        self.file_name = json_path
+        self.file_name = BUILD_TOOL_CONFIG_NAME
         self.build_tool_cfgs = []
 
         for cfg in cfg_list:            
@@ -45,11 +40,7 @@ class WriteCfg:
             temp_dict["build_tool_exe"] = cfg.build_tool_exe
             temp_dict["install_path"] = cfg.install_path
             temp_dict["env_script"] = cfg.env_script
-            self.build_tool_cfgs.append(temp_dict)
-
-  
-        
-  
+            self.build_tool_cfgs.append(temp_dict) 
 
 class Check:
     """Checks if all build tools are present.
@@ -133,9 +124,8 @@ class Check:
         print("Writing host configuration file \"{file}\"".format(
             file=self.json_path))
 
-        write_cfg = WriteCfg(BUILD_TOOL_CONFIG_NAME, self.build_tool_cfgs)
-
-        print(write_cfg.__dict__)
+        write_cfg = WriteCfg(self.build_tool_cfgs)
+      
         with io.open(self.json_path, mode="w",) as json_file:
             try:                
                 json.dump(obj=write_cfg.__dict__, fp=json_file,
