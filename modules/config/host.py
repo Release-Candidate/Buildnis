@@ -6,6 +6,7 @@
 # Date:     15.Feb.2021
 ###############################################################################
 
+import datetime
 from modules import EXT_ERR_WR_FILE
 from modules.config import AMD64_ARCH_STRING, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
 import platform
@@ -97,6 +98,8 @@ class Host:
             json_path (str):  the path to write the json file to
         """
         self.json_path = os.path.normpath(json_path)
+        self.generated_at = datetime.datetime.now(
+            tz=None).isoformat(sep=" ", timespec="seconds")
         print("Writing host configuration file \"{file}\"".format(file=self.json_path))
 
         with io.open(self.json_path,mode="w",) as json_file:

@@ -6,16 +6,19 @@
 # Date:     16.Feb.2021
 ###############################################################################
 
-import json
-from modules import EXT_ERR_DIR, EXT_ERR_WR_FILE
 import os
+import re
 import io
-from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CONFIGURE_SCRIPTS_PATH, FilePath, OSName
-import pathlib
 import sys
+import json
+import pathlib
+import datetime
 import subprocess
-import pprint
 from types import SimpleNamespace
+from typing import Any
+
+from modules import EXT_ERR_DIR, EXT_ERR_WR_FILE
+from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CONFIGURE_SCRIPTS_PATH, FilePath, OSName
 
 class WriteCfg:
     """Helper class to encode Check.build_tools_cfgs to JSON.
@@ -23,7 +26,8 @@ class WriteCfg:
 
     ############################################################################
     def __init__(self, cfg_list: list) -> None: 
-        """[summary]
+        """Converts the list of classes to a list of dictionaries suited to be 
+        dumped by the JSON writer `json.dump`
 
         Args:           
             cfg_list (list): the list of generated build tool configs
@@ -31,15 +35,52 @@ class WriteCfg:
         
         self.file_name = BUILD_TOOL_CONFIG_NAME
         self.build_tool_cfgs = []
+        self.generated_at = datetime.datetime.now(
+            tz=None).isoformat(sep=" ", timespec="seconds")
 
         for cfg in cfg_list:            
             temp_dict = dict()
-            temp_dict["name"] = cfg.name
-            temp_dict["name_long"] = cfg.name_long
-            temp_dict["version"] = cfg.version
-            temp_dict["build_tool_exe"] = cfg.build_tool_exe
-            temp_dict["install_path"] = cfg.install_path
-            temp_dict["env_script"] = cfg.env_script
+            try:
+                temp_dict["name"] = cfg.name
+            except AttributeError:
+                temp_dict["name"] = ""
+            try:
+                temp_dict["name_long"] = cfg.name_long
+            except AttributeError:
+                temp_dict["name_long"] = ""
+            try:
+                temp_dict["version"] = cfg.version
+            except AttributeError:
+                temp_dict["version"] = ""
+            try:
+                temp_dict["build_tool_exe"] = cfg.build_tool_exe
+            except AttributeError:
+                temp_dict["build_tool_exe"] = ""
+            try:
+                temp_dict["install_path"] = cfg.install_path
+            except AttributeError:
+                temp_dict["install_path"] = ""
+            try:
+                temp_dict["env_script"] = cfg.env_script
+            except AttributeError:
+                temp_dict["env_script"] = ""
+            try:
+                temp_dict["env_script_arg"] = cfg.env_script_arg
+            except AttributeError:
+                temp_dict["env_script_arg"] = ""
+            try:
+                temp_dict["version_regex"] = cfg.version_regex
+            except AttributeError:
+                temp_dict["version_regex"] = ""
+            try:
+                temp_dict["version_arg"] = cfg.version_arg
+            except AttributeError:
+                temp_dict["version_arg"] = ""
+            try:
+                temp_dict["is_checked"] = cfg.is_checked
+            except AttributeError:
+                temp_dict["is_checked"] = False
+            
             self.build_tool_cfgs.append(temp_dict) 
 
 class Check:
@@ -51,12 +92,16 @@ class Check:
     Each build tool configuration (item of build_tool_cfgs) has the following 
     attributes:
 
-    * `name`
-    * `name_long`
-    * `version`
-    * `build_tool_exe`
-    * `install_path`
-    * `env_script`
+    * `name`                The name of the build tool
+    * `name_long`           The full name of the build tool
+    * `version`             The version of the build tool, gathered from its output
+    * `version_arg`         The argument to call the build tool with to get the version 
+    * `version_regex`       The regex to parse the output of `version_arg` to get `version`
+    * `build_tool_exe`      The executable's file name
+    * `install_path`        The path to the executable
+    * `env_script`          The environment script to call before using the executable
+    * `env_script_arg`      The argument to call the environment script with
+    * `is_checked`          Has the executable been run and the version output been parsed?
 
     Attributes:
         os_name (OSName): the OS we are building for
@@ -67,6 +112,11 @@ class Check:
     Methods:
         writeJSON: writes the gathered build tool configurations to the given 
                     JSON config file.
+        isBuildToolCfgOK: checks if the build tool config has the minimum 
+                            needed attributes
+        callExecutable: calls the executable with the given command line
+        checkVersions: runs all build tools with the version argument, to check
+                        if the executable works
     """
     ###########################################################################
     def __init__(self, os_name: OSName, arch: Arch) -> None:
@@ -85,7 +135,7 @@ class Check:
         self.arch = arch
 
         working_dir = pathlib.Path(os.path.normpath(
-            "/".join([CONFIGURE_SCRIPTS_PATH, os_name])))
+            "/".join([CONFIGURE_SCRIPTS_PATH, os_name])))        
         if not working_dir.is_dir(): 
             print("ERROR: \"\{path}\" does not exist or is not a directory!".format(path=working_dir))
             sys.exit(EXT_ERR_DIR)
@@ -110,8 +160,163 @@ class Check:
                             .format(error=excp, path = script_path))             
                
                 for item in build_tool_cfg.build_tools:
-                    self.build_tool_cfgs.append(item)
-      
+                    if self.isBuildToolCfgOK(item):
+                        self.build_tool_cfgs.append(item)
+                    else:
+                        print("ERROR: build tool config \"{cfg}\" doesn't have all needed attributes!".format(
+                            cfg=script_path))
+        
+        self.checkVersions()
+
+    ############################################################################
+    def isBuildToolCfgOK(self, cfg: Any) -> bool:
+        """Checks if the given object has all the needed attributes of a build 
+        tool configuration.
+
+        Args:
+            cfg (obj): the object to check
+
+        Returns:
+            bool: True, if `cfg` has all needed attributes
+                  False else
+        """
+        try:
+            cfg.name
+        except AttributeError:
+            print("ERROR: build config has no attribute \"name\"")
+            return False
+        try:
+            cfg.name_long
+        except AttributeError:
+            cfg.name_long = ""
+        try:
+            cfg.version
+        except AttributeError:
+            cfg.version = ""
+        try:
+            cfg.build_tool_exe
+        except AttributeError:
+            print("ERROR: build config has no attribute \"build_tool_exe\"")
+            return False
+        try:
+            cfg.install_path
+        except AttributeError:
+            cfg.install_path = ""
+        try:
+            cfg.env_script
+        except AttributeError:
+            cfg.env_script = ""
+        try:
+            cfg.env_script_arg
+        except AttributeError:
+            cfg.env_script_arg = ""
+        try:
+            cfg.version_regex
+        except AttributeError:
+            print("ERROR: build config has no attribute \"version_regex\"")
+            return False
+        try:
+            cfg.version_arg
+        except AttributeError:
+            cfg.version_arg = ""
+
+        return True
+       
+            
+
+    ############################################################################
+    def checkVersions(self) -> None:
+        """Runs all configured build tools with the 'show version' argument.
+
+        To check, if the configured build tools exist and are working, try to 
+        execute each with the argument to get the version string of the build 
+        tool.
+        """ 
+        for tool in self.build_tool_cfgs:
+            if tool.build_tool_exe == "":
+                print("ERROR: build tool \"{name}\" has no executable configured!".format(
+                    name=tool.name))       
+                continue
+
+            exe_path = tool.build_tool_exe
+
+            # has environment script to call
+            if tool.env_script != "":
+                print("\"{name}\": calling environment script \"{script}\".".format(
+                    name=tool.name, script=tool.env_script))
+
+                out_std, out_err = self.callExecutable(
+                    exe_path=tool.env_script, arguments=[tool.env_script_arg, "&&", exe_path, tool.version_arg])               
+
+            # has full path (so maybe not in PATH)
+            elif tool.install_path != "":
+                exe_path = os.path.normpath(
+                    "/".join([tool.install_path, tool.build_tool_exe]))
+                print("\"{name}\": using path \"{path}\".".format(
+                    name=tool.name, path=exe_path))
+
+                out_std, out_err = self.callExecutable(
+                    exe_path=exe_path, arguments=[tool.version_arg])
+            
+            # no full path given, so it hopefully is in PATH
+            else:
+                print("\"{name}\": checking if executable \"{exe}\" is in PATH.".format(
+                    name=tool.name, exe=tool.build_tool_exe))
+                   
+                out_std, out_err = self.callExecutable(
+                    exe_path=exe_path, arguments=[tool.version_arg])
+
+            try:
+                version_regex = re.search(tool.version_regex, out_std)
+                if version_regex != None and version_regex.group(1): 
+                    tool.version = version_regex.group(1)
+                    tool.is_checked = True
+                else:
+                    version_regex = re.search(tool.version_regex, out_err)
+                    if version_regex != None and version_regex.group(1):
+                        tool.version = version_regex.group(1)
+                        tool.is_checked = True                
+
+            except Exception as excp:
+                print("ERROR: error \"{error}\" parsing version of \"{exe} {opt}\" using version regex \"{regex}\"".format(
+                    error= excp, exe=exe_path, opt=tool.version_arg, regex=tool.version_regex))
+
+            
+
+    ############################################################################
+    def callExecutable(self, exe_path: FilePath, arguments: list) -> tuple:       
+        """Runs the given executable, returns the output of the command.
+
+        Args:
+            exe_path (FilePath): the path of the executable, including the 
+                                 filename. The directory part can be omitted if
+                                 the executable is in the PATH
+            arguments (list): the list of arguments to pass to the executable
+
+        Returns:
+            tuple: the output of the program or the command interpreter trying
+                   to run the executable with the given arguments, returned as
+                   tuple stdout, stderr. `None` is returned for stdout or 
+                   stderr if no output has been captured.
+                   Returns the empty string '' for both on errors, the tuple
+                   ('', '')
+        """
+        cmd_line_args =[exe_path]
+        if arguments != []:
+            for arg in arguments:
+                if arg != "":
+                    cmd_line_args.append(arg)   
+
+        try:
+            process_result = subprocess.run(
+                args=cmd_line_args,
+                    capture_output=True, text=True, check=False, timeout=120)                 
+        except Exception as excp:
+            print("ERROR: error \"{error}\" calling \"{exe}\"".format(
+                error=excp, exe=exe_path))
+            return "", ""
+
+        return process_result.stdout, process_result.stderr
 
     ############################################################################
     def writeJSON(self, json_path: FilePath) -> None:

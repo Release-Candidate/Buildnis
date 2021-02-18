@@ -29,6 +29,8 @@ echo     {
 echo         "name": "Python",
 echo         "name_long": "%PYTHON_VERSION%",
 echo         "version": "",
+echo         "version_arg": "--version",
+echo         "version_regex": "^\\S+ (.*)",
 echo         "build_tool_exe": "python",
 echo         "install_path": "",
 echo         "env_script": ""

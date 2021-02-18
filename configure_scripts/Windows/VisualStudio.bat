@@ -130,6 +130,8 @@ if defined RESULT[!LOOP_IDX!].install_path (
     call echo         "name": "Clang (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
     call echo         "name_long": "%CLANG_VERSION% (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
     call echo         "version": "",
+    call echo         "version_arg": "--version",
+    call echo         "version_regex": "version (.*)",
     call echo         "build_tool_exe": "clang",
     call echo         "install_path": "%%RESULT[!LOOP_IDX!].clang_path%%",
     call echo         "env_script": ""
@@ -138,6 +140,8 @@ if defined RESULT[!LOOP_IDX!].install_path (
     call echo         "name": "Clang++ (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
     call echo         "name_long": "%CLANGPP_VERSION% (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
     call echo         "version": "",
+    call echo         "version_arg": "--version",
+    call echo         "version_regex": "version (.*)",
     call echo         "build_tool_exe": "clang++",
     call echo         "install_path": "%%RESULT[!LOOP_IDX!].clang_path%%",
     call echo         "env_script": ""
@@ -146,9 +150,12 @@ if defined RESULT[!LOOP_IDX!].install_path (
     call echo         "name": "%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%",
     call echo         "name_long": "%%RESULT[!LOOP_IDX!].name_long%% %%RESULT[!LOOP_IDX!].version%%",
     call echo         "version": "",
+    call echo         "version_arg": "",
+    call echo         "version_regex": "Version (.*) for",
     call echo         "build_tool_exe": "cl",
     call echo         "install_path": "",
-    call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script%%"    
+    call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script%%",
+    call echo         "env_script_arg": "%CMD_ARG%"    
     set /a "LOOP_IDX+=1"
     if defined RESULT[!LOOP_IDX!].install_path (
         echo     },

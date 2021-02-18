@@ -42,6 +42,8 @@ echo     {
 echo         "name": "Java",
 echo         "name_long": "%JAVA_VERSION%",
 echo         "version": "",
+echo         "version_arg": "--version",
+echo         "version_regex": "^\\S+ (\\S+) ",
 echo         "build_tool_exe": "java",
 echo         "install_path": %JAVA_PATH%,
 echo         "env_script": ""

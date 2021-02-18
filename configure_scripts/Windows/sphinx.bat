@@ -30,6 +30,8 @@ echo     {
 echo         "name": "Sphinx",
 echo         "name_long": "%SPHINX_VERSION%",
 echo         "version": "",
+echo         "version_arg": "--version",
+echo         "version_regex": "^\\S+ (.*)",
 echo         "build_tool_exe": "sphinx-build",
 echo         "install_path": "",
 echo         "env_script": ""

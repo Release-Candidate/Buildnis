@@ -59,38 +59,52 @@ echo     {
 echo         "name": "Intel C++ Classic",
 echo         "name_long": %ICL_VERSION%,
 echo         "version": "",
+echo         "version_arg": "/QV",
+echo         "version_regex": ", Version (.*) Build",
 echo         "build_tool_exe": "icl",
 echo         "install_path": "",
-echo         "env_script": %ENV_SCRIPT:\=\\%
+echo         "env_script": %ENV_SCRIPT:\=\\%,
+echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel DPC++/C++",
 echo         "name_long": %ICX_VERSION%,
 echo         "version": "",
+echo         "version_arg": "/QV",
+echo         "version_regex": ", Version (.*) Build",
 echo         "build_tool_exe": "icx",
 echo         "install_path": "",
-echo         "env_script": %ENV_SCRIPT:\=\\%
+echo         "env_script": %ENV_SCRIPT:\=\\%,
+echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel Fortran Classic",
 echo         "name_long": %IFORT_VERSION%,
 echo         "version": "",
+echo         "version_arg": "/QV",
+echo         "version_regex": ", Version (.*) Build",
 echo         "build_tool_exe": "ifort",
 echo         "install_path": "",
-echo         "env_script": %ENV_SCRIPT:\=\\%
+echo         "env_script": %ENV_SCRIPT:\=\\%,
+echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel Fortran (ifx)",
 echo         "name_long": %IFX_VERSION%,
 echo         "version": "",
+echo         "version_arg": "/QV",
+echo         "version_regex": ", Version (.*) Build",
 echo         "build_tool_exe": "ifx",
 echo         "install_path": "",
-echo         "env_script": %ENV_SCRIPT:\=\\%
+echo         "env_script": %ENV_SCRIPT:\=\\%,
+echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel Python",
 echo         "name_long": %PYTHON_VERSION%,
 echo         "version": "",
+echo         "version_arg": "--version",
+echo         "version_regex": "Python (.*) ::",
 echo         "build_tool_exe": "python",
 echo         "install_path": "",
 echo         "env_script": %ENV_SCRIPT:\=\\%
