@@ -6,6 +6,8 @@
 # Date:     16.Feb.2021
 ###############################################################################
 
+from __future__ import annotations
+
 import os
 import re
 import io
@@ -15,10 +17,10 @@ import pathlib
 import datetime
 import subprocess
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, List
 
 from modules import EXT_ERR_DIR, EXT_ERR_WR_FILE
-from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CONFIGURE_SCRIPTS_PATH, FilePath, OSName
+from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CFG_VERSION, CONFIGURE_SCRIPTS_PATH, CmdOutput, FilePath, OSName
 
 class WriteCfg:
     """Helper class to encode Check.build_tools_cfgs to JSON.
@@ -34,6 +36,7 @@ class WriteCfg:
         """
         
         self.file_name = BUILD_TOOL_CONFIG_NAME
+        self.file_version = ".".join(CFG_VERSION)
         self.build_tool_cfgs = []
         self.generated_at = datetime.datetime.now(
             tz=None).isoformat(sep=" ", timespec="seconds")
@@ -83,6 +86,8 @@ class WriteCfg:
             
             self.build_tool_cfgs.append(temp_dict) 
 
+# TODO add protocol for the config class
+
 class Check:
     """Checks if all build tools are present.
     
@@ -106,7 +111,7 @@ class Check:
     Attributes:
         os_name (OSName): the OS we are building for
         arch (Arch): the CPU architecture we are building for
-        build_tool_cfgs: the list of build tool configurations returned from 
+        build_tool_cfgs (list): the list of build tool configurations returned from 
                         the script_paths in `configure_script_paths/OS`
 
     Methods:
@@ -245,7 +250,7 @@ class Check:
                 print("\"{name}\": calling environment script \"{script}\".".format(
                     name=tool.name, script=tool.env_script))
 
-                out_std, out_err = self.callExecutable(
+                output = self.callExecutable(
                     exe_path=tool.env_script, arguments=[tool.env_script_arg, "&&", exe_path, tool.version_arg])               
 
             # has full path (so maybe not in PATH)
@@ -255,7 +260,7 @@ class Check:
                 print("\"{name}\": using path \"{path}\".".format(
                     name=tool.name, path=exe_path))
 
-                out_std, out_err = self.callExecutable(
+                output = self.callExecutable(
                     exe_path=exe_path, arguments=[tool.version_arg])
             
             # no full path given, so it hopefully is in PATH
@@ -263,16 +268,16 @@ class Check:
                 print("\"{name}\": checking if executable \"{exe}\" is in PATH.".format(
                     name=tool.name, exe=tool.build_tool_exe))
                    
-                out_std, out_err = self.callExecutable(
+                output = self.callExecutable(
                     exe_path=exe_path, arguments=[tool.version_arg])
 
             try:
-                version_regex = re.search(tool.version_regex, out_std)
+                version_regex = re.search(tool.version_regex, output.std_out)
                 if version_regex != None and version_regex.group(1): 
                     tool.version = version_regex.group(1)
                     tool.is_checked = True
                 else:
-                    version_regex = re.search(tool.version_regex, out_err)
+                    version_regex = re.search(tool.version_regex, output.err_out)
                     if version_regex != None and version_regex.group(1):
                         tool.version = version_regex.group(1)
                         tool.is_checked = True                
@@ -284,19 +289,19 @@ class Check:
             
 
     ############################################################################
-    def callExecutable(self, exe_path: FilePath, arguments: list) -> tuple:       
+    def callExecutable(self, exe_path: FilePath, arguments: List[str]) -> CmdOutput:       
         """Runs the given executable, returns the output of the command.
 
         Args:
             exe_path (FilePath): the path of the executable, including the 
                                  filename. The directory part can be omitted if
                                  the executable is in the PATH
-            arguments (list): the list of arguments to pass to the executable
+            arguments (List[str]): the list of arguments to pass to the executable
 
         Returns:
-            tuple: the output of the program or the command interpreter trying
+            CmdOutput: the output of the program or the command interpreter trying
                    to run the executable with the given arguments, returned as
-                   tuple stdout, stderr. `None` is returned for stdout or 
+                   tuple (`stdout`, `stderr`). `None` is returned for stdout or 
                    stderr if no output has been captured.
                    Returns the empty string '' for both on errors, the tuple
                    ('', '')
@@ -314,9 +319,9 @@ class Check:
         except Exception as excp:
             print("ERROR: error \"{error}\" calling \"{exe}\"".format(
                 error=excp, exe=exe_path))
-            return "", ""
+            return CmdOutput(std_out="", err_out="")
 
-        return process_result.stdout, process_result.stderr
+        return CmdOutput(std_out=process_result.stdout, err_out=process_result.stderr)
 
     ############################################################################
     def writeJSON(self, json_path: FilePath) -> None:

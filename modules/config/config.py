@@ -6,6 +6,8 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
+from __future__ import annotations
+
 import json
 import io
 from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD
@@ -13,9 +15,10 @@ import sys
 import pathlib
 import os
 import pprint
-from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, VERSION
+from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, CFG_VERSION
 from types import SimpleNamespace
 
+# TODO add protocols for config classes
 
 class Config:
     """Loads all JSON configurations.
@@ -25,11 +28,11 @@ class Config:
 
     Attributes:
 
-    config_path the path to the project'S main JSON configuration.
-    project_cfg_dir The directory part of `config_path`
-    project_cfg the project's JSON configuration stored in a Python class.
-    module_cfgs the module JSON configurations (mentioned in project_cfg)
-    build_cfgs the build JSON configurations (mentioned in the module JSONs)
+    config_path (FilePath): the path to the project'S main JSON configuration.
+    project_cfg_dir (FilePath): The directory part of `config_path`
+    project_cfg (obj): the project's JSON configuration stored in a Python class.
+    module_cfgs (Dict[FilePath, Any]) the module JSON configurations (mentioned in project_cfg)
+    build_cfgs (Dict[FilePAth, Any]) the build JSON configurations (mentioned in the module JSONs)
 
     Methods:
 
@@ -66,11 +69,11 @@ class Config:
             sys.exit(EXT_ERR_NOT_VLD)
 
         file_major, file_minor = self.project_cfg.file_version.split(sep=".")
-        if file_major < VERSION.major or file_minor < VERSION.minor:
+        if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
             print("ERROR: project file \"{path}\" is not a valid project file!".format(
                 path=self.config_path))
             print("ERROR: project file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                  .format(old=self.project_cfg.file_version, new=".".join(VERSION)))
+                  .format(old=self.project_cfg.file_version, new=".".join(CFG_VERSION)))
             sys.exit(EXT_ERR_NOT_VLD)
 
         self.project_cfg_dir = os.path.normpath(os.path.dirname(self.config_path))
@@ -118,11 +121,11 @@ class Config:
 
             file_major, file_minor = module_cfg.file_version.split(sep=".")
             
-            if file_major < VERSION.major or file_minor < VERSION.minor:
+            if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
                 print("ERROR: module file \"{path}\" is not a valid module file!".format(
                     path=module_path))
                 print("ERROR: module file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                  .format(old=module_cfg.file_version, new=".".join(VERSION)))
+                  .format(old=module_cfg.file_version, new=".".join(CFG_VERSION)))
                 sys.exit(EXT_ERR_NOT_VLD)
 
             target.module_file = module_path
@@ -176,11 +179,11 @@ class Config:
 
                 file_major, file_minor = build_cfg.file_version.split(sep=".")
 
-                if file_major < VERSION.major or file_minor < VERSION.minor:
+                if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
                     print("ERROR: build config file \"{path}\" is not a valid build config file!".format(
                         path=build_cfg_path))
                     print("ERROR: build config file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                          .format(old=build_cfg.file_version, new=".".join(VERSION)))
+                          .format(old=build_cfg.file_version, new=".".join(CFG_VERSION)))
                     sys.exit(EXT_ERR_NOT_VLD)
 
                 build_cfg.build_cfg_path = os.path.normpath(os.path.dirname(

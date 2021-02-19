@@ -8,15 +8,40 @@
 
 __all__ = ["config"]
 
+# program version
+
+
+
+from typing import NamedTuple
+
+VersionString = str
+
+class ProgramVersion (NamedTuple):
+    """Class to hold the program's version.
+    """
+    major: int = 0
+    minor: int = 0
+    patch: int = 0
+
+    def __str__(self) -> VersionString:
+        """Returns the program's version as a string.
+
+        Returns:
+            [VersionString]: the programs version as a string `{major}.{minor}.{patch}`
+        """
+        return "{major}.{minor}.{patch}".format(major=self.major, minor=self.minor, patch=self.patch)
+
+VERSION = ProgramVersion(major=1, minor=0, patch=0)
+
 # Exit constants, constants passed to ´sys.exit´
 EXT_OK = 0
 """No error"""
 
-EXT_ERR_CMDLINE = 1
-"""Error parsing command line"""
-
-EXT_ERR_LD_FILE = 2
+EXT_ERR_LD_FILE = 1
 """Error reading file"""
+
+EXT_ERR_CMDLINE = 2
+"""Error parsing command line"""
 
 EXT_ERR_DIR = 3
 """Error, directory does not exist or is not a directory"""

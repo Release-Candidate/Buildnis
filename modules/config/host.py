@@ -6,9 +6,9 @@
 # Date:     15.Feb.2021
 ###############################################################################
 
+from __future__ import annotations
+
 import datetime
-from modules import EXT_ERR_WR_FILE
-from modules.config import AMD64_ARCH_STRING, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
 import platform
 import pprint
 import json
@@ -16,6 +16,8 @@ import os
 import io
 import sys
 import subprocess
+from modules import EXT_ERR_WR_FILE
+from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
 
 class Host:
     """Holds all information about the host this is running on.
@@ -23,22 +25,22 @@ class Host:
     Stores hostname, OS, OS version, CPU architecture, RAM, CPU name, ...
 
     Attributes:
-        host_name:      This host's name
-        os:             The OS this is running on (like "Windows", "Linux")
-        os_vers_major:  Major version of the OS (like "10" for Windows 10)
-        os_vers:        Excact version string
-        cpu_arch:       CPU architecture, like "x64" or "x86"
-        cpu:            The detailed name of the CPU
-        file_name:      The JSON identifier of the host config file, part 
-                        of the file name
-        level2_cache:   Size of the CPU's level 2 cache, in bytes
-        level3_cache:   Size of the CPU's level 3 cache, in bytes
-        num_cores:      The number of physical cores
-        num_logical_cores: The number of logical, 'virtual' cores
-        ram_total:      Amount of physical RAM in bytes
-        gpu:            The list of names of all GPUs
-        python_version: The version of this host's Python interpreter
-        json_path:      The path to the written JSON host config file
+        host_name (str):      This host's name
+        os (str):             The OS this is running on (like "Windows", "Linux")
+        os_vers_major (str):  Major version of the OS (like "10" for Windows 10)
+        os_vers (str):        Excact version string
+        cpu_arch (str):       CPU architecture, like "x64" or "x86"
+        cpu (str):            The detailed name of the CPU
+        file_name (str):      The JSON identifier of the host config file, part 
+                              of the file name
+        level2_cache (int):   Size of the CPU's level 2 cache, in bytes
+        level3_cache (int):   Size of the CPU's level 3 cache, in bytes
+        num_cores (int):      The number of physical cores
+        num_logical_cores (int): The number of logical, 'virtual' cores
+        ram_total (int):      Amount of physical RAM in bytes
+        gpu List[str]:        The list of names of all GPUs
+        python_version (str): The version of this host's Python interpreter
+        json_path(str):       The path to the written JSON host config file
 
     Methods:
         writeJSON: saves the information to a JSON file.
@@ -58,6 +60,7 @@ class Host:
         print("Gathering information about this host ...")
 
         self.file_name=HOST_FILE_NAME
+        self.file_version = ".".join(CFG_VERSION)
 
         self.os, self.host_name, self.os_vers_major, self.os_vers, self.cpu_arch, self.cpu = platform.uname()
         if self.os == "Darwin":
