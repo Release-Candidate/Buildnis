@@ -10,6 +10,7 @@
     "copyright_info": "COPYRIGHT_INFO",
     "web_url": "PROJECT_WEBSITE",
     "email": "MAINTAINER_EMAILS",
+    "project_dependency_config": "PROJECT_DEPENDENCY_CONFIG",
     "target": 
     [
         {

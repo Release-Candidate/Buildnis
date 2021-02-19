@@ -42,7 +42,7 @@ class Config:
                     JSONs
     """
     ###########################################################################
-    def __init__(self, project_config: FilePath):
+    def __init__(self, project_config: FilePath) -> None:
         """Constructor of class Config.
 
         Parses the project's JSON configuration and stores it to project_cfg.
@@ -77,6 +77,9 @@ class Config:
             sys.exit(EXT_ERR_NOT_VLD)
 
         self.project_cfg_dir = os.path.normpath(os.path.dirname(self.config_path))
+
+        self.project_cfg.project_dependency_config = os.path.normpath("/".join([
+            self.project_cfg_dir, self.project_cfg.project_dependency_config]))
 
         self.module_cfgs = dict()
 

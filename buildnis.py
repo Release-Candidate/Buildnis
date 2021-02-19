@@ -8,8 +8,9 @@
 ###############################################################################
 
 from __future__ import annotations
+import os
 
-from modules.config import FilePath
+from modules.config import FilePath, project_dependency
 import sys
 from modules import EXT_ERR_IMP_MOD, EXT_ERR_PYTH_VERS, VERSION
 
@@ -42,6 +43,7 @@ except ImportError as exp:
 
 DEFAULT_CONFIG_FILE = "./project_config.json"
 
+################################################################################
 class CommandlineArguments:
     """Holds information about the command line arguments passed to the program.
 
@@ -206,9 +208,13 @@ def main():
     commandline_args = parseCommandLine()
     print("Using project config \"{config}\"".format(config=commandline_args.project_config_file))
 
+    project_cfg_dir = os.path.normpath(
+        os.path.dirname(commandline_args.project_config_file))
+
     host_cfg = host_config.Host()
     
-    host_cfg_filename = "_".join([host_cfg.host_name, HOST_FILE_NAME])
+    host_cfg_filename = "/".join([project_cfg_dir, host_cfg.host_name])
+    host_cfg_filename = "_".join([host_cfg_filename, HOST_FILE_NAME])
     host_cfg_filename = ".".join([host_cfg_filename, "json"])
 
     host_cfg.writeJSON(json_path=host_cfg_filename)         
@@ -217,11 +223,22 @@ def main():
 
     check_buildtools = check_tools.Check(os_name=host_cfg.os, arch=host_cfg.cpu_arch)
     
-    build_tools_filename = "_".join([host_cfg.host_name, BUILD_TOOL_CONFIG_NAME])
+    build_tools_filename = "/".join([project_cfg_dir, host_cfg.host_name])
+    build_tools_filename = "_".join(
+        [build_tools_filename, BUILD_TOOL_CONFIG_NAME])
     build_tools_filename = ".".join([build_tools_filename, "json"])
     check_buildtools.writeJSON(json_path=build_tools_filename)
 
     cfg = json_config.Config(project_config=commandline_args.project_config_file)
+
+    project_dep_cfg = project_dependency.ProjectDependency(
+        cfg.project_cfg.project_dependency_config)
+
+    # print(project_dep_cfg.dependency_cfg.__dict__)
+
+    project_dep_cfg.checkDependencies(force_check=True)
+
+    project_dep_cfg.writeJSON()
 
     # print(cfg.project_cfg.__dict__)
 

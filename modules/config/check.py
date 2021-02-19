@@ -331,7 +331,7 @@ class Check:
             json_path (FilePath): path to write the JSON build tools configuration to
         """
         self.json_path = os.path.normpath(json_path)
-        print("Writing host configuration file \"{file}\"".format(
+        print("Writing build tool configurations file \"{file}\"".format(
             file=self.json_path))
 
         write_cfg = WriteCfg(self.build_tool_cfgs)
