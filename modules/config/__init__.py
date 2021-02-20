@@ -7,7 +7,7 @@
 ###############################################################################
 
 __all__ = ["Config", "Host", "Check", "ProgramDependency", "PROJECT_FILE_NAME", "PROGRAM_DEP_FILE_NAME",
-           "MODULE_FILE_NAME", "BUILD_FILE_NAME", "HOST_FILE_NAME", "CFG_VERSION",
+           "MODULE_FILE_NAME", "BUILD_FILE_NAME", "HOST_FILE_NAME", "CFG_VERSION", "DEFAULT_CONFIG_FILE",
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", "AMD64_ARCH_STRING",
            "I86_ARCH_STRING", "CONFIGURE_SCRIPTS_PATH", "BUILD_TOOL_CONFIG_NAME"]
 
@@ -39,6 +39,7 @@ class CmdOutput (NamedTuple):
 
 
 # Constants to use for JSON files, arguments, ...
+DEFAULT_CONFIG_FILE = "./project_config.json"
 
 PROJECT_DEP_FILE_NAME = "project_dependency_config"
 

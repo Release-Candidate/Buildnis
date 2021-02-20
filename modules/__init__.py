@@ -6,10 +6,7 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
-__all__ = ["config"]
-
-# program version
-
+__all__ = ["config", "helpers", "VERSION"]
 
 
 from typing import NamedTuple

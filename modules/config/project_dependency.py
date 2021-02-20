@@ -6,12 +6,14 @@
 # Date:     19.Feb.2021
 ###############################################################################
 
+from modules.helpers import LOGGER_NAME
 from types import SimpleNamespace
 from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD, EXT_ERR_WR_FILE
 import os
 import io
 import sys
 import json
+import logging
 import pathlib
 import datetime
 from typing import Dict, List
@@ -155,6 +157,7 @@ class ProjectDependency:
 
         config_path (FilePath): path to the project dependency JSON file
         dependency_cfg (ProgDepConfig): the project dependency config object
+        _logger (logging.Logger): the logger to use
     
     Methods:
             writeJSON: writes the changes to the project dependency 
@@ -170,13 +173,14 @@ class ProjectDependency:
         Args:
             dependency_config (FilePath): the configuration file of project dependencies to load
         """
+        self._logger = logging.getLogger(LOGGER_NAME)
         self.config_path = os.path.normpath(dependency_config)
 
-        print("Parsing project dependency config file \"{path}\"".format(
+        self._logger.warning("Parsing project dependency config file \"{path}\"".format(
             path=self.config_path))
         
         if not pathlib.Path(self.config_path).is_file(): 
-            print("ERROR: project dependency config file \"{file}\" not found or is not a file!".format(
+            self._logger.critical("project dependency config file \"{file}\" not found or is not a file!".format(
                 file=self.config_path))
             sys.exit(EXT_ERR_LD_FILE)
 
@@ -185,20 +189,22 @@ class ProjectDependency:
                 tmp_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
 
         except Exception as exp:
-            print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=self.config_path))
+            self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
+                error=exp, path=self.config_path))
             sys.exit(EXT_ERR_LD_FILE)
 
         if tmp_cfg.file_name != PROJECT_DEP_FILE_NAME:
-            print("ERROR: project dependency file \"{path}\" is not a valid project dependency file!".format(path=self.config_path))
-            print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+            self._logger.critical(
+                "project dependency file \"{path}\" is not a valid project dependency file!".format(path=self.config_path))
+            self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
                   .format(should=PROJECT_DEP_FILE_NAME, but_is=tmp_cfg.file_name))
             sys.exit(EXT_ERR_NOT_VLD)
 
         file_major, file_minor = tmp_cfg.file_version.split(sep=".")
         if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-            print("ERROR: project dependency file \"{path}\" is not a valid project dependency file!".format(
+            self._logger.critical("project dependency file \"{path}\" is not a valid project dependency file!".format(
                 path=self.config_path))
-            print("ERROR: project dependency file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+            self._logger.critical("project dependency file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
                   .format(old=tmp_cfg.file_version, new=".".join(CFG_VERSION)))
             sys.exit(EXT_ERR_NOT_VLD)     
         
@@ -242,27 +248,27 @@ class ProjectDependency:
             bool: `True`, if the dependency has been found
                   `False` else 
         """
-        print("Checking if dependency \"{name}\" is installed ...".format(
+        self._logger.info("Checking if dependency \"{name}\" is installed ...".format(
             name=dep["name"]))
 
         if dep["ok_if_exists"] != "":
             if pathlib.Path(dep["ok_if_exists"]).is_file() or pathlib.Path(dep["ok_if_exists"]).is_dir():
-                print("Path \"{path}\" exists, dependency \"{name}\" is installed".format(
+                self._logger.info("Path \"{path}\" exists, dependency \"{name}\" is installed".format(
                     path=dep["ok_if_exists"], name=dep["name"]))
                 dep["is_checked"] = True
                 return True
             else:
-                print("ERROR: Path \"{path}\" does not exist, dependency \"{name}\" not found!".format(
+                self._logger.error("Path \"{path}\" does not exist, dependency \"{name}\" not found!".format(
                     path=dep["ok_if_exists"], name=dep["name"]))
         
         if dep["ok_if_executable"] != "":
-            print("Checking executable \"{exe}\"".format(
+            self._logger.info("Checking executable \"{exe}\"".format(
                 exe=dep["ok_if_executable"]))
             dep["is_checked"] = self.isExecuteableDep(dep)
             if dep["is_checked"]:                
                 return True
 
-        print("ERROR: dependency \"{name}\" not found!".format(
+        self._logger.error("dependency \"{name}\" not found!".format(
             name=dep["name"]))
         dep["is_checked"] = False
         return False
@@ -294,7 +300,7 @@ class ProjectDependency:
     def writeJSON(self) -> None:
         """Writes the changes to the JSON file.
         """
-        print("Writing project dependency configuration file \"{file}\"".format(
+        self._logger.warning("Writing project dependency configuration file \"{file}\"".format(
             file=self.config_path))
 
         self.dependency_cfg.file_version = ".".join(CFG_VERSION)
@@ -304,7 +310,6 @@ class ProjectDependency:
                 json.dump(obj=self.dependency_cfg.__dict__, fp=json_file,
                           skipkeys=True, indent=4)
             except Exception as excp:
-                print("ERROR: error \"{error}\" trying to write project dependency configuration to file \"{file}\""
+                self._logger.critical("error \"{error}\" trying to write project dependency configuration to file \"{file}\""
                       .format(error=excp, file=self.config_path))
                 sys.exit(EXT_ERR_WR_FILE)
-    

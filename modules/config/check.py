@@ -7,6 +7,8 @@
 ###############################################################################
 
 from __future__ import annotations
+import logging
+from modules.helpers import LOGGER_NAME
 
 import os
 import re
@@ -113,6 +115,7 @@ class Check:
         arch (Arch): the CPU architecture we are building for
         build_tool_cfgs (list): the list of build tool configurations returned from 
                         the script_paths in `configure_script_paths/OS`
+        _logger (logging.Logger): the logger to use
 
     Methods:
         writeJSON: writes the gathered build tool configurations to the given 
@@ -139,16 +142,20 @@ class Check:
         self.os = os_name
         self.arch = arch
 
+        self._logger = logging.getLogger(LOGGER_NAME)
+
         working_dir = pathlib.Path(os.path.normpath(
             "/".join([CONFIGURE_SCRIPTS_PATH, os_name])))        
         if not working_dir.is_dir(): 
-            print("ERROR: \"\{path}\" does not exist or is not a directory!".format(path=working_dir))
+            self._logger.critical(
+                "error: \"\{path}\" does not exist or is not a directory!".format(path=working_dir))
             sys.exit(EXT_ERR_DIR)
         
         self.build_tool_cfgs = []
         for script_path in working_dir.glob("*"): 
             if script_path.is_file():
-                print("Calling build tool config script \"{path}\"".format(path=script_path))
+                self._logger.warning(
+                    "Calling build tool config script \"{path}\"".format(path=script_path))
                 try:
                     script_out = subprocess.run(
                         [script_path, self.arch],
@@ -158,17 +165,17 @@ class Check:
                         script_out.stdout, object_hook=lambda dict: SimpleNamespace(**dict))
 
                 except subprocess.CalledProcessError as excp1:
-                    print("ERROR: error \"{error}\" running build tool script \"{path}\""
+                    self._logger.error("error \"{error}\" running build tool script \"{path}\""
                           .format(error=excp1, path=script_path))
                 except Exception as excp:
-                    print("ERROR: error \"{error}\" running build tool script \"{path}\""
+                    self._logger.error("error \"{error}\" running build tool script \"{path}\""
                             .format(error=excp, path = script_path))             
                
                 for item in build_tool_cfg.build_tools:
                     if self.isBuildToolCfgOK(item):
                         self.build_tool_cfgs.append(item)
                     else:
-                        print("ERROR: build tool config \"{cfg}\" doesn't have all needed attributes!".format(
+                        self._logger.error("build tool config \"{cfg}\" doesn't have all needed attributes!".format(
                             cfg=script_path))
         
         self.checkVersions()
@@ -201,7 +208,8 @@ class Check:
         try:
             cfg.build_tool_exe
         except AttributeError:
-            print("ERROR: build config has no attribute \"build_tool_exe\"")
+            self._logger.error(
+                "ERROR: build config has no attribute \"build_tool_exe\"")
             return False
         try:
             cfg.install_path
@@ -218,7 +226,8 @@ class Check:
         try:
             cfg.version_regex
         except AttributeError:
-            print("ERROR: build config has no attribute \"version_regex\"")
+            self._logger.error(
+                "ERROR: build config has no attribute \"version_regex\"")
             return False
         try:
             cfg.version_arg
@@ -239,7 +248,7 @@ class Check:
         """ 
         for tool in self.build_tool_cfgs:
             if tool.build_tool_exe == "":
-                print("ERROR: build tool \"{name}\" has no executable configured!".format(
+                self._logger.error("build tool \"{name}\" has no executable configured!".format(
                     name=tool.name))       
                 continue
 
@@ -247,7 +256,7 @@ class Check:
 
             # has environment script to call
             if tool.env_script != "":
-                print("\"{name}\": calling environment script \"{script}\".".format(
+                self._logger.info("\"{name}\": calling environment script \"{script}\".".format(
                     name=tool.name, script=tool.env_script))
 
                 output = self.callExecutable(
@@ -257,7 +266,7 @@ class Check:
             elif tool.install_path != "":
                 exe_path = os.path.normpath(
                     "/".join([tool.install_path, tool.build_tool_exe]))
-                print("\"{name}\": using path \"{path}\".".format(
+                self._logger.info("\"{name}\": using path \"{path}\".".format(
                     name=tool.name, path=exe_path))
 
                 output = self.callExecutable(
@@ -265,7 +274,7 @@ class Check:
             
             # no full path given, so it hopefully is in PATH
             else:
-                print("\"{name}\": checking if executable \"{exe}\" is in PATH.".format(
+                self._logger.info("\"{name}\": checking if executable \"{exe}\" is in PATH.".format(
                     name=tool.name, exe=tool.build_tool_exe))
                    
                 output = self.callExecutable(
@@ -283,7 +292,7 @@ class Check:
                         tool.is_checked = True                
 
             except Exception as excp:
-                print("ERROR: error \"{error}\" parsing version of \"{exe} {opt}\" using version regex \"{regex}\"".format(
+                self._logger.error("error \"{error}\" parsing version of \"{exe} {opt}\" using version regex \"{regex}\"".format(
                     error= excp, exe=exe_path, opt=tool.version_arg, regex=tool.version_regex))
 
             
@@ -317,7 +326,7 @@ class Check:
                 args=cmd_line_args,
                     capture_output=True, text=True, check=False, timeout=120)                 
         except Exception as excp:
-            print("ERROR: error \"{error}\" calling \"{exe}\"".format(
+            self._logger.error("ERROR: error \"{error}\" calling \"{exe}\"".format(
                 error=excp, exe=exe_path))
             return CmdOutput(std_out="", err_out="")
 
@@ -331,7 +340,7 @@ class Check:
             json_path (FilePath): path to write the JSON build tools configuration to
         """
         self.json_path = os.path.normpath(json_path)
-        print("Writing build tool configurations file \"{file}\"".format(
+        self._logger.warning("Writing build tool configurations file \"{file}\"".format(
             file=self.json_path))
 
         write_cfg = WriteCfg(self.build_tool_cfgs)
@@ -341,7 +350,7 @@ class Check:
                 json.dump(obj=write_cfg.__dict__, fp=json_file,
                           skipkeys=True, indent=4)
             except Exception as excp:
-                print("ERROR: error \"{error}\" trying to write build tool configurations to file \"{file}\""
+                self._logger.critical("error \"{error}\" trying to write build tool configurations to file \"{file}\""
                       .format(error=excp, file=self.json_path))
                 sys.exit(EXT_ERR_WR_FILE)
         

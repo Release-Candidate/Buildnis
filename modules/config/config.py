@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import json
 import io
+import logging
+from modules.helpers import LOGGER_NAME
 from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD
 import sys
 import pathlib
@@ -32,7 +34,8 @@ class Config:
     project_cfg_dir (FilePath): The directory part of `config_path`
     project_cfg (obj): the project's JSON configuration stored in a Python class.
     module_cfgs (Dict[FilePath, Any]) the module JSON configurations (mentioned in project_cfg)
-    build_cfgs (Dict[FilePAth, Any]) the build JSON configurations (mentioned in the module JSONs)
+    build_cfgs (Dict[FilePath, Any]) the build JSON configurations (mentioned in the module JSONs)
+    _logger (logging.Logger): the logger to use
 
     Methods:
 
@@ -50,29 +53,33 @@ class Config:
         Parameters:
             project_config: the path to the project's JSON configuration file.
         """
+        self._logger = logging.getLogger(LOGGER_NAME)
         self.config_path = project_config
 
-        print("Parsing project config file \"{path}\"".format(path=project_config))
+        self._logger.warning("Parsing project config file \"{path}\"".format(
+            path=project_config))
 
         try:
             with io.open(self.config_path, mode= "r", encoding="utf-8") as file:
                 self.project_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
 
         except Exception as exp:
-            print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=self.config_path))
+            self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
+                error=exp, path=self.config_path))
             sys.exit(EXT_ERR_LD_FILE)
 
         if self.project_cfg.file_name != PROJECT_FILE_NAME:
-            print("ERROR: project file \"{path}\" is not a valid project file!".format(path=self.config_path))
-            print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+            self._logger.critical(
+                "project file \"{path}\" is not a valid project file!".format(path=self.config_path))
+            self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
                     .format(should=PROJECT_FILE_NAME,but_is=self.project_cfg.file_name))
             sys.exit(EXT_ERR_NOT_VLD)
 
         file_major, file_minor = self.project_cfg.file_version.split(sep=".")
         if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-            print("ERROR: project file \"{path}\" is not a valid project file!".format(
+            self._logger.critical("project file \"{path}\" is not a valid project file!".format(
                 path=self.config_path))
-            print("ERROR: project file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+            self._logger.critical("project file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
                   .format(old=self.project_cfg.file_version, new=".".join(CFG_VERSION)))
             sys.exit(EXT_ERR_NOT_VLD)
 
@@ -102,10 +109,11 @@ class Config:
             module_path = os.path.normpath(os.path.join(
                 self.project_cfg_dir, target.module_file))
 
-            print("Parsing module config file \"{path}\"".format(path=module_path))
+            self._logger.warning(
+                "Parsing module config file \"{path}\"".format(path=module_path))
 
             if not pathlib.Path(module_path).is_file():
-                print("ERROR: module configuration file \"{config}\" not found or is not a file!".format(
+                self._logger.critical("module configuration file \"{config}\" not found or is not a file!".format(
                     config=module_path))
                 sys.exit(EXT_ERR_LD_FILE)
             try:
@@ -113,21 +121,23 @@ class Config:
                     module_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
 
             except Exception as exp:
-                print("ERROR: error \"{error}\" parsing file \"{path}\"".format(error=exp, path=module_path))
+                self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
+                    error=exp, path=module_path))
                 sys.exit(EXT_ERR_LD_FILE)
 
             if module_cfg.file_name != MODULE_FILE_NAME:
-                print("ERROR: module file \"{path}\" is not a valid module file!".format(path=module_path))
-                print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+                self._logger.critical(
+                    "module file \"{path}\" is not a valid module file!".format(path=module_path))
+                self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
                      .format(should=MODULE_FILE_NAME,but_is=module_cfg.file_name))
                 sys.exit(EXT_ERR_NOT_VLD)
 
             file_major, file_minor = module_cfg.file_version.split(sep=".")
             
             if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-                print("ERROR: module file \"{path}\" is not a valid module file!".format(
+                self._logger.critical("module file \"{path}\" is not a valid module file!".format(
                     path=module_path))
-                print("ERROR: module file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+                self._logger.critical("module file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
                   .format(old=module_cfg.file_version, new=".".join(CFG_VERSION)))
                 sys.exit(EXT_ERR_NOT_VLD)
 
@@ -153,14 +163,14 @@ class Config:
                 build_cfg_path = os.path.normpath(os.path.join(module_cfg.module_path,
                             module_build_cfg.build_config_file))
 
-                print("Parsing build config file \"{path}\"".format(
+                self._logger.warning("Parsing build config file \"{path}\"".format(
                     path=build_cfg_path))
 
                 if build_cfg_path in self.build_cfgs:
                     continue
                
                 if not pathlib.Path(build_cfg_path).is_file():
-                    print("ERROR: build configuration file \"{config}\" not found or is not a file!".format(
+                    self._logger.critical("build configuration file \"{config}\" not found or is not a file!".format(
                         config=build_cfg_path))
                     sys.exit(EXT_ERR_LD_FILE)
                 try:
@@ -169,23 +179,23 @@ class Config:
                             file, object_hook=lambda dict: SimpleNamespace(**dict))
 
                 except Exception as exp:
-                    print("ERROR: error \"{error}\" parsing file \"{path}\"".format(
+                    self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
                         error=exp, path=build_cfg_path))
                     sys.exit(EXT_ERR_LD_FILE)
 
                 if build_cfg.file_name != BUILD_FILE_NAME:
-                    print("ERROR: build config file \"{path}\" is not a valid build config file!".format(
+                    self._logger.critical("build config file \"{path}\" is not a valid build config file!".format(
                         path=build_cfg_path))
-                    print("ERROR: the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
+                    self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
                           .format(should=BUILD_FILE_NAME, but_is=build_cfg.file_name))
                     sys.exit(EXT_ERR_NOT_VLD)
 
                 file_major, file_minor = build_cfg.file_version.split(sep=".")
 
                 if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-                    print("ERROR: build config file \"{path}\" is not a valid build config file!".format(
+                    self._logger.critical("build config file \"{path}\" is not a valid build config file!".format(
                         path=build_cfg_path))
-                    print("ERROR: build config file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
+                    self._logger.critical("build config file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
                           .format(old=build_cfg.file_version, new=".".join(CFG_VERSION)))
                     sys.exit(EXT_ERR_NOT_VLD)
 

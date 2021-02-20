@@ -15,8 +15,10 @@ import json
 import os
 import io
 import sys
+import logging
 import subprocess
 from modules import EXT_ERR_WR_FILE
+from modules.helpers import LOGGER_NAME
 from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
 
 class Host:
@@ -41,6 +43,7 @@ class Host:
         gpu List[str]:        The list of names of all GPUs
         python_version (str): The version of this host's Python interpreter
         json_path(str):       The path to the written JSON host config file
+        _logger(logging.Logger): The logger to use
 
     Methods:
         writeJSON: saves the information to a JSON file.
@@ -57,7 +60,9 @@ class Host:
 
         Like OS, hostname, OS version, CPU architecture, ...
         """
-        print("Gathering information about this host ...")
+        self._logger= logging.getLogger(LOGGER_NAME)
+        
+        self._logger.info("Gathering information about this host ...")
 
         self.file_name=HOST_FILE_NAME
         self.file_version = ".".join(CFG_VERSION)
@@ -80,9 +85,11 @@ class Host:
             self.collectOSXConfig()
 
         else:
-            print("ERROR: error, \"{os_name}\" is a unknown OS!".format(os_name=self.os))
-            print("You can add support of this OS to the file \"modules\config\host.py\"")
-            print()
+            self._logger.error(
+                "error, \"{os_name}\" is a unknown OS!".format(os_name=self.os))
+            self._logger.error(
+                "You can add support of this OS to the file \"modules\config\host.py\"")
+            self._logger.error("")
 
     ###########################################################################
     def __repr__(self) -> str:
@@ -92,6 +99,21 @@ class Host:
             str: A strings representation of the objects data
         """
         return pprint.pformat(vars(self))
+
+    ############################################################################
+    def returnJSONComp(self) -> dict:
+        """Returns a JSON compatible version of `self.__dict__`.
+
+        Copies `self.__dict__` except for the `_logger` attribute.
+        Returns:
+            str: a JSON compatible version of `self.__dict__`
+        """
+        ret_val = dict()
+        for item in self.__dict__:
+            if item != "_logger":
+                ret_val[item] = self.__dict__[item]
+
+        return ret_val
 
     ###########################################################################
     def writeJSON(self, json_path: FilePath) -> None:
@@ -103,13 +125,14 @@ class Host:
         self.json_path = os.path.normpath(json_path)
         self.generated_at = datetime.datetime.now(
             tz=None).isoformat(sep=" ", timespec="seconds")
-        print("Writing host configuration file \"{file}\"".format(file=self.json_path))
+        self._logger.warning(
+            "Writing host configuration file \"{file}\"".format(file=self.json_path))       
 
         with io.open(self.json_path,mode="w",) as json_file:
             try:
-                json.dump(obj=self.__dict__,fp=json_file, skipkeys=True, indent=4)
+                json.dump(obj=self.returnJSONComp(),fp=json_file, skipkeys=True, indent=4)
             except Exception as excp:
-                print("ERROR: error \"{error}\" trying to write host configuration to file \"{file}\""
+                self._logger.critical("error \"{error}\" trying to write host configuration to file \"{file}\""
                     .format(error=excp,file=self.json_path))
                 sys.exit(EXT_ERR_WR_FILE)
 
@@ -174,9 +197,11 @@ class Host:
                         pass
 
         except subprocess.CalledProcessError as excp:
-            print ("ERROR: error \"{error}\" calling wmic",format(error=excp))
+            self._logger.error(
+                "error \"{error}\" calling wmic", format(error=excp))
         except Exception as excp2:
-            print("ERROR: error \"{error}\" calling wmic".format(error=excp2))
+            self._logger.error(
+                "error \"{error}\" calling wmic".format(error=excp2))
 
     #############################################################################
     # grep "model name" /proc/cpuinfo |uniq
