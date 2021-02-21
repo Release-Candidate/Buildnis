@@ -8,21 +8,20 @@
 
 from __future__ import annotations
 import logging
+from modules.helpers.execute import doesExecutableWork, runCommand
+from modules.helpers.json import writeJSON
 from modules.helpers import LOGGER_NAME
 
 import os
-import re
-import io
 import sys
 import json
 import pathlib
 import datetime
-import subprocess
 from types import SimpleNamespace
-from typing import Any, List
+from typing import Any
 
-from modules import EXT_ERR_DIR, EXT_ERR_WR_FILE
-from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CFG_VERSION, CONFIGURE_SCRIPTS_PATH, CmdOutput, FilePath, OSName
+from modules import EXT_ERR_DIR
+from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CFG_VERSION, CONFIGURE_SCRIPTS_PATH, FilePath, OSName
 
 class WriteCfg:
     """Helper class to encode Check.build_tools_cfgs to JSON.
@@ -122,7 +121,6 @@ class Check:
                     JSON config file.
         isBuildToolCfgOK: checks if the build tool config has the minimum 
                             needed attributes
-        callExecutable: calls the executable with the given command line
         checkVersions: runs all build tools with the version argument, to check
                         if the executable works
     """
@@ -153,30 +151,31 @@ class Check:
         
         self.build_tool_cfgs = []
         for script_path in working_dir.glob("*"): 
-            if script_path.is_file():
-                self._logger.warning(
-                    "Calling build tool config script \"{path}\"".format(path=script_path))
-                try:
-                    script_out = subprocess.run(
-                        [script_path, self.arch],
-                        capture_output=True, text=True, check=True, timeout=120)                 
+            try:
+                if script_path.is_file():
+            
+                    self._logger.warning(
+                        "Calling build tool config script \"{path}\"".format(path=script_path))
+                    try:                      
+                        script_out = runCommand(
+                            exe=script_path, args=[self.arch])
 
-                    build_tool_cfg = json.loads(
-                        script_out.stdout, object_hook=lambda dict: SimpleNamespace(**dict))
+                        build_tool_cfg = json.loads(
+                            script_out.std_out, object_hook=lambda dict: SimpleNamespace(**dict))
 
-                except subprocess.CalledProcessError as excp1:
-                    self._logger.error("error \"{error}\" running build tool script \"{path}\""
-                          .format(error=excp1, path=script_path))
-                except Exception as excp:
-                    self._logger.error("error \"{error}\" running build tool script \"{path}\""
-                            .format(error=excp, path = script_path))             
-               
-                for item in build_tool_cfg.build_tools:
-                    if self.isBuildToolCfgOK(item):
-                        self.build_tool_cfgs.append(item)
-                    else:
-                        self._logger.error("build tool config \"{cfg}\" doesn't have all needed attributes!".format(
-                            cfg=script_path))
+                    except Exception as excp:
+                        self._logger.error("error \"{error}\" running build tool script \"{path}\""
+                                           .format(error=excp, path=script_path))
+
+                    for item in build_tool_cfg.build_tools:
+                        if self.isBuildToolCfgOK(item):
+                            self.build_tool_cfgs.append(item)
+                        else:
+                            self._logger.error("build tool config \"{cfg}\" doesn't have all needed attributes!".format(
+                                cfg=script_path))
+            except Exception as excp:
+                self._logger.error("build tool filename \"{cfg}\" not valid".format(
+                    cfg=script_path))
         
         self.checkVersions()
 
@@ -257,10 +256,7 @@ class Check:
             # has environment script to call
             if tool.env_script != "":
                 self._logger.info("\"{name}\": calling environment script \"{script}\".".format(
-                    name=tool.name, script=tool.env_script))
-
-                output = self.callExecutable(
-                    exe_path=tool.env_script, arguments=[tool.env_script_arg, "&&", exe_path, tool.version_arg])               
+                    name=tool.name, script=tool.env_script))            
 
             # has full path (so maybe not in PATH)
             elif tool.install_path != "":
@@ -268,69 +264,22 @@ class Check:
                     "/".join([tool.install_path, tool.build_tool_exe]))
                 self._logger.info("\"{name}\": using path \"{path}\".".format(
                     name=tool.name, path=exe_path))
-
-                output = self.callExecutable(
-                    exe_path=exe_path, arguments=[tool.version_arg])
             
             # no full path given, so it hopefully is in PATH
             else:
                 self._logger.info("\"{name}\": checking if executable \"{exe}\" is in PATH.".format(
                     name=tool.name, exe=tool.build_tool_exe))
-                   
-                output = self.callExecutable(
-                    exe_path=exe_path, arguments=[tool.version_arg])
 
-            try:
-                version_regex = re.search(tool.version_regex, output.std_out)
-                if version_regex != None and version_regex.group(1): 
-                    tool.version = version_regex.group(1)
+            try:               
+                tool.version = doesExecutableWork(exe=exe_path, check_regex=tool.version_regex, 
+                                                regex_group=1, args=[tool.version_arg],
+                                                env_script=tool.env_script, env_script_args=[tool.env_script_arg])
+                if tool.version != "":
                     tool.is_checked = True
-                else:
-                    version_regex = re.search(tool.version_regex, output.err_out)
-                    if version_regex != None and version_regex.group(1):
-                        tool.version = version_regex.group(1)
-                        tool.is_checked = True                
 
             except Exception as excp:
                 self._logger.error("error \"{error}\" parsing version of \"{exe} {opt}\" using version regex \"{regex}\"".format(
                     error= excp, exe=exe_path, opt=tool.version_arg, regex=tool.version_regex))
-
-            
-
-    ############################################################################
-    def callExecutable(self, exe_path: FilePath, arguments: List[str]) -> CmdOutput:       
-        """Runs the given executable, returns the output of the command.
-
-        Args:
-            exe_path (FilePath): the path of the executable, including the 
-                                 filename. The directory part can be omitted if
-                                 the executable is in the PATH
-            arguments (List[str]): the list of arguments to pass to the executable
-
-        Returns:
-            CmdOutput: the output of the program or the command interpreter trying
-                   to run the executable with the given arguments, returned as
-                   tuple (`stdout`, `stderr`). `None` is returned for stdout or 
-                   stderr if no output has been captured.
-                   Returns the empty string '' for both on errors, the tuple
-                   ('', '')
-        """
-        cmd_line_args =[exe_path]
-        if arguments != []:
-            for arg in arguments:
-                if arg != "":
-                    cmd_line_args.append(arg)   
-
-        try:
-            process_result = subprocess.run(
-                args=cmd_line_args,
-                    capture_output=True, text=True, check=False, timeout=120)                 
-        except Exception as excp:
-            self._logger.error("ERROR: error \"{error}\" calling \"{exe}\"".format(
-                error=excp, exe=exe_path))
-            return CmdOutput(std_out="", err_out="")
-
-        return CmdOutput(std_out=process_result.stdout, err_out=process_result.stderr)
 
     ############################################################################
     def writeJSON(self, json_path: FilePath) -> None:
@@ -338,21 +287,10 @@ class Check:
         
         Args:
             json_path (FilePath): path to write the JSON build tools configuration to
-        """
-        self.json_path = os.path.normpath(json_path)
-        self._logger.warning("Writing build tool configurations file \"{file}\"".format(
-            file=self.json_path))
-
+        """       
         write_cfg = WriteCfg(self.build_tool_cfgs)
-      
-        with io.open(self.json_path, mode="w",) as json_file:
-            try:                
-                json.dump(obj=write_cfg.__dict__, fp=json_file,
-                          skipkeys=True, indent=4)
-            except Exception as excp:
-                self._logger.critical("error \"{error}\" trying to write build tool configurations to file \"{file}\""
-                      .format(error=excp, file=self.json_path))
-                sys.exit(EXT_ERR_WR_FILE)
+        writeJSON(write_cfg.__dict__, file_text="build tools", 
+                json_path=json_path, conf_file_name=BUILD_TOOL_CONFIG_NAME)
         
 
 

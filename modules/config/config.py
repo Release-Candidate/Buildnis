@@ -8,17 +8,12 @@
 
 from __future__ import annotations
 
-import json
-import io
 import logging
+from modules.helpers.json import getJSONDict, readJSON, writeJSON
 from modules.helpers import LOGGER_NAME
-from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD
-import sys
-import pathlib
 import os
 import pprint
 from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, CFG_VERSION
-from types import SimpleNamespace
 
 # TODO add protocols for config classes
 
@@ -30,7 +25,7 @@ class Config:
 
     Attributes:
 
-    config_path (FilePath): the path to the project'S main JSON configuration.
+    config_path (FilePath): the path to the project's main JSON configuration.    
     project_cfg_dir (FilePath): The directory part of `config_path`
     project_cfg (obj): the project's JSON configuration stored in a Python class.
     module_cfgs (Dict[FilePath, Any]) the module JSON configurations (mentioned in project_cfg)
@@ -39,10 +34,14 @@ class Config:
 
     Methods:
 
-    parseModuleCfgs Parses the module JSON configurations setup in the project
+    parseModuleCfgs: Parses the module JSON configurations setup in the project
                     JSON
-    parseBuildCfgs Parses the build JSON configurations setup in the module
+    parseBuildCfgs: Parses the build JSON configurations setup in the module
                     JSONs
+    setHostConfigPath: Sets the path to the generated host config file
+    setBuildToolCfgPath: Sets the path to the generated build tool config file
+    setProjDepCfgPath: Sets the path to the generated project dependency config file
+    getProjCfgDict: Get the project configuration as a JSON sequenceable dict
     """
     ###########################################################################
     def __init__(self, project_config: FilePath) -> None:
@@ -56,37 +55,13 @@ class Config:
         self._logger = logging.getLogger(LOGGER_NAME)
         self.config_path = project_config
 
-        self._logger.warning("Parsing project config file \"{path}\"".format(
-            path=project_config))
+        self.project_cfg = readJSON(
+            json_path=self.config_path, file_text="project", conf_file_name=PROJECT_FILE_NAME)
 
-        try:
-            with io.open(self.config_path, mode= "r", encoding="utf-8") as file:
-                self.project_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
+        self.project_cfg.project_dependency_config = os.path.abspath("/".join([
+            os.path.dirname(self.config_path), os.path.basename(self.project_cfg.project_dependency_config)]))
 
-        except Exception as exp:
-            self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
-                error=exp, path=self.config_path))
-            sys.exit(EXT_ERR_LD_FILE)
-
-        if self.project_cfg.file_name != PROJECT_FILE_NAME:
-            self._logger.critical(
-                "project file \"{path}\" is not a valid project file!".format(path=self.config_path))
-            self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
-                    .format(should=PROJECT_FILE_NAME,but_is=self.project_cfg.file_name))
-            sys.exit(EXT_ERR_NOT_VLD)
-
-        file_major, file_minor = self.project_cfg.file_version.split(sep=".")
-        if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-            self._logger.critical("project file \"{path}\" is not a valid project file!".format(
-                path=self.config_path))
-            self._logger.critical("project file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                  .format(old=self.project_cfg.file_version, new=".".join(CFG_VERSION)))
-            sys.exit(EXT_ERR_NOT_VLD)
-
-        self.project_cfg_dir = os.path.normpath(os.path.dirname(self.config_path))
-
-        self.project_cfg.project_dependency_config = os.path.normpath("/".join([
-            self.project_cfg_dir, self.project_cfg.project_dependency_config]))
+        self.project_cfg_dir = os.path.abspath(os.path.dirname(self.config_path))
 
         self.module_cfgs = dict()
 
@@ -106,40 +81,11 @@ class Config:
         """
         for target in self.project_cfg.target:
             
-            module_path = os.path.normpath(os.path.join(
+            module_path = os.path.abspath(os.path.join(
                 self.project_cfg_dir, target.module_file))
 
-            self._logger.warning(
-                "Parsing module config file \"{path}\"".format(path=module_path))
-
-            if not pathlib.Path(module_path).is_file():
-                self._logger.critical("module configuration file \"{config}\" not found or is not a file!".format(
-                    config=module_path))
-                sys.exit(EXT_ERR_LD_FILE)
-            try:
-                with io.open(module_path, mode= "r", encoding="utf-8") as file:
-                    module_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
-
-            except Exception as exp:
-                self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
-                    error=exp, path=module_path))
-                sys.exit(EXT_ERR_LD_FILE)
-
-            if module_cfg.file_name != MODULE_FILE_NAME:
-                self._logger.critical(
-                    "module file \"{path}\" is not a valid module file!".format(path=module_path))
-                self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
-                     .format(should=MODULE_FILE_NAME,but_is=module_cfg.file_name))
-                sys.exit(EXT_ERR_NOT_VLD)
-
-            file_major, file_minor = module_cfg.file_version.split(sep=".")
-            
-            if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-                self._logger.critical("module file \"{path}\" is not a valid module file!".format(
-                    path=module_path))
-                self._logger.critical("module file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                  .format(old=module_cfg.file_version, new=".".join(CFG_VERSION)))
-                sys.exit(EXT_ERR_NOT_VLD)
+            module_cfg = readJSON(
+                json_path=module_path, file_text="module", conf_file_name=MODULE_FILE_NAME)
 
             target.module_file = module_path
 
@@ -160,44 +106,11 @@ class Config:
             module_cfg = self.module_cfgs[mdl_key]
 
             for module_build_cfg in module_cfg.supported_builds:                                
-                build_cfg_path = os.path.normpath(os.path.join(module_cfg.module_path,
+                build_cfg_path = os.path.abspath(os.path.join(module_cfg.module_path,
                             module_build_cfg.build_config_file))
 
-                self._logger.warning("Parsing build config file \"{path}\"".format(
-                    path=build_cfg_path))
-
-                if build_cfg_path in self.build_cfgs:
-                    continue
-               
-                if not pathlib.Path(build_cfg_path).is_file():
-                    self._logger.critical("build configuration file \"{config}\" not found or is not a file!".format(
-                        config=build_cfg_path))
-                    sys.exit(EXT_ERR_LD_FILE)
-                try:
-                    with io.open(build_cfg_path, mode="r", encoding="utf-8") as file:
-                        build_cfg = json.load(
-                            file, object_hook=lambda dict: SimpleNamespace(**dict))
-
-                except Exception as exp:
-                    self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
-                        error=exp, path=build_cfg_path))
-                    sys.exit(EXT_ERR_LD_FILE)
-
-                if build_cfg.file_name != BUILD_FILE_NAME:
-                    self._logger.critical("build config file \"{path}\" is not a valid build config file!".format(
-                        path=build_cfg_path))
-                    self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
-                          .format(should=BUILD_FILE_NAME, but_is=build_cfg.file_name))
-                    sys.exit(EXT_ERR_NOT_VLD)
-
-                file_major, file_minor = build_cfg.file_version.split(sep=".")
-
-                if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-                    self._logger.critical("build config file \"{path}\" is not a valid build config file!".format(
-                        path=build_cfg_path))
-                    self._logger.critical("build config file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                          .format(old=build_cfg.file_version, new=".".join(CFG_VERSION)))
-                    sys.exit(EXT_ERR_NOT_VLD)
+                build_cfg = readJSON(
+                    json_path=build_cfg_path, file_text="build", conf_file_name=BUILD_FILE_NAME)
 
                 build_cfg.build_cfg_path = os.path.normpath(os.path.dirname(
                     build_cfg_path))
@@ -205,6 +118,54 @@ class Config:
                 module_build_cfg.build_config_file = build_cfg_path          
 
                 self.build_cfgs[build_cfg_path] = build_cfg
+
+    ###########################################################################
+    def writeJSON(self, json_path: FilePath) -> None:
+        """Writes the project's config to a JSON file
+
+        Args:
+            json_path (str):  the path to write the json file to
+        """       
+        writeJSON(self.returnJSONComp(), json_path=json_path, 
+                file_text="project", conf_file_name=PROJECT_FILE_NAME)
+    
+    ###########################################################################
+    def returnJSONComp(self) -> dict:
+        """Returns a JSON compatible version of `self.project_cfg`.
+       
+        Returns:
+            dict: a JSON compatible version of `self.project_cfg`
+        """
+        ret_val = getJSONDict(self.project_cfg)          
+
+        return ret_val
+
+    ###########################################################################
+    def setHostConfigPath(self, path: FilePath) -> None:
+        """Sets the path to the generated host config JSON file.
+
+        Args:
+            path (FilePath): the path to the host config file
+        """
+        self.project_cfg.host_cfg_file = os.path.abspath(path)
+
+    ###########################################################################
+    def setBuildToolCfgPath(self, path: FilePath) -> None:
+        """Sets the path to the generated build tools config JSON file.
+
+        Args:
+            path (FilePath): the path to the build tools config file
+        """
+        self.project_cfg.build_tools_cfg_file = os.path.abspath(path)
+
+    ###########################################################################
+    def setProjDepCfgPath(self, path: FilePath) -> None:
+        """Sets the path to the generated project dependency config JSON file.
+
+        Args:
+            path (FilePath): the path to the project dependency config file.
+        """
+        self.project_cfg.project_dependency_config = os.path.abspath(path)
 
     ###########################################################################
     def __repr__(self) -> str:

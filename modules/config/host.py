@@ -8,16 +8,12 @@
 
 from __future__ import annotations
 
-import datetime
+
+from modules.helpers.json import getJSONDict, writeJSON
 import platform
 import pprint
-import json
-import os
-import io
-import sys
 import logging
 import subprocess
-from modules import EXT_ERR_WR_FILE
 from modules.helpers import LOGGER_NAME
 from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
 
@@ -105,15 +101,12 @@ class Host:
         """Returns a JSON compatible version of `self.__dict__`.
 
         Copies `self.__dict__` except for the `_logger` attribute.
-        Returns:
-            str: a JSON compatible version of `self.__dict__`
-        """
-        ret_val = dict()
-        for item in self.__dict__:
-            if item != "_logger":
-                ret_val[item] = self.__dict__[item]
 
-        return ret_val
+        Returns:
+            dict: a JSON compatible version of `self.__dict__`
+        """
+        return getJSONDict(self)
+
 
     ###########################################################################
     def writeJSON(self, json_path: FilePath) -> None:
@@ -121,20 +114,9 @@ class Host:
 
         Args:
             json_path (str):  the path to write the json file to
-        """
-        self.json_path = os.path.normpath(json_path)
-        self.generated_at = datetime.datetime.now(
-            tz=None).isoformat(sep=" ", timespec="seconds")
-        self._logger.warning(
-            "Writing host configuration file \"{file}\"".format(file=self.json_path))       
-
-        with io.open(self.json_path,mode="w",) as json_file:
-            try:
-                json.dump(obj=self.returnJSONComp(),fp=json_file, skipkeys=True, indent=4)
-            except Exception as excp:
-                self._logger.critical("error \"{error}\" trying to write host configuration to file \"{file}\""
-                    .format(error=excp,file=self.json_path))
-                sys.exit(EXT_ERR_WR_FILE)
+        """      
+        writeJSON(self.returnJSONComp(), json_path=json_path, 
+                file_text="host", conf_file_name=HOST_FILE_NAME)
 
     #############################################################################  
     def collectWindowsConfig(self) -> None:

@@ -6,13 +6,12 @@
 # Date:     19.Feb.2021
 ###############################################################################
 
+from __future__ import annotations
+from modules.helpers.execute import doesExecutableWork
+from modules.helpers.json import readJSON, writeJSON
+
 from modules.helpers import LOGGER_NAME
-from types import SimpleNamespace
-from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD, EXT_ERR_WR_FILE
 import os
-import io
-import sys
-import json
 import logging
 import pathlib
 import datetime
@@ -176,37 +175,8 @@ class ProjectDependency:
         self._logger = logging.getLogger(LOGGER_NAME)
         self.config_path = os.path.normpath(dependency_config)
 
-        self._logger.warning("Parsing project dependency config file \"{path}\"".format(
-            path=self.config_path))
-        
-        if not pathlib.Path(self.config_path).is_file(): 
-            self._logger.critical("project dependency config file \"{file}\" not found or is not a file!".format(
-                file=self.config_path))
-            sys.exit(EXT_ERR_LD_FILE)
-
-        try:
-            with io.open(self.config_path, mode= "r", encoding="utf-8") as file:
-                tmp_cfg = json.load(file, object_hook=lambda dict: SimpleNamespace(**dict))
-
-        except Exception as exp:
-            self._logger.critical("error \"{error}\" parsing file \"{path}\"".format(
-                error=exp, path=self.config_path))
-            sys.exit(EXT_ERR_LD_FILE)
-
-        if tmp_cfg.file_name != PROJECT_DEP_FILE_NAME:
-            self._logger.critical(
-                "project dependency file \"{path}\" is not a valid project dependency file!".format(path=self.config_path))
-            self._logger.critical("the value of 'file_name' should be \"{should}\" but is \"{but_is}\""
-                  .format(should=PROJECT_DEP_FILE_NAME, but_is=tmp_cfg.file_name))
-            sys.exit(EXT_ERR_NOT_VLD)
-
-        file_major, file_minor = tmp_cfg.file_version.split(sep=".")
-        if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-            self._logger.critical("project dependency file \"{path}\" is not a valid project dependency file!".format(
-                path=self.config_path))
-            self._logger.critical("project dependency file version (the value of 'file_version') is too old. is \"{old}\" should be \"{new}\""
-                  .format(old=tmp_cfg.file_version, new=".".join(CFG_VERSION)))
-            sys.exit(EXT_ERR_NOT_VLD)     
+        tmp_cfg = readJSON(dependency_config, file_text="project dependency",
+                           conf_file_name=PROJECT_DEP_FILE_NAME)
         
         self.dependency_cfg = ProjDepConfig(tmp_cfg)
         
@@ -252,14 +222,17 @@ class ProjectDependency:
             name=dep["name"]))
 
         if dep["ok_if_exists"] != "":
-            if pathlib.Path(dep["ok_if_exists"]).is_file() or pathlib.Path(dep["ok_if_exists"]).is_dir():
-                self._logger.info("Path \"{path}\" exists, dependency \"{name}\" is installed".format(
-                    path=dep["ok_if_exists"], name=dep["name"]))
-                dep["is_checked"] = True
-                return True
-            else:
-                self._logger.error("Path \"{path}\" does not exist, dependency \"{name}\" not found!".format(
-                    path=dep["ok_if_exists"], name=dep["name"]))
+            try:
+                if pathlib.Path(dep["ok_if_exists"]).is_file() or pathlib.Path(dep["ok_if_exists"]).is_dir():
+                    self._logger.info("Path \"{path}\" exists, dependency \"{name}\" is installed".format(
+                        path=dep["ok_if_exists"], name=dep["name"]))
+                    dep["is_checked"] = True
+                    return True
+                else:
+                    self._logger.error("Path \"{path}\" does not exist, dependency \"{name}\" not found!".format(
+                        path=dep["ok_if_exists"], name=dep["name"]))
+            except Exception as excp:
+                self._logger.error("error \"{error}\"".format(error=excp))
         
         if dep["ok_if_executable"] != "":
             self._logger.info("Checking executable \"{exe}\"".format(
@@ -280,6 +253,7 @@ class ProjectDependency:
         Args:
             dep (Dict[str, str]): the dependency to install or download
         """
+        # TODO code
         pass
 
     ############################################################################
@@ -294,22 +268,31 @@ class ProjectDependency:
                          configured string.
                   `False` else
         """
+        self._logger.info(
+            "Checking dependency \"{name}\", try to run executable \"{exe}\" with argument \"{arg}\" against regex \"{regex}\"".format(
+                name=dep["name"], exe=dep["ok_if_executable"], 
+                arg=dep["executable_argument"], regex=dep["executable_check_regex"]))
+
+        try:
+            matched_string = doesExecutableWork(
+                exe=dep["ok_if_executable"], check_regex=dep["executable_check_regex"], 
+                args=[dep["executable_argument"]])
+
+            if matched_string != "":
+                return True
+        except Exception as excp:
+            self._logger.error("error \"{error}\" dependency \"{name}\", trying to run executable \"{exe}\" with argument \"{arg}\" against regex \"{regex}\"".format(
+                error=excp, name=dep["name"], exe=dep["ok_if_executable"], 
+                arg=dep["executable_argument"], regex=dep["executable_check_regex"]))
+
         return False
 
     ############################################################################
-    def writeJSON(self) -> None:
+    def writeJSON(self, json_path: FilePath) -> None:
         """Writes the changes to the JSON file.
-        """
-        self._logger.warning("Writing project dependency configuration file \"{file}\"".format(
-            file=self.config_path))
 
-        self.dependency_cfg.file_version = ".".join(CFG_VERSION)
-
-        with io.open(self.config_path, mode="w",) as json_file:
-            try:
-                json.dump(obj=self.dependency_cfg.__dict__, fp=json_file,
-                          skipkeys=True, indent=4)
-            except Exception as excp:
-                self._logger.critical("error \"{error}\" trying to write project dependency configuration to file \"{file}\""
-                      .format(error=excp, file=self.config_path))
-                sys.exit(EXT_ERR_WR_FILE)
+        Args:
+            json_path (FilePath): the path to the file to write the JSON to
+        """       
+        writeJSON(self.dependency_cfg.__dict__, json_path=json_path, 
+            file_text="project dependencies", conf_file_name=PROJECT_DEP_FILE_NAME)

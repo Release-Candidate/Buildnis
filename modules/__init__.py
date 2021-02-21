@@ -9,6 +9,11 @@
 __all__ = ["config", "helpers", "VERSION"]
 
 
+class BuildnisException(Exception):
+    """Base class of all custom exceptions used in this program.
+    """
+    pass
+
 from typing import NamedTuple
 
 VersionString = str

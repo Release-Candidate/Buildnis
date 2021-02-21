@@ -79,6 +79,8 @@ class CommandlineArguments:
             self.do_clean: bool = False
         try:
             self.do_distclean: bool = src.do_distclean
+            if self.do_distclean == True:
+                self.do_clean = True
         except AttributeError:
             self.do_distclean: bool = False
         try:
