@@ -6,8 +6,10 @@
 # Date:     20.Feb.2021
 ###############################################################################
 
-__all__ = ["parseCommandLine", "LOGGER_NAME", "getProgramLogger",
+__all__ = ["parseCommandLine", "CommandlineArguments",
+           "LOGGER_NAME", "getProgramLogger",
            "FileCompare", "FileCompareException", "hashFile", "areHashesSame",
-           "runCommand", "doesExecutableWork"]
+           "runCommand", "doesExecutableWork", "ExecuteException"
+           "getJSONDict", "writeJSON", "readJSON"]
 
 LOGGER_NAME = "Buildnis"
