@@ -30,7 +30,7 @@ def getJSONDict(src: object) -> Dict:
     Attention: only works with simple classes obtained from `json.load(s)`.
 
     Args:
-        cls (object): The class to serialize
+        src (object): The class to serialize
 
     Returns:
         Dict: The dictionary suitable to pass to `json.dump(s)`.
