@@ -7,6 +7,7 @@
 ###############################################################################
 
 from __future__ import annotations
+from modules.helpers.execute import runCommand
 
 
 from modules.helpers.json import getJSONDict, writeJSON
@@ -129,9 +130,8 @@ class Host:
         wmic path win32_VideoController get name
         """
         try:
-            cpu_info_cmd = subprocess.run(
-                ["wmic", "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"], 
-                capture_output=True, text=True, check=True, timeout=120)
+            (cpu_info_cmd, cpu_info_err) = runCommand(exe="wmic", args=[
+                                      "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"])           
             cpu_name_cmd = subprocess.run(
                 ["wmic", "cpu", "get","Name"],
                 capture_output=True, text=True, check=True, timeout=120)
@@ -142,7 +142,7 @@ class Host:
                 ["wmic", "path", "win32_VideoController", "get", "name"],
                 capture_output=True, text=True, check=True, timeout=120)            
                  
-            for line in cpu_info_cmd.stdout.strip().split("\n"):
+            for line in cpu_info_cmd.strip().split("\n"):
                 if "L2CacheSize" in line:
                     continue
                 if line != "":
@@ -182,9 +182,9 @@ class Host:
             self._logger.error(
                 "error \"{error}\" calling wmic", format(error=excp))
         except Exception as excp2:
-            self._logger.error(
+           self._logger.error(
                 "error \"{error}\" calling wmic".format(error=excp2))
-
+ 
     #############################################################################
     # grep "model name" /proc/cpuinfo |uniq
     # grep "cache size" /proc/cpuinfo |uniq
@@ -200,19 +200,48 @@ class Host:
         """
         pass
 
-    #############################################################################
-    # sysctl -n hw.memsize
-    # sysctl -n hw.physicalcpu
-    # sysctl -n hw.logicalcpu
-    # sysctl -n hw.l2cachesize
-    # sysctl -n hw.l3cachesize
-    # sysctl -n machdep.cpu.brand_string
+    #############################################################################   
     def collectOSXConfig(self) -> None:
         """Collect information about the hardware we're running on on MacOS X.
 
+        Using this commands:
+        sysctl -n hw.memsize
+        sysctl -n hw.physicalcpu
+        sysctl -n hw.logicalcpu
+        sysctl -n hw.l2cachesize
+        sysctl -n hw.l3cachesize
+        sysctl -n machdep.cpu.brand_string
 
+        TODO get GPU info: system_profiler SPDisplaysDataType
         """
-        pass
+        try:
+            cpu_name_cmd = runCommand(exe="sysctl", args=["-n", "machdep.cpu.brand_string"])
+            self.cpu = cpu_name_cmd.std_out.strip()
+
+            cpu_num_cores = runCommand(exe="sysctl", args=["-n", "hw.physicalcpu"])
+            self.num_cores = int(cpu_num_cores.std_out)
+
+            cpu_num_log_cpus = runCommand(
+                exe="sysctl", args=["-n", "hw.logicalcpu"])
+            self.num_logical_cores = int(cpu_num_log_cpus.std_out)
+
+            cpu_l2_cache = runCommand(
+                exe="sysctl", args=["-n", "hw.l2cachesize"])
+            self.level2_cache = int(cpu_l2_cache.std_out)
+
+            cpu_l3_cache = runCommand(
+                exe="sysctl", args=["-n", "hw.l3cachesize"])
+            self.level3_cache = int(cpu_l3_cache.std_out)
+
+            ram_size = runCommand(
+                exe="sysctl", args=["-n", "hw.memsize"])
+            self.ram_total = int(ram_size.std_out)
+
+            self.gpu = []
+
+        except Exception as excp:
+            self._logger.error(
+                "error \"{error}\" gathering information on OS X".format(error=excp))
 
 ################################################################################
 def printHostInfo() -> None:
