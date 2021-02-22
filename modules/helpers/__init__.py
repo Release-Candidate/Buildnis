@@ -8,8 +8,10 @@
 
 __all__ = ["parseCommandLine", "CommandlineArguments",
            "LOGGER_NAME", "getProgramLogger",
-           "FileCompare", "FileCompareException", "hashFile", "areHashesSame",
+           "FileCompare", "FileCompareException", "hashFile", "areHashesSame", 
+           "checkIfExists", "checkIfIsFile", "checkIfIsDir", "checkIfIsLink", "makeDirIfNotExists",
            "runCommand", "doesExecutableWork", "ExecuteException"
-           "getJSONDict", "writeJSON", "readJSON"]
+           "getJSONDict", "writeJSON", "readJSON",
+           "WebException", "doDownload"]
 
 LOGGER_NAME = "Buildnis"

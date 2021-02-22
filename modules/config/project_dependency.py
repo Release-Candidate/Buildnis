@@ -7,7 +7,8 @@
 ###############################################################################
 
 from __future__ import annotations
-from modules.helpers.execute import doesExecutableWork
+from modules.helpers.web import doDownload
+from modules.helpers.execute import doesExecutableWork, runCommand
 from modules.helpers.json import readJSON, writeJSON
 
 from modules.helpers import LOGGER_NAME
@@ -37,6 +38,7 @@ class ProjDepConfig:
         download_url (str): website to download the dependency
         download_dir (str): path to the directory to download the dependency to
         install_cmd (str): command line to call to install the dependency
+        install_arguments (List[str]): arguments to pass to the install command
         ok_if_exists (FilePath): if this file exists, the dependency has been 
                                  successfully installed
         ok_if_executable (FilePath): if this file is executable, the dependency 
@@ -97,7 +99,7 @@ class ProjDepConfig:
 
         Returns:
             Dict[str, str]: a dictionary of the values of the given object.
-        """
+        """       
         ret_val = dict()
         try:
             ret_val["name"] = dependency.name
@@ -119,6 +121,10 @@ class ProjDepConfig:
             ret_val["install_cmd"] = dependency.install_cmd
         except AttributeError:
             ret_val["install_cmd"] = ""
+        try:
+            ret_val["install_arguments"] = dependency.install_arguments
+        except AttributeError:
+            ret_val["install_arguments"] = []
         try:
             ret_val["ok_if_exists"] = dependency.ok_if_exists
         except AttributeError:
@@ -177,7 +183,7 @@ class ProjectDependency:
 
         tmp_cfg = readJSON(dependency_config, file_text="project dependency",
                            conf_file_name=PROJECT_DEP_FILE_NAME)
-        
+
         self.dependency_cfg = ProjDepConfig(tmp_cfg)
         
     ############################################################################
@@ -252,9 +258,31 @@ class ProjectDependency:
 
         Args:
             dep (Dict[str, str]): the dependency to install or download
-        """
-        # TODO code
-        pass
+        """       
+        if dep["download_url"] != "":
+            try:
+                self._logger.info("Trying to download \"{name}\" from URL \"{url}\" to \"{path}\"".format(
+                    name=dep["name"], url=dep["download_url"], path=dep["download_dir"]))
+                doDownload(url=dep["download_url"], to=dep["download_dir"])            
+            except Exception as excp:
+                self._logger.error("error \"{error}\" trying to download \"{name}\" from URL \"{url}\" to \"{path}\"".format(
+                    error=excp, name=dep["name"], url=dep["download_url"], path=dep["download_dir"]
+                ))
+
+        if dep["install_cmd"] != "":
+            try:
+                self._logger.info("trying to install \"{name}\" using command \"{cmd}\" with args \"{args}\"".format(
+                    name=dep["name"], cmd=dep["install_cmd"], args=dep["install_arguments"]))
+
+                output = runCommand(dep["install_cmd"],
+                                    args=dep["install_arguments"])
+                self._logger(output.std_out)
+                self._logger(output.err_out)
+
+            except Exception as excp:
+                self._logger.error("error \"{error}\" trying to install \"{name}\" using command \"{cmd}\" with args \"{args}\"".format(
+                    error=excp, name=dep["name"], cmd=dep["install_cmd"], args=dep["install_arguments"]
+                ))
 
     ############################################################################
     def isExecuteableDep(self, dep: Dict[str, str]) -> bool:
@@ -280,6 +308,7 @@ class ProjectDependency:
 
             if matched_string != "":
                 return True
+
         except Exception as excp:
             self._logger.error("error \"{error}\" dependency \"{name}\", trying to run executable \"{exe}\" with argument \"{arg}\" against regex \"{regex}\"".format(
                 error=excp, name=dep["name"], exe=dep["ok_if_executable"], 

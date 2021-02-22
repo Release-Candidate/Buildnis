@@ -115,7 +115,7 @@ class FileCompare:
             return False 
 
     ############################################################################
-    def isSame(self, file: FilePath) -> bool:
+    def isSame(self, file: FilePath, not_exist_is_excp: bool = False) -> bool:
         """Checks whether `self` and the file with path `file` are the same.
 
         Problem: a symlink to the file and the file itself are NOT the same using 
@@ -123,6 +123,9 @@ class FileCompare:
 
         Args:
             file (FilePath): path to the file to check
+            not_exist_is_excp (bool): if this is `True` an exception is raised
+                    if `file` does not exist. If this is `False`, `False` is 
+                    returned - the files data is not the same. Default: `False`
 
         Raises:
             FileCompareException: if something goes wrong
@@ -137,8 +140,11 @@ class FileCompare:
             tmp_path_obj = pathlib.Path(tmp_path)
 
             if not tmp_path_obj.is_file():
-                raise FileCompareException(
-                    "file \"{path}\" does not exist or is not a file!".format(path=tmp_path))
+                if not_exist_is_excp == True:
+                    raise FileCompareException(
+                        "file \"{path}\" does not exist or is not a file!".format(path=tmp_path))
+                else:
+                    return False
 
             tmp_size = tmp_path_obj.stat().st_size
 
@@ -156,7 +162,7 @@ class FileCompare:
         return True
 
 ################################################################################
-def areHashesSame(file1: FilePath, file2: FilePath) -> bool:
+def areHashesSame(file1: FilePath, file2: FilePath, not_exist_is_excp: bool = False) -> bool:
     """Compares the BLAKE2 hashes of the given files.
 
     Returns `True` if the contents of both files are the same (have the same hash).
@@ -164,6 +170,9 @@ def areHashesSame(file1: FilePath, file2: FilePath) -> bool:
     Args:
         file1 (FilePath): first file to compare
         file2 (FilePath): second file to compare
+        not_exist_is_excp (bool): if this is `True` an exception is raised
+                    if a file does not exist. If this is `False`, `False` is 
+                    returned - the files hashes are not the same. Default: `False`
 
     Raises:
         FileCompareException: if something goes wrong
@@ -173,6 +182,26 @@ def areHashesSame(file1: FilePath, file2: FilePath) -> bool:
               `False` else
     """
     try:
+        if not checkIfIsFile(file1):       
+            if not_exist_is_excp == True:
+                raise FileCompareException(
+                    "file \"{path}\" does not exist or is not a file!".format(path=file1))
+            else:
+                return False
+
+        if not checkIfIsFile(file2):       
+            if not_exist_is_excp == True:
+                raise FileCompareException(
+                    "file \"{path}\" does not exist or is not a file!".format(path=file2))
+            else:
+                return False
+
+        file_size1 = pathlib.Path(file1).stat().st_size
+        file_size2 = pathlib.Path(file2).stat().st_size
+
+        if file_size1 != file_size2:
+            return False
+
         hash1 = hashFile(file1)
         hash2 = hashFile(file2)
 
@@ -180,6 +209,129 @@ def areHashesSame(file1: FilePath, file2: FilePath) -> bool:
             return True
         else:
             return False
+    except Exception as excp:
+        raise FileCompareException(excp)
+
+################################################################################
+def checkIfExists(file: FilePath) -> bool:
+    """Returns `True` if the given file exists.
+
+    Args:
+        file (FilePath): Path to the file to test
+
+    Raises:
+        FileCompareException: if something went wrong
+
+    Returns:
+        bool: `True``, if the file exists
+              `False` else
+    """
+    try:
+        tmp_path = os.path.abspath(file)
+
+        tmp_path_obj = pathlib.Path(tmp_path)
+
+        if not tmp_path_obj.exists():
+            return True
+
+    except Exception as excp:
+        raise FileCompareException(excp)
+
+################################################################################
+def checkIfIsFile(file: FilePath) -> bool:
+    """Returns `True` if the given file exists and is a file.
+
+    Args:
+        file (FilePath): Path to the file to test
+
+    Raises:
+        FileCompareException: if something went wrong
+
+    Returns:
+        bool: `True``, if the file exists and is a file
+              `False` else
+    """
+    try:
+        tmp_path = os.path.abspath(file)
+
+        tmp_path_obj = pathlib.Path(tmp_path)
+
+        if not tmp_path_obj.is_file():
+            return True
+
+    except Exception as excp:
+        raise FileCompareException(excp)
+
+################################################################################
+def checkIfIsDir(dir: FilePath) -> bool:
+    """Returns `True` if the given file exists and is a directory.
+
+    Args:
+        dir (FilePath): Path to the directory to test
+
+    Raises:
+        FileCompareException: if something went wrong
+
+    Returns:
+        bool: `True``, if the file exists and is a directory
+              `False` else
+    """
+    try:
+        tmp_path = os.path.abspath(dir)
+
+        tmp_path_obj = pathlib.Path(tmp_path)
+
+        if not tmp_path_obj.is_dir():
+            return True
+
+    except Exception as excp:
+        raise FileCompareException(excp)
+
+################################################################################
+def checkIfIsLink(link: FilePath) -> bool:
+    """Returns `True` if the given file exists and is a symlink.
+
+    Args:
+        link (FilePath): Path to the file to test
+
+    Raises:
+        FileCompareException: if something went wrong
+
+    Returns:
+        bool: `True``, if the file exists and is a symlink
+              `False` else
+    """
+    try:
+        tmp_path = os.path.abspath(link)
+
+        tmp_path_obj = pathlib.Path(tmp_path)
+
+        if not tmp_path_obj.is_symlink():
+            return True
+
+    except Exception as excp:
+        raise FileCompareException(excp)
+
+################################################################################
+def makeDirIfNotExists(dir: FilePath) -> None:
+    """Creates the directory `dir` if it doesn't exist yet.
+
+    Args:
+        dir (FilePath): the directory to create
+
+    Raises:
+        FileCompareException: if something goes wrong
+    """
+    try:
+        dir_path_obj = pathlib.Path(dir)
+
+        if dir_path_obj.exists:
+            if not dir_path_obj.is_dir:
+                raise FileCompareException(
+                    "error creating directory, \"{path}\" exists but is not a directory!".format(path=dir))        
+
+        dir_path_obj.mkdir(parents=True, exist_ok=True)
+
     except Exception as excp:
         raise FileCompareException(excp)
 
