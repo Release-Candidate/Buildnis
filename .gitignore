@@ -133,3 +133,6 @@ local_test/**
 
 *_host_config.json
 *_build_tool_config.json
+
+# OS X special files to ignore ...
+.DS_Store
