@@ -186,13 +186,18 @@ class Host:
                 "error \"{error}\" calling wmic".format(error=excp2))
  
     #############################################################################
-    # grep "model name" /proc/cpuinfo |uniq
+    # grep "model name" /proc/cpuinfo |uniq|cut -d':' -f2
     # grep "cache size" /proc/cpuinfo |uniq
-    # grep "cpu cores" /proc/cpuinfo |uniq
-    # grep "siblings" /proc/cpuinfo |uniq
-    # free -b|grep "Mem:"
+    # lscpu -C |grep L2|awk '{print $2}' (attention: read unit: K, M, G)
+    # lscpu -C |grep L3|awk '{print $2}' (attention: read unit: K, M, G)
+    # best: getconf -a
+    # getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'
+    # getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'
+    # grep "cpu cores" /proc/cpuinfo |uniq|cut -d':' -f2
+    # grep "siblings" /proc/cpuinfo |uniq |cut -d':' -f2
+    # free -b|grep "Mem:"|awk '{print $2}'
     # grep "DISTRIB_DESCRIPTION" /etc/lsb-release
-    # lspci|grep VGA
+    # lspci|grep VGA|cut -f3 -d':'
     def collectLinuxConfig(self) -> None:
         """Collect information about the hardware we're running on on Linux.
 
