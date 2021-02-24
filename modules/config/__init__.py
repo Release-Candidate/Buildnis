@@ -11,7 +11,7 @@ __all__ = ["Config", "Host", "Check", "ProgramDependency",
            "BUILD_FILE_NAME", "HOST_FILE_NAME", "BUILD_TOOL_CONFIG_NAME", 
            "CFG_VERSION", "DEFAULT_CONFIG_FILE", "CONFIGURE_SCRIPTS_PATH",
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", 
-           "AMD64_ARCH_STRING", "I86_ARCH_STRING"]
+           "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT"]
 
 import collections
 from typing import NamedTuple
@@ -38,7 +38,27 @@ class CmdOutput (NamedTuple):
     std_out: str = ""
     err_out: str = ""
 
-
+OSX_NAME_DICT = {
+    "10.0": "Cheetah",
+    "10.1": "Puma",
+    "10.2": "Jaguar",
+    "10.3": "Panther",
+    "10.4": "Tiger",
+    "10.5": "Leopard",
+    "10.6": "Snow Leopard",
+    "10.7": "Lion",
+    "10.8": "Mountain Lion",
+    "10.9": "Mavericks",
+    "10.10": "Yosemite",
+    "10.10": "El Capitan",
+    "10.12": "Sierra",
+    "10.13": "High Sierra",
+    "10.14": "Mojave",
+    "10.15": "Catalina",
+    "11.0": "Big Sur",
+    "11.1": "Big Sur",
+    "11.2": "Big Sur",
+}
 
 # Constants to use for JSON files, arguments, ...
 DEFAULT_CONFIG_FILE = "./project_config.json"

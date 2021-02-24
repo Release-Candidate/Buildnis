@@ -2,15 +2,15 @@
 # Copyright (C) 2021 Roland Csaszar
 #
 # Project:  Buildnis
-# File:     python.sh
+# File:     sphinx.sh
 # Date:     24.Feb.2021
 ################################################################################
 
 # offical, user friendly name of the executable
-NAME="Python"
+NAME="Sphinx"
 
 # name to call the executable with
-EXE_NAME="python"
+EXE_NAME="sphinx-build"
 
 # argument to get the program's version
 VERSION_ARG="--version"

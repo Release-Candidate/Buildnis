@@ -14,9 +14,8 @@ from modules.helpers.json import getJSONDict, writeJSON
 import platform
 import pprint
 import logging
-import subprocess
 from modules.helpers import LOGGER_NAME
-from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING
+from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING
 
 class Host:
     """Holds all information about the host this is running on.
@@ -130,19 +129,9 @@ class Host:
         wmic path win32_VideoController get name
         """
         try:
-            (cpu_info_cmd, cpu_info_err) = runCommand(exe="wmic", args=[
-                                      "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"])           
-            cpu_name_cmd = subprocess.run(
-                ["wmic", "cpu", "get","Name"],
-                capture_output=True, text=True, check=True, timeout=120)
-            mem_info_cmd = subprocess.run(
-                ["wmic", "memorychip", "get", "capacity"],
-                capture_output=True, text=True, check=True, timeout=120)
-            gpu_info_cmd = subprocess.run(
-                ["wmic", "path", "win32_VideoController", "get", "name"],
-                capture_output=True, text=True, check=True, timeout=120)            
-                 
-            for line in cpu_info_cmd.strip().split("\n"):
+            cpu_info_cmd = runCommand(exe="wmic", args=[
+                                      "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"])        
+            for line in cpu_info_cmd.std_out.strip().split("\n"):
                 if "L2CacheSize" in line:
                     continue
                 if line != "":
@@ -155,21 +144,26 @@ class Host:
                     except:
                         pass
 
-            for line in cpu_name_cmd.stdout.strip().split("\n"):
+            cpu_name_cmd = runCommand(exe="wmic", args=["cpu", "get","Name"])           
+            for line in cpu_name_cmd.std_out.strip().split("\n"):
                 if "Name" in line:
                     continue
                 if line != "":
                     self.cpu = line
-
+             
+            gpu_info_cmd = runCommand(
+                exe="wmic", args=["path", "win32_VideoController", "get", "name"])
             self.gpu = []
-            for line in gpu_info_cmd.stdout.strip().split("\n"):
+            for line in gpu_info_cmd.std_out.strip().split("\n"):
                 if "Name" in line:
                     continue
                 if line != "":
                     self.gpu.append(line.strip())
 
+            mem_info_cmd = runCommand(
+                exe="wmic", args=["memorychip", "get", "capacity"])
             self.ram_total = 0
-            for line in mem_info_cmd.stdout.strip().split("\n"):
+            for line in mem_info_cmd.std_out.strip().split("\n"):
                 if "Capacity" in line:
                     continue
                 if line != "":
@@ -177,20 +171,14 @@ class Host:
                         self.ram_total += int(line)                        
                     except:
                         pass
-
-        except subprocess.CalledProcessError as excp:
-            self._logger.error(
-                "error \"{error}\" calling wmic", format(error=excp))
+      
         except Exception as excp2:
            self._logger.error(
                 "error \"{error}\" calling wmic".format(error=excp2))
  
     #############################################################################
     # grep "model name" /proc/cpuinfo |uniq|cut -d':' -f2
-    # grep "cache size" /proc/cpuinfo |uniq
-    # lscpu -C |grep L2|awk '{print $2}' (attention: read unit: K, M, G)
-    # lscpu -C |grep L3|awk '{print $2}' (attention: read unit: K, M, G)
-    # best: getconf -a
+    # grep "cache size" /proc/cpuinfo |uniq  
     # getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'
     # getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'
     # grep "cpu cores" /proc/cpuinfo |uniq|cut -d':' -f2
@@ -203,7 +191,41 @@ class Host:
 
         Parses `/proc/cpuinfo`, the output of `free` and similar.
         """
-        pass
+        try:
+            cpu_name_cmd = runCommand(
+                exe="grep", args=["'model name'", "/proc/cpuinfo"])
+            self.cpu = cpu_name_cmd.std_out.strip()
+
+            cpu_num_cores = runCommand(
+                exe="grep", args=["'cpu cores'", "/proc/cpuinfo"])
+            self.num_cores = int(cpu_num_cores.std_out.strip())
+
+            cpu_num_log_cpus = runCommand(
+                exe="grep", args=["'siblings'", "/proc/cpuinfo"])
+            self.num_logical_cores = int(cpu_num_log_cpus.std_out.strip())
+
+            cpu_l2_cache = runCommand(
+                exe="getconf", args=["-a", "|", "grep", "LEVEL2_CACHE_SIZE"])
+            self.level2_cache = int(cpu_l2_cache.std_out.strip())
+
+            cpu_l3_cache = runCommand(
+                exe="getconf", args=["-a", "|", "grep", "LEVEL3_CACHE_SIZE"])
+            self.level3_cache = int(cpu_l3_cache.std_out.strip())
+
+            ram_size = runCommand(exe="free", args=["-b", "|", "grep 'Mem:'"])
+            self.ram_total = int(ram_size.std_out.strip())
+
+            self.gpu = []
+            gpu_info_cmd = runCommand(exe="lspci", args=["|", "grep", "VGA"])
+            for line in gpu_info_cmd.std_out.strip().split("\n"):
+                if "Name" in line:
+                    continue
+                if line != "":
+                    self.gpu.append(line.strip())
+
+        except Exception as excp:
+            self._logger.error(
+                "error \"{error}\" getting Linux host information".format(error=excp))
 
     #############################################################################   
     def collectOSXConfig(self) -> None:
@@ -216,10 +238,17 @@ class Host:
         sysctl -n hw.l2cachesize
         sysctl -n hw.l3cachesize
         sysctl -n machdep.cpu.brand_string
+        sw_vers -productVersion
 
         TODO get GPU info: system_profiler SPDisplaysDataType
         """
         try:
+            os_name = runCommand(exe="sw_vers", args=["-productVersion"])
+            self.os_vers = os_name.std_out.strip()
+
+            os_vers_2_digits_list = self.os_vers.rsplit(".")
+            self.os_vers_major = OSX_NAME_DICT[".".join(os_vers_2_digits_list[:-1])]            
+
             cpu_name_cmd = runCommand(exe="sysctl", args=["-n", "machdep.cpu.brand_string"])
             self.cpu = cpu_name_cmd.std_out.strip()
 
