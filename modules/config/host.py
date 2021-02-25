@@ -201,11 +201,13 @@ class Host:
             try:
                 if checkIfExists("/etc/os-release") == True:
                     os_vers_maj = runCommand(
-                        exe="bash", args=["-c", "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                        exe="bash", args=["-c", 
+                        "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
                     self.os_vers_major = os_vers_maj.std_out.strip()
                     
                     os_vers  = runCommand(
-                        exe="bash", args=["-c", "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                        exe="bash", args=["-c", 
+                        "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
                     self.os_vers = os_vers.std_out.strip()
             except:
                 pass
