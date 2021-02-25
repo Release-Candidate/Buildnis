@@ -6,6 +6,10 @@
 # Date:     22.Feb.2021
 ################################################################################
 
+
+# clang comes with XCode. 
+# https://developer.apple.com/xcode/resources/
+
 # assumes clang is in the PATH
 CLANG_VERSION=$(clang --version |head -1|cut -d'(' -f1)
 CLANG_PATH=$(dirname `which clang`)

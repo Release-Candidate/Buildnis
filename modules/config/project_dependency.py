@@ -205,7 +205,7 @@ class ProjectDependency:
                     self.installDep(dep)
                     dep["is_checked"] = self.isDependencyFulfilled(dep)
             else:
-                print("Project dependency \"{name}\" has already been checked OK".format(
+                self._logger.info("Project dependency \"{name}\" has already been checked OK".format(
                     dep["name"]))
 
         self.dependency_cfg.generated_at = datetime.datetime.now(

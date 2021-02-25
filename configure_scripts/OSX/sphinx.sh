@@ -6,8 +6,11 @@
 # Date:     22.Feb.2021
 ################################################################################
 
+# Sphinx, install with
+# pip install sphinx
+
 # assumes sphinx-build is in the PATH
-SPHINX_VERSION=$(sphinx-build --version |head -1|awk '{print $2}'
+SPHINX_VERSION=$(sphinx-build --version |head -1)
 SPHINX_PATH=$(dirname `which sphinx-build`)
 
 echo "{"

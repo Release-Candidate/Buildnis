@@ -21,7 +21,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from modules import EXT_ERR_DIR
-from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CFG_VERSION, CONFIGURE_SCRIPTS_PATH, FilePath, OSName
+from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CFG_VERSION, CONFIGURE_SCRIPTS_PATH, FilePath, LINUX_OS_STRING, OSName, OSX_OS_STRING
 
 class WriteCfg:
     """Helper class to encode Check.build_tools_cfgs to JSON.
@@ -194,7 +194,7 @@ class Check:
         try:
             cfg.name
         except AttributeError:
-            print("ERROR: build config has no attribute \"name\"")
+            self._logger.error("ERROR: build config has no attribute \"name\"")
             return False
         try:
             cfg.name_long
@@ -270,10 +270,16 @@ class Check:
                 self._logger.info("\"{name}\": checking if executable \"{exe}\" is in PATH.".format(
                     name=tool.name, exe=tool.build_tool_exe))
 
-            try:               
+            try:
+                if self.os == LINUX_OS_STRING or self.os == OSX_OS_STRING:
+                    source_env_script = True
+                else:
+                    source_env_script = False               
                 tool.version = doesExecutableWork(exe=exe_path, check_regex=tool.version_regex, 
                                                 regex_group=1, args=[tool.version_arg],
-                                                env_script=tool.env_script, env_script_args=[tool.env_script_arg])
+                                                  env_script=tool.env_script, 
+                                                env_script_args=[tool.env_script_arg], 
+                                                source_env_script=source_env_script)
                 if tool.version != "":
                     tool.is_checked = True
 

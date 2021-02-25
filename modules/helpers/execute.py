@@ -19,7 +19,7 @@ class ExecuteException(Exception):
     pass
 
 ################################################################################
-def runCommand(exe: FilePath, args: List[str] = [], env_script: FilePath = "", env_script_args: List[str] = []) -> CmdOutput:
+def runCommand(exe: FilePath, args: List[str] = [], env_script: FilePath = "", env_script_args: List[str] = [], source_env_script: bool = False) -> CmdOutput:
     """Executes the given command with the given arguments.
 
     The argument `exe` is the executable's name or path, needed arguments can be
@@ -36,6 +36,8 @@ def runCommand(exe: FilePath, args: List[str] = [], env_script: FilePath = "", e
                     environment prior to calling the executable. Defaults to "".
         env_script_args (List[str], optional): List of arguments to pass to the 
                 environment script `env_script` Defaults to [].
+        source_env_script (bool): Call the environment script (`False`) or source 
+                    the environment script (set this to `True`)
 
     Raises:
         ExecuteException: if something goes wrong
@@ -45,17 +47,28 @@ def runCommand(exe: FilePath, args: List[str] = [], env_script: FilePath = "", e
     """
     cmd_line_args = []
 
-    if env_script != "":        
-        cmd_line_args.append(env_script)
-        for env_arg in env_script_args:
-            cmd_line_args.append(env_arg)
-        cmd_line_args.append("&&")
+    # TODO really always call bash?
+    if env_script != "":
+        if source_env_script == True:
+            cmd_line_args.append("bash")
+            cmd_line_args.append("-c")            
+            source_cmd = "source " + env_script + \
+                " " + " ".join(env_script_args)
+            source_cmd = source_cmd + " && " + exe
+            source_cmd = source_cmd +  " " + " ".join(args)            
+            cmd_line_args.append(source_cmd)
+        else:
+            cmd_line_args.append(env_script)
+            for env_arg in env_script_args:
+                cmd_line_args.append(env_arg)
+            cmd_line_args.append("&&")
 
-    cmd_line_args.append(exe)
+    if env_script == "" or not source_env_script:
+        cmd_line_args.append(exe)
     
-    for arg in args:
-        if arg != "":
-            cmd_line_args.append(arg)
+        for arg in args:
+            if arg != "":
+                cmd_line_args.append(arg)
 
     try:
         process_result = subprocess.run(
@@ -67,7 +80,7 @@ def runCommand(exe: FilePath, args: List[str] = [], env_script: FilePath = "", e
     return CmdOutput(std_out=process_result.stdout, err_out=process_result.stderr)
 
 ################################################################################
-def doesExecutableWork(exe: FilePath, check_regex: str, regex_group: int = 0, args: List[str] = [], env_script: FilePath = "", env_script_args: List[str] = []) -> str:
+def doesExecutableWork(exe: FilePath, check_regex: str, regex_group: int = 0, args: List[str] = [], env_script: FilePath = "", env_script_args: List[str] = [], source_env_script:bool = False) -> str:
     """Checks if the given command line works.
 
     Tries to run the command with the given arguments (see `runCommand`) and
@@ -90,6 +103,8 @@ def doesExecutableWork(exe: FilePath, check_regex: str, regex_group: int = 0, ar
                     environment prior to calling the executable. Defaults to "".
         env_script_args (List[str], optional): List of arguments to pass to the 
                 environment script `env_script` Defaults to [].
+        source_env_script (bool): Call the environment script (`False`) or source 
+                    the environment script (set this to `True`)
 
     Raises:
         ExecuteException: if something goes wrong
@@ -101,7 +116,8 @@ def doesExecutableWork(exe: FilePath, check_regex: str, regex_group: int = 0, ar
     ret_val = ""
 
     try:
-        output = runCommand(exe=exe, args=args, env_script=env_script, env_script_args=env_script_args)
+        output = runCommand(exe=exe, args=args, env_script=env_script,
+                            env_script_args=env_script_args, source_env_script=source_env_script)
 
         run_regex = re.search(check_regex, output.std_out)
         if run_regex != None and run_regex.group(regex_group):

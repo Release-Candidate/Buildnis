@@ -6,6 +6,9 @@
 # Date:     22.Feb.2021
 ################################################################################
 
+# You get the latest PYthon versions at
+# https://www.python.org/downloads/
+
 # assumes python is in the PATH
 PYTHON_VERSION=$(python3 --version 2>&1)
 PYTHON_PATH=$(dirname `which python3`)

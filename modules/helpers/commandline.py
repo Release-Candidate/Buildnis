@@ -269,8 +269,7 @@ def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: obj
         ret_val.do_check_what_to_do = True
 
     if not pathlib.Path(ret_val.project_config_file).is_file():
-        cmd_line_parser.print_help(file=sys.stderr)
-        print("", file=sys.stderr)
+        cmd_line_parser.print_help(file=sys.stderr)      
         cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: configuration file \"{config}\" not found or is not a file!"
                              .format(config=ret_val.project_config_file))
 
