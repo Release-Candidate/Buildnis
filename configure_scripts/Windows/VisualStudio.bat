@@ -104,15 +104,20 @@ set /a LOOP_IDX=0
 if defined RESULT[!LOOP_IDX!].install_path (
     call set a=%%RESULT[!LOOP_IDX!].install_path%%\VC\Tools\Llvm\%%CLANG_PATH%%\bin
     for /f "delims=" %%l in ('"!a!\clang"  --version') do (
-        if /i "!CLANG_VERSION!"=="" (
-            set CLANG_VERSION=%%l
-            call :TRIM CLANG_VERSION
+        call set b=%%CLANG_VERSION[!LOOP_IDX!]%%
+                
+        if /i "!b!"=="" (
+            set CLANG_VERSION[!LOOP_IDX!]=%%l
+            call :TRIM CLANG_VERSION[!LOOP_IDX!]
+            
      )
     )
     for /f "delims=" %%l in ('"!a!\clang++"  --version') do (
-        if /i "!CLANGPP_VERSION!"=="" (
-            set CLANGPP_VERSION=%%l
-            call :TRIM CLANGPP_VERSION
+        call set b=%%CLANGPP_VERSION[!LOOP_IDX!]%%
+        
+        if /i "!b!"=="" (
+            set CLANGPP_VERSION[!LOOP_IDX!]=%%l
+            call :TRIM CLANGPP_VERSION[!LOOP_IDX!]            
      )
     )
     set /a "LOOP_IDX+=1"
@@ -128,7 +133,7 @@ set /a LOOP_IDX=0
 if defined RESULT[!LOOP_IDX!].install_path (
     echo     {
     call echo         "name": "Clang (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
-    call echo         "name_long": "%CLANG_VERSION% (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
+    call echo         "name_long": "%%CLANG_VERSION[!LOOP_IDX!]%% (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
     call echo         "version": "",
     call echo         "version_arg": "--version",
     call echo         "version_regex": "version (.*)",
@@ -138,7 +143,7 @@ if defined RESULT[!LOOP_IDX!].install_path (
     echo     },
     echo     {
     call echo         "name": "Clang++ (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
-    call echo         "name_long": "%CLANGPP_VERSION% (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
+    call echo         "name_long": "%%CLANGPP_VERSION[!LOOP_IDX!]%% (%%RESULT[!LOOP_IDX!].name%% %%RESULT[!LOOP_IDX!].year%%)",
     call echo         "version": "",
     call echo         "version_arg": "--version",
     call echo         "version_regex": "version (.*)",

@@ -45,11 +45,45 @@ set ENV_SCRIPT=""
 
 :HAVE_ENV_SCRIPT
 
-if /i "%ICL_VERSION%"=="" set ICL_VERSION=""
-if /i "%ICX_VERSION%"=="" set ICX_VERSION=""
-if /i "%IFORT_VERSION%"=="" set IFORT_VERSION=""
-if /i "%IFX_VERSION%"=="" set IFX_VERSION=""
-if /i "%PYTHON_VERSION%"=="" set PYTHON_VERSION=""
+call %ENV_SCRIPT% %CMD_ARG% > nul 2>&1
+
+SetLocal EnableDelayedExpansion
+
+for /f "delims=" %%l in ('icl /QV 2^>^&1') do (    
+    if /i "!ICL_VERSION!"=="" (        
+        set ICL_VERSION=%%l
+        call :TRIM ICL_VERSION
+    )
+)
+
+for /f "delims=" %%l in ('icx /QV 2^>^&1') do (    
+    if /i "!ICX_VERSION!"=="" (       
+        set ICX_VERSION=%%l
+        call :TRIM ICX_VERSION
+    )
+)
+
+for /f "delims=" %%l in ('ifort /QV 2^>^&1') do (    
+    if /i "!IFORT_VERSION!"=="" (        
+        set IFORT_VERSION=%%l
+        call :TRIM IFORT_VERSION
+    )
+)
+
+for /f "delims=" %%l in ('ifx /QV 2^>^&1') do (    
+    if /i "!IFX_VERSION!"=="" (        
+        set IFX_VERSION=%%l
+        call :TRIM IFX_VERSION
+    )
+)
+
+for /f "delims=" %%l in ('python --version') do (    
+    if /i "!PYTHON_VERSION!"=="" (        
+        set PYTHON_VERSION=%%l
+        call :TRIM PYTHON_VERSION
+    )
+)
+
 
 :: JSON output
 echo {
@@ -57,7 +91,7 @@ echo "build_tools":
 echo [
 echo     {
 echo         "name": "Intel C++ Classic",
-echo         "name_long": %ICL_VERSION%,
+echo         "name_long": "%ICL_VERSION%",
 echo         "version": "",
 echo         "version_arg": "/QV",
 echo         "version_regex": ", Version (.*) Build",
@@ -68,7 +102,7 @@ echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel DPC++/C++",
-echo         "name_long": %ICX_VERSION%,
+echo         "name_long": "%ICX_VERSION%",
 echo         "version": "",
 echo         "version_arg": "/QV",
 echo         "version_regex": ", Version (.*) Build",
@@ -79,7 +113,7 @@ echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel Fortran Classic",
-echo         "name_long": %IFORT_VERSION%,
+echo         "name_long": "%IFORT_VERSION%",
 echo         "version": "",
 echo         "version_arg": "/QV",
 echo         "version_regex": ", Version (.*) Build",
@@ -90,7 +124,7 @@ echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel Fortran (ifx)",
-echo         "name_long": %IFX_VERSION%,
+echo         "name_long": "%IFX_VERSION%",
 echo         "version": "",
 echo         "version_arg": "/QV",
 echo         "version_regex": ", Version (.*) Build",
@@ -101,7 +135,7 @@ echo         "env_script_arg": "%CMD_ARG%"
 echo     },
 echo     {
 echo         "name": "Intel Python",
-echo         "name_long": %PYTHON_VERSION%,
+echo         "name_long": "%PYTHON_VERSION%",
 echo         "version": "",
 echo         "version_arg": "--version",
 echo         "version_regex": "Python (.*) ::",
@@ -112,7 +146,7 @@ echo     }
 echo ]
 echo }
 
-
+EndLocal
 GOTO :EOF
 
 

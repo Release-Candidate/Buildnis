@@ -9,19 +9,9 @@
 
 from __future__ import annotations
 
-from modules.config import PROJECT_FILE_NAME
-
-import sys
-import platform
-from modules import EXT_ERR_IMP_MOD, EXT_ERR_PYTH_VERS
-
-
-# the part about '< 3' is actually useless, Python 2 throws a syntay error trying to byte compile this script.
-if sys.version_info.major < 3 or sys.version_info.minor < 9:
-    print("ERROR: Python version is too old, I need at least Python 3.9, this has a version of {version}"
-          .format(version=platform.python_version()), file=sys.stderr)
-    sys.exit(EXT_ERR_PYTH_VERS)
-try:
+try:    
+    import sys
+    from modules import EXT_ERR_IMP_MOD
     import os
     import logging
     import pathlib
@@ -32,6 +22,7 @@ except ImportError as exp:
     sys.exit(EXT_ERR_IMP_MOD)
 
 try:
+    from modules.config import PROJECT_FILE_NAME
     from modules.helpers.logging import getProgramLogger
     from modules.config import project_dependency
     from modules.helpers.commandline import parseCommandLine
