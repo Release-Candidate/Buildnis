@@ -7,6 +7,7 @@
 ###############################################################################
 
 from __future__ import annotations
+from modules.helpers.files import checkIfExists
 from modules.helpers.execute import runCommand
 
 
@@ -177,49 +178,64 @@ class Host:
                 "error \"{error}\" calling wmic".format(error=excp2))
  
     #############################################################################
-    # grep "model name" /proc/cpuinfo |uniq|cut -d':' -f2
-    # grep "cache size" /proc/cpuinfo |uniq  
-    # getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'
-    # getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'
-    # grep "cpu cores" /proc/cpuinfo |uniq|cut -d':' -f2
-    # grep "siblings" /proc/cpuinfo |uniq |cut -d':' -f2
-    # free -b|grep "Mem:"|awk '{print $2}'
-    # grep "DISTRIB_DESCRIPTION" /etc/lsb-release
-    # lspci|grep VGA|cut -f3 -d':'
+    # 
     def collectLinuxConfig(self) -> None:
         """Collect information about the hardware we're running on on Linux.
 
-        Parses `/proc/cpuinfo`, the output of `free` and similar.
+        Calls the following commands:
+
+        cat /etc/os-release 
+        NAME="Red Hat Enterprise Linux"
+        VERSION="8.3 (Ootpa)"
+
+        grep "model name" /proc/cpuinfo |uniq|cut -d':' -f2   
+        getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'
+        getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'
+        grep "cpu cores" /proc/cpuinfo |uniq|cut -d':' -f2
+        grep "siblings" /proc/cpuinfo |uniq |cut -d':' -f2
+        free -b|grep "Mem:"|awk '{print $2}'
+        grep "DISTRIB_DESCRIPTION" /etc/lsb-release
+        lspci|grep VGA|cut -f3 -d':'
         """
         try:
-            cpu_name_cmd = runCommand(
-                exe="grep", args=["'model name'", "/proc/cpuinfo"])
-            self.cpu = cpu_name_cmd.std_out.strip()
+            try:
+                if checkIfExists("/etc/os-release") == True:
+                    os_vers_maj = runCommand(
+                        exe="bash", args=["-c", "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                    self.os_vers_major = os_vers_maj.std_out.strip()
+                    
+                    os_vers  = runCommand(
+                        exe="bash", args=["-c", "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                    self.os_vers = os_vers.std_out.strip()
+            except:
+                pass
 
+            cpu_name_cmd = runCommand(
+                exe="bash", args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"])
+            self.cpu = cpu_name_cmd.std_out.strip()
+            
             cpu_num_cores = runCommand(
-                exe="grep", args=["'cpu cores'", "/proc/cpuinfo"])
+                exe="bash", args=["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"])
             self.num_cores = int(cpu_num_cores.std_out.strip())
 
             cpu_num_log_cpus = runCommand(
-                exe="grep", args=["'siblings'", "/proc/cpuinfo"])
+                exe="bash", args=["-c", "grep siblings /proc/cpuinfo |uniq |cut -d':' -f2"])
             self.num_logical_cores = int(cpu_num_log_cpus.std_out.strip())
 
             cpu_l2_cache = runCommand(
-                exe="getconf", args=["-a", "|", "grep", "LEVEL2_CACHE_SIZE"])
+                exe="bash", args=["-c", "getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'"])
             self.level2_cache = int(cpu_l2_cache.std_out.strip())
 
             cpu_l3_cache = runCommand(
-                exe="getconf", args=["-a", "|", "grep", "LEVEL3_CACHE_SIZE"])
+                exe="bash", args=["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"])
             self.level3_cache = int(cpu_l3_cache.std_out.strip())
 
-            ram_size = runCommand(exe="free", args=["-b", "|", "grep 'Mem:'"])
+            ram_size = runCommand(exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"])
             self.ram_total = int(ram_size.std_out.strip())
 
             self.gpu = []
-            gpu_info_cmd = runCommand(exe="lspci", args=["|", "grep", "VGA"])
-            for line in gpu_info_cmd.std_out.strip().split("\n"):
-                if "Name" in line:
-                    continue
+            gpu_info_cmd = runCommand(exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"])
+            for line in gpu_info_cmd.std_out.strip().split("\n"):               
                 if line != "":
                     self.gpu.append(line.strip())
 

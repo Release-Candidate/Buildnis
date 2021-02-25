@@ -23,7 +23,7 @@ PROGRAM_PATH=$(dirname `which ${EXE_NAME}`)
 ENV_SCRIPT_PATH=""
 if [ x"${ENV_SCRIPT_PATH}" != x"" ]
 then
-    PROGRAM_VERSION=$(source ${ENV_SCRIPT_PATH} && ${EXE_NAME} ${VERSION_ARG} 2>&1)
+    PROGRAM_VERSION=$(bash -c \"source ${ENV_SCRIPT_PATH} && ${EXE_NAME} ${VERSION_ARG}\" 2>&1)
 fi
 
 # WARNING: this is a JSON encoded regex to use with Python, not to parse the

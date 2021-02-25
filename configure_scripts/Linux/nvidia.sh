@@ -1,32 +1,58 @@
 #!/bin/bash
+# Copyright (C) 2021 Roland Csaszar
+#
+# Project:  Buildnis
+# File:     nvidia.sh
+# Date:     24.Feb.2021
+################################################################################
 
-/opt/nvidia/hpc_sdk/Linux_x86_64/2021/compilers/
+NVC_LONG_NAME=$(nvc --version|head -2|tail -1)
+NVCPP_LONG_NAME=$(nvc++ --version|head -2|tail -1)
+NFORT_LONG_NAME=$(nvfortran --version|head -2|tail -1)
+NVCC_LONG_NAME=$(nvcc --version|head -4|tail -1)
 
-
-PATH=$NVCOMPILERS/$NVARCH/21.2/compilers/bin
-
-OpenMP:
-
-PATH=$NVCOMPILERS/$NVARCH/21.2/comm_libs/mpi/bin
-
-nvc --version
-
-nvc 21.2-0 LLVM 64-bit target on x86-64 Linux -tp haswell 
-
-nvc++ --version
-
-nvc++ 21.2-0 LLVM 64-bit target on x86-64 Linux -tp haswell
-
-nvfortran --version
-
-nvfortran 21.2-0 LLVM 64-bit target on x86-64 Linux -tp haswell
-
-nvcc --version
-nvcc: NVIDIA (R) Cuda compiler driver
-Copyright (c) 2005-2020 NVIDIA Corporation
-Built on Mon_Nov_30_19:08:53_PST_2020
-Cuda compilation tools, release 11.2, V11.2.67
-Build cuda_11.2.r11.2/compiler.29373293_0
-
-
-ACHTUNG: Leerzeile!
+echo "{"
+echo '    "build_tools":'
+echo "    ["
+echo "         {"
+echo "            \"name\": \"NVidia C++\","
+echo "            \"name_long\": \"${NVC_LONG_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"nv\\\\S+ (\\\\S*)\","
+echo "            \"build_tool_exe\": \"nvc\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         },"
+echo "         {"
+echo "            \"name\": \"NVidia C++\","
+echo "            \"name_long\": \"${NVCPP_LONG_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"nv\\\\S+ (\\\\S*)\","
+echo "            \"build_tool_exe\": \"nvc++\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         }",
+echo "         {"
+echo "            \"name\": \"NVidia Fortran\","
+echo "            \"name_long\": \"${NFORT_LONG_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"nv\\\\S+ (\\\\S*)\","
+echo "            \"build_tool_exe\": \"nvfortran\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         }",
+echo "         {"
+echo "            \"name\": \"NVidia CUDA\","
+echo "            \"name_long\": \"${NVCC_LONG_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \", release \\\\S+ (\\\\S+)\","
+echo "            \"build_tool_exe\": \"nvcc\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         }"
+echo "    ]"
+echo "}"

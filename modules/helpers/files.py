@@ -231,11 +231,13 @@ def checkIfExists(file: FilePath) -> bool:
 
         tmp_path_obj = pathlib.Path(tmp_path)
 
-        if not tmp_path_obj.exists():
+        if tmp_path_obj.exists():
             return True
 
     except Exception as excp:
         raise FileCompareException(excp)
+
+    return False
 
 ################################################################################
 def checkIfIsFile(file: FilePath) -> bool:
@@ -256,11 +258,13 @@ def checkIfIsFile(file: FilePath) -> bool:
 
         tmp_path_obj = pathlib.Path(tmp_path)
 
-        if not tmp_path_obj.is_file():
+        if tmp_path_obj.is_file():
             return True
 
     except Exception as excp:
         raise FileCompareException(excp)
+
+    return False
 
 ################################################################################
 def checkIfIsDir(dir: FilePath) -> bool:
@@ -281,11 +285,13 @@ def checkIfIsDir(dir: FilePath) -> bool:
 
         tmp_path_obj = pathlib.Path(tmp_path)
 
-        if not tmp_path_obj.is_dir():
+        if tmp_path_obj.is_dir():
             return True
 
     except Exception as excp:
         raise FileCompareException(excp)
+
+    return False
 
 ################################################################################
 def checkIfIsLink(link: FilePath) -> bool:
@@ -306,11 +312,13 @@ def checkIfIsLink(link: FilePath) -> bool:
 
         tmp_path_obj = pathlib.Path(tmp_path)
 
-        if not tmp_path_obj.is_symlink():
+        if tmp_path_obj.is_symlink():
             return True
 
     except Exception as excp:
         raise FileCompareException(excp)
+
+    return False
 
 ################################################################################
 def makeDirIfNotExists(dir: FilePath) -> None:

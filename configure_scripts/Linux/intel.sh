@@ -1,20 +1,51 @@
 #!/bin/bash
+# Copyright (C) 2021 Roland Csaszar
+#
+# Project:  Buildnis
+# File:     intel.sh
+# Date:     25.Feb.2021
+################################################################################
 
-/opt/intel/oneapi/setvars.sh
+INTEL_ENV_SCRIPT=$(find /opt/intel/oneapi -name "setvar*")
 
-icx  --version
-Intel(R) oneAPI DPC++ Compiler 2021.1.2 (2020.10.0.1214)
+source ${INTEL_ENV_SCRIPT} >/dev/null 2>&1
 
-ifort --version
-ifort (IFORT) 2021.1.2 20201208
+ICC_LONG_NAME=$(icc --version|head -1)
+IFORT_LONG_NAME=$(ifort --version|head -1)
+INTEL_PYTHON_NAME=$(python --version|head -1)
 
-ifx --version
-ifx (IFORT) 2021.1.2 Beta 20201214
-
- icc --version
-icc (ICC) 2021.1.2 20201208
-
-python --version
-Python 3.7.9 :: Intel Corporation
-
-immer erste Zeile
+echo "{"
+echo '    "build_tools":'
+echo "    ["
+echo "         {"
+echo "            \"name\": \"Intel C++\","
+echo "            \"name_long\": \"${ICC_LONG_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"\\\\(ICC\\\\) (\\\\S*) \","
+echo "            \"build_tool_exe\": \"icc\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"${INTEL_ENV_SCRIPT}\""
+echo "         },"
+echo "         {"
+echo "            \"name\": \"Intel Fortran\","
+echo "            \"name_long\": \"${IFORT_LONG_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"\\\\(IFORT\\\\) (\\\\S*) \","
+echo "            \"build_tool_exe\": \"ifort\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"${INTEL_ENV_SCRIPT}\""
+echo "         }",
+echo "         {"
+echo "            \"name\": \"Intel Python\","
+echo "            \"name_long\": \"${INTEL_PYTHON_NAME}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"Python (\\\\S+) \","
+echo "            \"build_tool_exe\": \"python\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"${INTEL_ENV_SCRIPT}\""
+echo "         }"
+echo "    ]"
+echo "}"

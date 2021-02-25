@@ -10,7 +10,7 @@
 NAME="Python"
 
 # name to call the executable with
-EXE_NAME="python"
+EXE_NAME="python3"
 
 # argument to get the program's version
 VERSION_ARG="--version"
@@ -18,13 +18,6 @@ VERSION_ARG="--version"
 # assumes PROGRAM is in the PATH
 PROGRAM_VERSION=$(${EXE_NAME} ${VERSION_ARG} 2>&1)
 PROGRAM_PATH=$(dirname `which ${EXE_NAME}`)
-
-# environmemt script to source before calling PROGRAM
-ENV_SCRIPT_PATH=""
-if [ x"${ENV_SCRIPT_PATH}" != x"" ]
-then
-    PROGRAM_VERSION=$(source ${ENV_SCRIPT_PATH} && ${EXE_NAME} ${VERSION_ARG} 2>&1)
-fi
 
 # WARNING: this is a JSON encoded regex to use with Python, not to parse the
 # version output now

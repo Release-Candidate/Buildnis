@@ -1,17 +1,63 @@
 #!/bin/bash
+# Copyright (C) 2021 Roland Csaszar
+#
+# Project:  Buildnis
+# File:     clang.sh
+# Date:     25.Feb.2021
+################################################################################
 
-clang --version
-clang version 11.1.0 (Fedora 11.1.0-0.4.rc2.fc34)
+# flang --version
+# f18 compiler (under development), version 11.1.0
 
-clang --version|head -1
-clang version 11.1.0 (Fedora 11.1.0-0.4.rc2.fc34)
+CLANG_VERSION=$(clang --version|head -1)
+CLANGPP_VERSION=$(clang++ --version|head -1)
+FLANG_VERSION=$(flang --version|head -1)
 
-# ACHTING: Leerzeile!
-flang --version
-
-f18 compiler (under development), version 11.1.0
-
-
+echo "{"
+echo '    "build_tools":'
+echo "    ["
+echo "         {"
+echo "            \"name\": \"Clang\","
+echo "            \"name_long\": \"${CLANG_VERSION}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"version (.*) \\\\(\","
+echo "            \"build_tool_exe\": \"clang\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         },"
+echo "         {"
+echo "            \"name\": \"Clang++\","
+echo "            \"name_long\": \"${CLANGPP_VERSION}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"version (.*) \\\\(\","
+echo "            \"build_tool_exe\": \"clang++\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         }",
+echo "         {"
+echo "            \"name\": \"FLang\","
+echo "            \"name_long\": \"${FLANG_VERSION}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \", version (\\\\S+)$\","
+echo "            \"build_tool_exe\": \"flang\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         }",
+echo "         {"
+echo "            \"name\": \"FLang\","
+echo "            \"name_long\": \"${FLANG_VERSION}\","
+echo "            \"version\": \"\","
+echo "            \"version_arg\": \"--version\","
+echo "            \"version_regex\": \"version (.*) \\\\(\","
+echo "            \"build_tool_exe\": \"flang\","
+echo "            \"install_path\": \"\","
+echo "            \"env_script\": \"\""
+echo "         }"
+echo "    ]"
+echo "}"
 
 
 
