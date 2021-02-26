@@ -9,9 +9,9 @@
 # flang --version
 # f18 compiler (under development), version 11.1.0
 
-CLANG_VERSION=$(clang --version|head -1)
-CLANGPP_VERSION=$(clang++ --version|head -1)
-FLANG_VERSION=$(flang --version|head -1)
+CLANG_VERSION=$(clang --version 2>&1|sed '/^$/d'|head -1)
+CLANGPP_VERSION=$(clang++ --version 2>&1|sed '/^$/d'|head -1)
+FLANG_VERSION=$(flang --version 2>&1|sed '/^$/d'|head -1)
 
 echo "{"
 echo '    "build_tools":'
