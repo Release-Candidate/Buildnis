@@ -240,7 +240,7 @@ class Host:
             for line in gpu_info_cmd.std_out.strip().split("\n"):               
                 if line != "":
                     self.gpu.append(line.strip())
-            if self.gpu == []:
+            if len(self.gpu) == 0:
                  gpu_info_cmd = runCommand(exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"])
             for line in gpu_info_cmd.std_out.strip().split("\n"):               
                 if line != "":
