@@ -126,7 +126,7 @@ def doesExecutableWork(exe: FilePath, check_regex: str, regex_group: int = 0, ar
         else:
             run_regex = re.search(check_regex, output.err_out)
             if run_regex != None and run_regex.group(regex_group):
-                ret_val = run_regex.group(regex_group)                        
+                ret_val = run_regex.group(regex_group).strip()                       
                         
     except Exception as excp:
         raise ExecuteException(excp)
