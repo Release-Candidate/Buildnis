@@ -79,20 +79,24 @@ class Config:
         project's setup stored in self.project_cfg. Stores the configurations
         in module_cfgs.
         """
-        for target in self.project_cfg.target:
+        tmp_module_paths = []
+        for module in self.project_cfg.modules:
             
             module_path = os.path.abspath(os.path.join(
-                self.project_cfg_dir, target.module_file))
+                self.project_cfg_dir, module))
 
             module_cfg = readJSON(
                 json_path=module_path, file_text="module", conf_file_name=MODULE_FILE_NAME)
 
-            target.module_file = module_path
+            tmp_module_paths.append(module_path)           
 
             module_cfg.module_path = os.path.normpath(os.path.dirname(
                 module_path))
 
-            self.module_cfgs[module_path] = module_cfg       
+            self.module_cfgs[module_path] = module_cfg
+
+            self.project_cfg.modules = tmp_module_paths
+
 
     ###########################################################################
     def parseBuildCfgs(self) -> None:

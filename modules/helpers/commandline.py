@@ -7,6 +7,7 @@
 ###############################################################################
 
 import logging
+from modules.helpers.files import checkIfIsDir, makeDirIfNotExists
 from modules import EXT_ERR_LD_FILE, VERSION
 from modules.config import DEFAULT_CONFIG_FILE, FilePath
 from typing import List
@@ -272,5 +273,13 @@ def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: obj
         cmd_line_parser.print_help(file=sys.stderr)      
         cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: configuration file \"{config}\" not found or is not a file!"
                              .format(config=ret_val.project_config_file))
+
+    try:
+        makeDirIfNotExists(ret_val.conf_dir)
+    except Exception as excp:
+        cmd_line_parser.print_help(file=sys.stderr)
+        cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: \"{error}\" configuration directory \"{path}\" could not be generated or not a directory!"
+                             .format(error=excp,path=ret_val.conf_dir))
+
 
     return ret_val
