@@ -1,0 +1,61 @@
+{
+    "file_name": "module_config",
+    "file_version": "1.0",
+    "name": "Fortran Executable",
+    "version": "${../version}",
+    "author": "${../author}",
+    "company": "${../company}",
+    "date": "27.02.2021",
+    "description": "Subproject to build a Fortran executable that links against a static and a shared Fortran library. To test the Fortran compiler.",
+    "copyright_info": "${../copyright_info}",
+    "web_url": "${../web_url}",
+    "email": "${../email}",
+    "sources": [
+        "*.f90"
+    ],
+    "targets": [
+        {
+            "name": "f_executable_release",
+            "alias": "f_exe",
+            "default": true,
+            "build_type": "executable",
+            "build_subtype": "release",
+            "build_tool_type": "Fortran",
+            "result": "file",
+            "result_name": "fortran_executable",
+            "build_directory": "./build",
+            "sources": "${../sources}",
+            "include_paths": [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "f_executable_debug",
+            "alias": "f_exe-dbg",           
+            "build_type": "executable",
+            "build_subtype": "debug",
+            "build_tool_type": "Fortran",
+            "result": "file",
+            "result_name": "fortran_executable-dbg",
+            "build_directory": "./build-dbg",
+            "sources": "${../sources}",
+            "include_paths": [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "install",
+            "build_type": "install",
+            "build_subtype": "file",
+            "build_tool_type": "internal",
+            "dependencies": "${@}"
+        }
+    ],
+    "supported_builds": []
+}

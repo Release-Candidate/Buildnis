@@ -1,7 +1,7 @@
 {
     "file_name": "project_config",
     "file_version": "1.0",
-	"name": "Buildnis Test Project",
+    "name": "Buildnis Test Project",
     "version": "1.0.34-74",
     "author": "Aloisius Tester",
     "company": "WTF Corp",
@@ -11,35 +11,13 @@
     "web_url": "https://github.com/Release-Candidate/Buildnis",
     "email": "salzamt@nowhere.local",
     "project_dependency_config": "./project_dependency_config.json",
-    "target": 
-    [
-        {
-            "name": "C++ Executable",
-            "module_file": "./cpp_executable/module_config.json"
-        },
-        {
-            "name": "C++ Static Library",
-            "module_file": "./cpp_static_library/module_config.json"
-        },
-        {
-            "name": "C++ Shared Library",
-            "module_file": "./cpp_dynamic_library/module_config.json"
-        },
-        {
-            "name": "Fortran Executable",
-            "module_file": "./fortran_executable/module_config.json"
-        },
-        {
-            "name": "Fortran Static Library",
-            "module_file": "./fortran_static_library/module_config.json"
-        },
-        {
-            "name": "Fortran Shared Library",
-            "module_file": "./fortran_dynamic_library/module_config.json"
-        },
-        {
-            "name": "HTML Documentation",
-            "module_file": "./doc/module_config.json"
-        }
+    "modules": [
+        "./cpp_executable/module_config.json",
+        "./cpp_static_library/module_config.json",
+        "./cpp_dynamic_library/module_config.json",
+        "./fortran_executable/module_config.json",
+        "./fortran_static_library/module_config.json",
+        "./fortran_dynamic_library/module_config.json",
+        "./doc/module_config.json"
     ]
-} 
+}

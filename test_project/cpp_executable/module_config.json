@@ -1,0 +1,61 @@
+{
+    "file_name": "module_config",
+    "file_version": "1.0",
+    "name": "C++ Executable",
+    "version": "${../version}",
+    "author": "${../author}",
+    "company": "${../company}",
+    "date": "27.02.2021",
+    "description": "Subproject to build a C++ executable that is linked against a shared and a static C++ library build in other subprojects",
+    "copyright_info": "${../copyright_info}",
+    "web_url": "${../web_url}",
+    "email": "${../email}",
+    "sources": [
+        "*.cpp"
+    ],
+    "targets": [
+        {
+            "name": "executable_release",
+            "alias": "exe",
+            "default": true,
+            "build_type": "executable",
+            "build_subtype": "release",
+            "build_tool_type": "C++",
+            "result": "file",
+            "result_name": "cpp_executable",
+            "build_directory": "./build",
+            "sources": "${../sources}",
+            "include_paths": [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "executable_debug",
+            "alias": "exe-dbg",           
+            "build_type": "executable",
+            "build_subtype": "debug",
+            "build_tool_type": "C++",
+            "result": "file",
+            "result_name": "cpp_executable-dbg",
+            "build_directory": "./build-dbg",
+            "sources": "${../sources}",
+            "include_paths": [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "install",
+            "build_type": "install",
+            "build_subtype": "file",
+            "build_tool_type": "internal",
+            "dependencies": "${@}"
+        }
+    ],
+    "supported_builds": []
+}

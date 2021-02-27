@@ -1,0 +1,64 @@
+{
+    "file_name": "module_config",
+    "file_version": "1.0",
+    "name": "C++ Shared Library",
+    "version": "${../version}",
+    "author": "${../author}",
+    "company": "${../company}",
+    "date": "27.02.2021",
+    "description": "Subproject to build a shared C++ library to test the generation of a shared library using C++ compilers.",
+    "copyright_info": "${../copyright_info}",
+    "web_url": "${../web_url}",
+    "email": "${../email}",
+    "sources": 
+    [
+        "*.cpp"
+    ],   
+    "targets": 
+    [
+        {
+            "name": "shared_release",
+            "alias": "shared",            
+            "default": true,   
+            "build_type": "shared_library",
+            "build_subtype": "release",
+            "build_tool_type": "C++",
+            "result": "file",
+            "result_name": "cpp_shared_library",
+            "build_directory": "./build",
+            "sources": "${../sources}",
+            "include_paths": 
+            [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "shared_debug",
+            "alias": "shared-dbg",           
+            "build_type": "shared_library",
+            "build_subtype": "debug",
+            "build_tool_type": "C++",
+            "result": "file",
+            "result_name": "cpp_shared_library-dbg",
+            "build_directory": "./build-dbg",
+            "sources": "${../sources}",
+            "include_paths": [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "install",
+            "build_type": "install",
+            "build_subtype": "file",
+            "build_tool_type": "internal",
+            "dependencies": "${@}"
+        }
+    ],
+    "supported_builds": []
+}

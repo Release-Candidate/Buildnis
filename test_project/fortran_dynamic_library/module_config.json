@@ -1,0 +1,64 @@
+{
+    "file_name": "module_config",
+    "file_version": "1.0",
+    "name": "Fortran Shared Library",
+    "version": "${../version}",
+    "author": "${../author}",
+    "company": "${../company}",
+    "date": "27.02.2021",
+    "description": "Subproject to build a shared Fortran library to test the generation of a shared library using Fortran compilers.",
+    "copyright_info": "${../copyright_info}",
+    "web_url": "${../web_url}",
+    "email": "${../email}",
+    "sources": 
+    [
+        "*.f90"
+    ],   
+    "targets": 
+    [
+        {
+            "name": "f_shared_release",
+            "alias": "f_shared",            
+            "default": true,   
+            "build_type": "shared_library",
+            "build_subtype": "release",
+            "build_tool_type": "Fortran",
+            "result": "file",
+            "result_name": "fortran_shared_library",
+            "build_directory": "./build",
+            "sources": "${../sources}",
+            "include_paths": 
+            [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "f_shared_debug",
+            "alias": "f_shared-dbg",           
+            "build_type": "shared_library",
+            "build_subtype": "debug",
+            "build_tool_type": "Fortran",
+            "result": "file",
+            "result_name": "fortran_shared_library-dbg",
+            "build_directory": "./build-dbg",
+            "sources": "${../sources}",
+            "include_paths": [
+                "./"
+            ],
+            "library_paths": [],
+            "libraries": [],
+            "module_paths": []
+        },
+        {
+            "name": "install",
+            "build_type": "install",
+            "build_subtype": "file",
+            "build_tool_type": "internal",
+            "dependencies": "${@}"
+        }
+    ],
+    "supported_builds": []
+}

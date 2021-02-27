@@ -1,7 +1,7 @@
 {
     "file_name": "project_config",
     "file_version": "1.0",
-	"name": "PROJECT_NAME",
+    "name": "PROJECT_NAME",
     "version": "VERSION_STRING",
     "author": "PROJECT_AUTHORS_STRING",
     "company": "COMPANY_NAME",
@@ -11,15 +11,9 @@
     "web_url": "PROJECT_WEBSITE",
     "email": "MAINTAINER_EMAILS",
     "project_dependency_config": "PROJECT_DEPENDENCY_CONFIG",
-    "target": 
+    "modules": 
     [
-        {
-            "name": "TARGET1_NAME",
-            "module_file": "PATH1/module_config.json"
-        },
-        {
-            "name": "TARGET2_NAME",
-            "module_file": "PATH2/module_config.json"
-        }
+        "PATH1/module_config.json",
+        "PATH2/module_config.json"
     ]
-} 
+}
