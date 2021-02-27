@@ -1,0 +1,115 @@
+IndentWidth: 4
+UseTab: Never
+
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true #AcrossComments
+AlignConsecutiveBitFields: true #AcrossComments
+AlignConsecutiveDeclarations: false #None
+AlignConsecutiveMacros: true #AcrossComments
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: MultiLine
+# AttributeMacros:
+BinPackArguments: true
+BinPackParameters: true
+#BitFieldColonSpacing: None
+BreakBeforeBraces: Custom
+BraceWrapping:
+ AfterCaseLabel: true
+ AfterClass: true
+ #BraceWrappingAfterControlStatementStyle: Always
+ AfterControlStatement: Always
+ AfterEnum: true
+ AfterFunction: true
+ AfterNamespace: true
+ AfterObjCDeclaration: true
+ AfterStruct: true
+ AfterUnion: true
+ AfterExternBlock: true
+ BeforeCatch: true
+ BeforeElse: true
+ BeforeLambdaBody: true
+ BeforeWhile: true
+ IndentBraces: false
+ SplitEmptyFunction: false
+ SplitEmptyRecord: true
+ SplitEmptyNamespace: true
+BreakAfterJavaFieldAnnotations: false
+BreakBeforeBinaryOperators: NonAssignment
+#BreakBeforeConceptDeclarations: false
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakStringLiterals: true
+ColumnLimit: 80
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: true
+DeriveLineEnding: true
+DerivePointerAlignment: false
+#EmptyLineBeforeAccessModifier: LogicalBlock
+FixNamespaceComments: true
+IncludeBlocks: Merge
+# IncludeCategories:
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentExternBlock: NoIndent
+IndentGotoLabels: false
+IndentPPDirectives: AfterHash
+#IndentRequires: true
+IndentWrappedFunctionNames: false
+#InsertTrailingCommas: Wrapped
+JavaScriptQuotes: Double
+JavaScriptWrapImports: true
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+#ObjCBinPackProtocolList
+#ObjCBlockIndentWidth
+#ObjCBreakBeforeNestedBlockParam
+#ObjCSpaceAfterProperty
+#ObjCSpaceBeforeProtocolList
+PointerAlignment: Right
+ReflowComments: true
+SortIncludes: false
+#SortJavaStaticImport: Before
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+#SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+#SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 4
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: true
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+UseCRLF: false
+

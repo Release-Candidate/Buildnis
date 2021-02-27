@@ -4,5 +4,12 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"fortran.includePaths": 
+		[
+			"./test_project/fortran_executable",
+			"./test_project/fortran_static_library",
+			"./test_project/fortran_dynamic_library"
+		]
+	}
 }

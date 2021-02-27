@@ -136,3 +136,21 @@ local_test/**
 
 # OS X special files to ignore ...
 .DS_Store
+
+# ignore Visual Studio projects
+.vs/
+Release/
+x64/
+*.vcxproj*
+*.vfproj
+*.u2d
+*.sln
+
+# ignore generated files
+*.mod
+*.obj
+*.o
+*.lib
+*.exe
+*.dll
+*.exp
