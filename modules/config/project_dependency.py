@@ -276,8 +276,8 @@ class ProjectDependency:
 
                 output = runCommand(dep["install_cmd"],
                                     args=dep["install_arguments"])
-                self._logger(output.std_out)
-                self._logger(output.err_out)
+                self._logger.debug(output.std_out)
+                self._logger.debug(output.err_out)
 
             except Exception as excp:
                 self._logger.error("error \"{error}\" trying to install \"{name}\" using command \"{cmd}\" with args \"{args}\"".format(

@@ -4,15 +4,49 @@
     "dependencies":
     [
         {
-            "name": "DEPENDENCY_NAME",
-            "website_url": "WEBSITE_URL",
-            "download_url": "DOWNLOAD_URL",
-            "download_dir": "DOWNLOAD_PATH",
-            "install_cmd": "INSTALL_COMMAND",
-            "ok_if_exists": "FILE_PATH",
-            "ok_if_executable": "FILE_PATH",
-            "executable_argument": "EXE_ARG",
-            "executable_check_regex": "REGEX"
+            "name": "Doxygen",
+            "website_url": "https://www.doxygen.nl/index.html",
+            "download_url": "",
+            "download_dir": "",
+            "install_cmd": "",
+            "ok_if_exists": "",
+            "ok_if_executable": "%programFiles%\\doxygen\\bin\\Doxygen",
+            "executable_argument": "-v",
+            "executable_check_regex": "(\\S+) \\("
+        },
+        {
+            "name": "Sphinx",
+            "website_url": "https://www.sphinx-doc.org/en/master/usage/quickstart.html",
+            "download_url": "",
+            "download_dir": "",
+            "install_cmd": "pip install sphinx",
+            "ok_if_exists": "",
+            "ok_if_executable": "sphinx-build",
+            "executable_argument": "--version",
+            "executable_check_regex": "^\\S+ (.*)"
+        },
+        {
+            "name": "Sphinx Doc Setup",
+            "website_url": "https://www.sphinx-doc.org/en/master/usage/quickstart.html",
+            "download_url": "",
+            "download_dir": "",
+            "install_cmd": "sphinx-quickstart",
+            "install_arguments": 
+            [
+                "--project=${../name}",
+                "--author=${../author}",
+                "-v ${../version}",
+                "--release=${../version}",
+                "--language=en",
+                "--no-makefile",
+                "--no-batchfile",
+                "--no-sep",
+                ".\\doc"
+            ],
+            "ok_if_exists": ".\\doc\\index.rst",
+            "ok_if_executable": "",
+            "executable_argument": "",
+            "executable_check_regex": ""
         }
     ]
 }

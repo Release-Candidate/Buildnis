@@ -130,6 +130,7 @@ dmypy.json
 
 # ignore local tests
 local_test/**
+conf_out/**
 
 *_host_config.json
 *_build_tool_config.json
@@ -154,3 +155,6 @@ x64/
 *.exe
 *.dll
 *.exp
+
+
+
