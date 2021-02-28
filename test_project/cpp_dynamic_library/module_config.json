@@ -2,14 +2,14 @@
     "file_name": "module_config",
     "file_version": "1.0",
     "name": "C++ Shared Library",
-    "version": "${../version}",
-    "author": "${../author}",
-    "company": "${../company}",
+    "version": "${../../version}",
+    "author": "${../../author}",
+    "company": "${../../company}",
     "date": "27.02.2021",
     "description": "Subproject to build a shared C++ library to test the generation of a shared library using C++ compilers.",
-    "copyright_info": "${../copyright_info}",
-    "web_url": "${../web_url}",
-    "email": "${../email}",
+    "copyright_info": "${../../copyright_info}",
+    "web_url": "${../../web_url}",
+    "email": "${../../email}",
     "sources": 
     [
         "*.cpp"

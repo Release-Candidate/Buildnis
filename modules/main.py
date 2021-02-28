@@ -8,8 +8,9 @@
 ###############################################################################
 
 from __future__ import annotations
+from modules.helpers.files import checkIfIsFile
 
-try:    
+try:
     import sys
     from modules import EXT_ERR_IMP_MOD
     import os
@@ -48,83 +49,89 @@ def main():
     """
     commandline_args, logger = setCmdLineArgsLogger()
 
-    if commandline_args.conf_dir == "" or commandline_args.conf_dir == None:
-        project_cfg_dir = os.path.normpath(
-            os.path.dirname(commandline_args.project_config_file))
-    else:
-        project_cfg_dir = os.path.normpath(commandline_args.conf_dir)
+    project_cfg_dir = os.path.normpath(commandline_args.conf_dir)
 
     list_of_generated_files: List[FilePath] = []
 
-    # Always create host config JSON
+    # Always create host config
     host_cfg, host_cfg_filename = setUpHostCfg(
         list_of_generated_files, logger, project_cfg_dir)
 
-    (build_tools_filename_exists, build_tools_filename,
+    (host_cfg_filename_exists, host_cfg_filename,
+     build_tools_filename_exists, build_tools_filename,
      project_dep_filename_exists, project_dep_filename,
      project_config_filename_exists, project_config_filename) = setUpPaths(
-        project_cfg_dir, list_of_generated_files, host_cfg)
+        project_cfg_dir=project_cfg_dir, host_cfg_file=host_cfg_filename,
+        list_of_generated_files=list_of_generated_files, host_cfg=host_cfg)
 
-    if build_tools_filename_exists == False or commandline_args.do_configure == True:
-        check_buildtools = check_tools.Check(
-            os_name=host_cfg.os, arch=host_cfg.cpu_arch)
+    if not commandline_args.do_clean:
+        host_cfg.writeJSON(json_path=host_cfg_filename)
+        list_of_generated_files.append(host_cfg_filename)
 
-        check_buildtools.writeJSON(json_path=build_tools_filename)
-        if not build_tools_filename_exists:
-            list_of_generated_files.append(build_tools_filename)
-    else:
-        logger.warning("JSON file \"{path}\" already exists, not checking for build tool configurations".format(
-            path=build_tools_filename))
+        if not build_tools_filename_exists or commandline_args.do_configure == True:
+            check_buildtools = check_tools.Check(
+                os_name=host_cfg.os, arch=host_cfg.cpu_arch)
 
-    if project_config_filename_exists == False or commandline_args.do_configure == True:
-        cfg = json_config.Config(
-            project_config=commandline_args.project_config_file)
+            check_buildtools.writeJSON(json_path=build_tools_filename)
+            if not build_tools_filename_exists:
+                list_of_generated_files.append(build_tools_filename)
+        else:
+            logger.warning("JSON file \"{path}\" already exists, not checking for build tool configurations".format(
+                path=build_tools_filename))
 
+        if not project_config_filename_exists or commandline_args.do_configure == True:
+            cfg = json_config.Config(
+                project_config=commandline_args.project_config_file)
+
+            if not project_config_filename_exists:
+                list_of_generated_files.append(project_config_filename)
+        else:
+            cfg = json_config.Config(
+                project_config=project_config_filename)
+
+        cfg.project_dep_cfg = project_dependency.ProjectDependency(
+            cfg.project_cfg.project_dependency_config)
+
+        cfg.expandAllPlaceholders()
+
+        if not project_dep_filename_exists or commandline_args.do_configure == True:
+            cfg.checkDependencies(force_check=True)
+
+        else:
+            logger.warning("JSON file \"{path}\" already exists, not checking project dependencies".format(
+                path=project_dep_filename))
+            cfg.checkDependencies(force_check=False)
+
+        cfg.project_dep_cfg.writeJSON(project_dep_filename)
+
+        if not project_dep_filename_exists:
+            list_of_generated_files.append(project_dep_filename)
+
+        cfg.setBuildToolCfgPath(build_tools_filename)
+        cfg.setHostConfigPath(host_cfg_filename)
+        cfg.setProjDepCfgPath(project_dep_filename)
+
+        cfg.writeJSON(project_config_filename)
         if not project_config_filename_exists:
             list_of_generated_files.append(project_config_filename)
+
+        # print(cfg.project_cfg.__dict__)
+
+        # print("=======================================================")
+
+        # for module_key in cfg.module_cfgs:
+        #     print(module_key, cfg.module_cfgs[module_key].__dict__)
+        #     print("")
+
+        #     print("=======================================================")
+
+        #     for build_key in cfg.build_cfgs:
+        #         print(build_key, cfg.build_cfgs[build_key].__dict__)
+        #         print("")
+
     else:
-        cfg = json_config.Config(
-            project_config=project_config_filename)
-
-    cfg.setBuildToolCfgPath(build_tools_filename)
-    cfg.setHostConfigPath(host_cfg_filename)
-
-    project_dep_cfg = project_dependency.ProjectDependency(
-        cfg.project_cfg.project_dependency_config)
-
-    if project_dep_filename_exists == False or commandline_args.do_configure == True:
-
-        project_dep_cfg.checkDependencies(force_check=True)
-
-    else:
-        logger.warning("JSON file \"{path}\" already exists, not checking project dependencies".format(
-            path=project_dep_filename))
-        project_dep_cfg.checkDependencies(force_check=False)
-
-    project_dep_cfg.writeJSON(project_dep_filename)
-
-    if not project_dep_filename_exists:
-        list_of_generated_files.append(project_dep_filename)
-
-    cfg.setProjDepCfgPath(project_dep_filename)
-
-    cfg.writeJSON(project_config_filename)
-    if not project_config_filename_exists:
-        list_of_generated_files.append(project_config_filename)
-
-    # print(cfg.project_cfg.__dict__)
-
-    # print("=======================================================")
-
-    # for module_key in cfg.module_cfgs:
-    #     print(module_key, cfg.module_cfgs[module_key].__dict__)
-    #     print("")
-
-    #     print("=======================================================")
-
-    #     for build_key in cfg.build_cfgs:
-    #         print(build_key, cfg.build_cfgs[build_key].__dict__)
-    #         print("")
+        logger.warning(
+            "Not doing anything but deleting files, a \"clean\" argument (\"--clean\" or \"--distclean\") has been given!")
 
     #! WARNING: no more logging after this function!
     # Logger is shut down
@@ -135,11 +142,12 @@ def main():
 ################################################################################
 
 
-def setUpPaths(project_cfg_dir: FilePath, list_of_generated_files: List[FilePath], host_cfg: host_config.Host) -> Tuple[bool, FilePath, bool, FilePath, bool, FilePath]:
+def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_generated_files: List[FilePath], host_cfg: host_config.Host) -> Tuple[bool, FilePath, bool, FilePath, bool, FilePath, bool, FilePath]:
     """Helper: set up all pathnames of JSON files.
 
     Args:
-        project_cfg_dir (): The path to the directory the JSON files are generated in
+        project_cfg_dir (FilePath): The path to the directory the JSON files are generated in
+        host_cfg (FilePath): The path to the generated host configuration JSON file
         list_of_generated_files (List[FilePath]): List of generated JSON files
         host_cfg (host_config.Host): host configuration object instance
 
@@ -147,6 +155,15 @@ def setUpPaths(project_cfg_dir: FilePath, list_of_generated_files: List[FilePath
         Tuple[bool, FilePath, bool, FilePath, bool, FilePath]: the paths to the JSON 
             files and a bool that is `True` if the file already has been created.
     """
+    host_cfg_filename_exists = False
+
+    try:
+        if checkIfIsFile(host_cfg_file) == True:
+            list_of_generated_files.append(host_cfg_file)
+            host_cfg_filename_exists = True
+    except:
+        pass
+
     build_tools_filename_exists = False
 
     build_tools_filename = "/".join([project_cfg_dir, host_cfg.host_name])
@@ -156,7 +173,7 @@ def setUpPaths(project_cfg_dir: FilePath, list_of_generated_files: List[FilePath
     build_tools_filename = os.path.normpath(build_tools_filename)
 
     try:
-        if pathlib.Path(build_tools_filename).is_file():
+        if checkIfIsFile(build_tools_filename) == True:
             list_of_generated_files.append(build_tools_filename)
             build_tools_filename_exists = True
     except:
@@ -171,7 +188,7 @@ def setUpPaths(project_cfg_dir: FilePath, list_of_generated_files: List[FilePath
     project_dep_filename = os.path.normpath(project_dep_filename)
 
     try:
-        if pathlib.Path(project_dep_filename).is_file():
+        if checkIfIsFile(project_dep_filename) == True:
             list_of_generated_files.append(project_dep_filename)
             project_dep_filename_exists = True
     except:
@@ -186,13 +203,14 @@ def setUpPaths(project_cfg_dir: FilePath, list_of_generated_files: List[FilePath
     project_config_filename = os.path.normpath(project_config_filename)
 
     try:
-        if pathlib.Path(project_config_filename).is_file():
+        if checkIfIsFile(project_config_filename) == True:
             list_of_generated_files.append(project_config_filename)
             project_config_filename_exists = True
     except:
         pass
 
-    return (build_tools_filename_exists, build_tools_filename,
+    return (host_cfg_filename_exists, host_cfg_file,
+            build_tools_filename_exists, build_tools_filename,
             project_dep_filename_exists, project_dep_filename,
             project_config_filename_exists, project_config_filename)
 
@@ -253,10 +271,6 @@ def setUpHostCfg(list_of_generated_files: List[FilePath], logger: logging.Logger
     host_cfg_filename = "_".join([host_cfg_filename, HOST_FILE_NAME])
     host_cfg_filename = ".".join([host_cfg_filename, "json"])
     host_cfg_filename = os.path.normpath(host_cfg_filename)
-
-    host_cfg.writeJSON(json_path=host_cfg_filename)
-
-    list_of_generated_files.append(host_cfg_filename)
 
     logger.debug("Host config: \"\"\"{cfg}\"\"\"".format(cfg=host_cfg))
 

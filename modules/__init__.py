@@ -6,7 +6,7 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
-__all__ = ["config", "helpers", "VERSION", "main"]
+__all__ = ["config", "helpers", "VERSION", "main", "config_parser"]
 
 
 class BuildnisException(Exception):

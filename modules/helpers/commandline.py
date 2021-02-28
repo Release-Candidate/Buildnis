@@ -7,6 +7,7 @@
 ###############################################################################
 
 import logging
+import os
 from modules.helpers.files import checkIfIsDir, makeDirIfNotExists
 from modules import EXT_ERR_LD_FILE, VERSION
 from modules.config import DEFAULT_CONFIG_FILE, FilePath
@@ -266,6 +267,9 @@ def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: obj
     else:
         ret_val.do_install = True
 
+    if ret_val.conf_dir == None:
+        ret_val.conf_dir = ""
+
     if ret_val.do_configure == False and ret_val.do_build == False and ret_val.do_install == False:
         ret_val.do_check_what_to_do = True
 
@@ -274,12 +278,16 @@ def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: obj
         cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: configuration file \"{config}\" not found or is not a file!"
                              .format(config=ret_val.project_config_file))
 
+    
     try:
+        working_dir = os.path.dirname(ret_val.project_config_file)
+        ret_val.conf_dir = "/".join(
+                [os.path.abspath(working_dir), ret_val.conf_dir])
         makeDirIfNotExists(ret_val.conf_dir)
     except Exception as excp:
         cmd_line_parser.print_help(file=sys.stderr)
         cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: \"{error}\" configuration directory \"{path}\" could not be generated or not a directory!"
-                             .format(error=excp,path=ret_val.conf_dir))
+                            .format(error=excp,path=ret_val.conf_dir))
 
 
     return ret_val

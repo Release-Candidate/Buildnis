@@ -33,17 +33,17 @@
             "install_cmd": "sphinx-quickstart",
             "install_arguments": 
             [
-                "--project=${../name}",
-                "--author=${../author}",
-                "-v ${../version}",
-                "--release=${../version}",
+                "--project='${../../../name}'",
+                "--author='${../../../author}'",
+                "-v '${../../../version}'",
+                "--release='${../../../version}'",
                 "--language=en",
                 "--no-makefile",
                 "--no-batchfile",
                 "--no-sep",
-                ".\\doc"
+                "${PROJECT_ROOT}\\doc"
             ],
-            "ok_if_exists": ".\\doc\\index.rst",
+            "ok_if_exists": "${PROJECT_ROOT}\\doc\\index.rst",
             "ok_if_executable": "",
             "executable_argument": "",
             "executable_check_regex": ""
