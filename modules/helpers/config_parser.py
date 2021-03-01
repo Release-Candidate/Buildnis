@@ -6,40 +6,196 @@
 # Date:     28.Feb.2021
 ###############################################################################
 
+from modules.config import config_values
 import re
 from logging import Logger
-from types import SimpleNamespace
 from modules.helpers.files import FileCompare
 from typing import List
 
 # regexes to use
 
 project_root_regex = re.compile("\$\{(PROJECT_ROOT)\}")
+"""Regex to find the placeholder `${PROJECT_ROOT}`.
+"""
+
+project_name_regex = re.compile("\$\{(PROJECT_NAME)\}")
+"""Regex to find the placeholder `${PROJECT_NAME}`.
+"""
+
+project_version_regex = re.compile("\$\{(PROJECT_VERSION)\}")
+"""Regex to find the placeholder `${PROJECT_VERSION}`.
+"""
+
+project_author_regex = re.compile("\$\{(PROJECT_AUTHOR)\}")
+"""Regex to find the placeholder `${PROJECT_AUTHOR}`.
+"""
+
+project_company_regex = re.compile("\$\{(PROJECT_COMPANY)\}")
+"""Regex to find the placeholder `${PROJECT_COMPANY}`.
+"""
+
+project_copyright_info_regex = re.compile("\$\{(PROJECT_COPYRIGHT_INFO)\}")
+"""Regex to find the placeholder `${PROJECT_COPYRIGHT_INFO}`.
+"""
+
+project_web_url_regex = re.compile("\$\{(PROJECT_WEB_URL)\}")
+"""Regex to find the placeholder `${PROJECT_WEB_URL}`.
+"""
+
+project_email_regex = re.compile("\$\{(PROJECT_EMAIL)\}")
+"""Regex to find the placeholder `${PROJECT_EMAIL}`.
+"""
+
+project_cfg_dir_regex = re.compile("\$\{(PROJECT_CONFIG_DIR_PATH)\}")
+"""Regex to find the placeholder `${PROJECT_CONFIG_DIR_PATH}`.
+"""
+
+host_os_regex = re.compile("\$\{(HOST_OS)\}")
+"""Regex to find the placeholder `${HOST_OS}`.
+"""
+
+host_name_regex = re.compile("\$\{(HOST_NAME)\}")
+"""Regex to find the placeholder `${HOST_NAME}`.
+"""
+
+host_cpu_arch_regex = re.compile("\$\{(HOST_CPU_ARCH)\}")
+"""Regex to find the placeholder `${HOST_CPU_ARCH}`.
+"""
+
+host_num_cores_regex = re.compile("\$\{(HOST_NUM_CORES)\}")
+"""Regex to find the placeholder `${HOST_NUM_CORES}`.
+"""
+
+host_num_log_cores_regex = re.compile("\$\{(HOST_NUM_LOG_CORES)\}")
+"""Regex to find the placeholder `${HOST_NUM_LOG_CORES}`.
+"""
+
 placeholder_regex = re.compile("\$\{(.*)\}")
+"""Regex to find general placefolders, of the form `${STRING}`, where string
+is to be substituted for a value of another configuration item.
+"""
+
 
 ############################################################################
-def expandItem(item: str, parents: List[object]) -> object:
-    """Parses the given item, if it contains a placeholder, that placeholder 
-        is expanded. If the item doesn't contain a placeholder, the item's 
-        unaltered string is returned.
+def replaceConstants(item: str) -> str:
+    """Replaces all known constants defined in `config_values.py` in the given string.
 
-        Args:
-            item (str): The item to parse and expand its placeholder
-            parents (List[object]): The parents of the item to search for 
-                                    the placeholder's content.
+    These are placeholders like `${PROJECT_ROOT}`, `${PROJECT_NAME}`, ...
 
-        Returns:
-            object: The expanded string if the item contained a placeholder, the
-                 original string else. Ig the placeholder points to another 
-                 object, that is not a string, this object is returned.
+    Args:
+        item (str): The string to parse for known constants.
+
+    Returns:
+        str: The substitution if a placeholder has been found, the unaltered
+                string else.
     """
     ret_val = item
 
     result = project_root_regex.search(item)
-    if result:
-        ret_val = project_root_regex.sub("REPLACED_PROJECT_ROOT", item)
+    if result:      
+        ret_val = project_root_regex.sub(
+            config_values.PROJECT_ROOT.replace("\\", "\\\\"), item)
         return ret_val
-   
+
+    result = project_name_regex.search(item)
+    if result:
+        ret_val = project_name_regex.sub(
+            config_values.PROJECT_NAME.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = project_version_regex.search(item)
+    if result:
+        ret_val = project_version_regex.sub(
+            config_values.PROJECT_VERSION.replace("\\", "\\\\"), item)
+        return ret_val
+
+    result = project_author_regex.search(item)
+    if result:
+        ret_val = project_author_regex.sub(
+            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = project_company_regex.search(item)
+    if result:
+        ret_val = project_company_regex.sub(
+            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = project_copyright_info_regex.search(item)
+    if result:
+        ret_val = project_copyright_info_regex.sub(
+            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = project_web_url_regex.search(item)
+    if result:
+        ret_val = project_web_url_regex.sub(
+            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = project_email_regex.search(item)
+    if result:
+        ret_val = project_email_regex.sub(
+            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), item)
+        return ret_val
+
+    result = project_cfg_dir_regex.search(item)
+    if result:
+        ret_val = project_cfg_dir_regex.sub(
+            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = host_os_regex.search(item)
+    if result:
+        ret_val = host_os_regex.sub(
+            config_values.HOST_OS.replace("\\", "\\\\"), item)
+        return ret_val
+
+    result = host_name_regex.search(item)
+    if result:
+        ret_val = host_name_regex.sub(
+            config_values.HOST_NAME.replace("\\", "\\\\"), item)
+        return ret_val
+
+    result = host_cpu_arch_regex.search(item)
+    if result:
+        ret_val = host_cpu_arch_regex.sub(
+            config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), item)
+        return ret_val
+    
+    result = host_num_cores_regex.search(item)
+    if result:
+        ret_val = host_num_cores_regex.sub(
+            config_values.HOST_NUM_CORES.replace("\\", "\\\\"), item)
+        return ret_val
+
+    result = host_num_log_cores_regex.search(item)
+    if result:
+        ret_val = host_num_log_cores_regex.sub(
+            config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), item)
+        return ret_val
+
+    return ret_val
+
+
+############################################################################
+def expandItem(item: str, parents: List[object]) -> object:
+    """Parses the given item, if it contains a placeholder, that placeholder
+        is expanded. If the item doesn't contain a placeholder, the item's
+        unaltered string is returned.
+
+        Args:
+            item (str): The item to parse and expand its placeholder
+            parents (List[object]): The parents of the item to search for
+                                    the placeholder's content.
+
+        Returns:
+            object: The expanded string if the item contained a placeholder, the
+                 original string else. If the placeholder points to another
+                 object that is not a string, this object is returned.
+    """
+    ret_val = replaceConstants(item)
+
     result = placeholder_regex.search(item)
     parent_to_use_id = 0
     if result:
@@ -48,17 +204,14 @@ def expandItem(item: str, parents: List[object]) -> object:
         parent_regex = re.compile("(\.\./)")
 
         result = parent_regex.match(placeholder)
-        while result  != None:
-            #print("Found ../")
+        while result != None:
             placeholder = placeholder.removeprefix("../")
-            #print(placeholder)
             result = parent_regex.match(placeholder)
             parent_to_use_id -= 1
-            #print("Parent id {id}".format(id=parent_to_use_id))
 
         try:
-            parent = parents[parent_to_use_id]          
-                      
+            parent = parents[parent_to_use_id]
+
             substitute = parent[placeholder]
             print("Replace {ph} with: {elem}".format(
                 ph=placeholder, elem=substitute))
@@ -67,7 +220,7 @@ def expandItem(item: str, parents: List[object]) -> object:
                 substitute = getattr(parent, placeholder)
                 print("Replace {ph} with: {elem}, class".format(ph=placeholder,
                                                                 elem=substitute))
-            except: 
+            except:
                 return ret_val
 
         if isinstance(substitute, str):
@@ -87,46 +240,43 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
 
     Args:
         element (object): The configuration element to parse and expand.
-        parent (List[object], optional): The parent and the parent's parent and it's 
+        parent (List[object], optional): The parent and the parent's parent and it's
         parent as a list, starting with the parent as first element. Defaults to None.
 
     Returns:
 
         object: The parsed and expanded object.
     """
-    print("parseConfigElement: {element}, parents: {parents}".format(element=element.__class__, parents=len(parents)))
+    print("parseConfigElement: {element}, parents: {parents}".format(
+        element=element.__class__, parents=len(parents)))
     local_parents = parents.copy()
     if isinstance(element, list):
-        tmp_list = []        
-        for subitem in element:           
-            local_parents = parents.copy()           
+        tmp_list = []
+        for subitem in element:
+            local_parents = parents.copy()
 
-            if hasattr(subitem, "__dict__"):               
-                #print("Is item of list with __dict__: {element}".format(element=subitem))
+            if hasattr(subitem, "__dict__"):
                 tmp_list.append(parseConfigElement(subitem, local_parents))
 
             elif isinstance(subitem, dict):
                 local_parents.append(element)
-               # print("Is item of list , dict: {element}".format(
-                #    element=subitem))
-                for key in subitem:                    
+                for key in subitem:
                     subitem[key] = parseConfigElement(
                         subitem[key], local_parents)
 
                 tmp_list.append(subitem)
             else:
-                #print("Is item of list: {element}".format(element=subitem))
                 if isinstance(subitem, str):
                     tmp_list.append(expandItem(subitem, local_parents))
                 else:
                     tmp_list.append(subitem)
-        return tmp_list    
-                
+        return tmp_list
 
     elif hasattr(element, "__dict__"):
-        local_parents = parents.copy()               
-        for key in element.__dict__:          
-            element.__dict__[key] = parseConfigElement(element.__dict__[key], local_parents)
+        local_parents = parents.copy()
+        for key in element.__dict__:
+            element.__dict__[key] = parseConfigElement(
+                element.__dict__[key], local_parents)
         return element
 
     elif isinstance(element, FileCompare):
@@ -138,7 +288,4 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
     elif isinstance(element, str):
         return expandItem(element, local_parents)
     else:
-        #print("Is item: {element}".format(element=element))
         return element
-
-   

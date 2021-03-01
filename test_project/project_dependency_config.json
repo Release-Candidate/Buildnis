@@ -41,9 +41,9 @@
                 "--no-makefile",
                 "--no-batchfile",
                 "--no-sep",
-                "${PROJECT_ROOT}\\doc"
+                "${PROJECT_ROOT}\\doc\\sphinx"
             ],
-            "ok_if_exists": "${PROJECT_ROOT}\\doc\\index.rst",
+            "ok_if_exists": "${PROJECT_ROOT}\\doc\\sphinx",
             "ok_if_executable": "",
             "executable_argument": "",
             "executable_check_regex": ""

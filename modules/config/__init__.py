@@ -11,7 +11,8 @@ __all__ = ["Config", "Host", "Check", "ProgramDependency",
            "BUILD_FILE_NAME", "HOST_FILE_NAME", "BUILD_TOOL_CONFIG_NAME", 
            "CFG_VERSION", "DEFAULT_CONFIG_FILE", "CONFIGURE_SCRIPTS_PATH",
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", 
-           "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT"]
+           "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT",
+           "config_values"]
 
 import collections
 from typing import NamedTuple

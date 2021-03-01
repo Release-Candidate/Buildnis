@@ -8,6 +8,7 @@
 ###############################################################################
 
 from __future__ import annotations
+from modules.config import config_values
 from modules.helpers.files import checkIfIsFile
 
 try:
@@ -26,7 +27,7 @@ try:
     from modules.config import PROJECT_FILE_NAME
     from modules.helpers.logging import getProgramLogger
     from modules.config import project_dependency
-    from modules.helpers.commandline import parseCommandLine
+    from modules.helpers.commandline import parseCommandLine  
     import modules.config.config as json_config
     import modules.config.host as host_config
     import modules.config.check as check_tools
@@ -51,22 +52,20 @@ def main():
 
     project_cfg_dir = os.path.normpath(commandline_args.conf_dir)
 
-    list_of_generated_files: List[FilePath] = []
-
     # Always create host config
     host_cfg, host_cfg_filename = setUpHostCfg(
-        list_of_generated_files, logger, project_cfg_dir)
+        config_values.g_list_of_generated_files, logger, project_cfg_dir)
 
     (host_cfg_filename_exists, host_cfg_filename,
      build_tools_filename_exists, build_tools_filename,
      project_dep_filename_exists, project_dep_filename,
      project_config_filename_exists, project_config_filename) = setUpPaths(
         project_cfg_dir=project_cfg_dir, host_cfg_file=host_cfg_filename,
-        list_of_generated_files=list_of_generated_files, host_cfg=host_cfg)
+        list_of_generated_files=config_values.g_list_of_generated_files, host_cfg=host_cfg)
 
     if not commandline_args.do_clean:
         host_cfg.writeJSON(json_path=host_cfg_filename)
-        list_of_generated_files.append(host_cfg_filename)
+        config_values.g_list_of_generated_files.append(host_cfg_filename)
 
         if not build_tools_filename_exists or commandline_args.do_configure == True:
             check_buildtools = check_tools.Check(
@@ -74,7 +73,8 @@ def main():
 
             check_buildtools.writeJSON(json_path=build_tools_filename)
             if not build_tools_filename_exists:
-                list_of_generated_files.append(build_tools_filename)
+                config_values.g_list_of_generated_files.append(
+                    build_tools_filename)
         else:
             logger.warning("JSON file \"{path}\" already exists, not checking for build tool configurations".format(
                 path=build_tools_filename))
@@ -84,7 +84,8 @@ def main():
                 project_config=commandline_args.project_config_file)
 
             if not project_config_filename_exists:
-                list_of_generated_files.append(project_config_filename)
+                config_values.g_list_of_generated_files.append(
+                    project_config_filename)
         else:
             cfg = json_config.Config(
                 project_config=project_config_filename)
@@ -105,7 +106,8 @@ def main():
         cfg.project_dep_cfg.writeJSON(project_dep_filename)
 
         if not project_dep_filename_exists:
-            list_of_generated_files.append(project_dep_filename)
+            config_values.g_list_of_generated_files.append(
+                project_dep_filename)
 
         cfg.setBuildToolCfgPath(build_tools_filename)
         cfg.setHostConfigPath(host_cfg_filename)
@@ -113,7 +115,8 @@ def main():
 
         cfg.writeJSON(project_config_filename)
         if not project_config_filename_exists:
-            list_of_generated_files.append(project_config_filename)
+            config_values.g_list_of_generated_files.append(
+                project_config_filename)
 
         # print(cfg.project_cfg.__dict__)
 
@@ -135,7 +138,8 @@ def main():
 
     #! WARNING: no more logging after this function!
     # Logger is shut down
-    doDistClean(commandline_args, logger, list_of_generated_files)
+    doDistClean(commandline_args, logger,
+                config_values.g_list_of_generated_files)
 
     sys.exit(EXT_OK)
 

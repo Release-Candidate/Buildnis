@@ -9,12 +9,14 @@
 from __future__ import annotations
 
 import logging
+import modules
 from modules.helpers.config_parser import parseConfigElement
 from modules.helpers.json import getJSONDict, readJSON, writeJSON
 from modules.helpers import LOGGER_NAME
 import os
 import pprint
-from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, project_dependency
+from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, config_values, project_dependency
+
 
 # TODO add protocols for config classes
 
@@ -67,7 +69,20 @@ class Config:
 
         self.project_cfg_dir = os.path.abspath(
             os.path.dirname(self.config_path))
-
+        
+        config_values.PROJECT_CONFIG_DIR_PATH = self.project_cfg_dir
+        config_values.PROJECT_NAME = self.project_cfg.name        
+        config_values.PROJECT_VERSION = self.project_cfg.version       
+        config_values.PROJECT_AUTHOR = self.project_cfg.author       
+        config_values.PROJECT_COMPANY = self.project_cfg.company        
+        config_values.PROJECT_COPYRIGHT_INFO = self.project_cfg.copyright_info       
+        config_values.PROJECT_WEB_URL = self.project_cfg.web_url        
+        config_values.PROJECT_EMAIL = self.project_cfg.email       
+        print("PRoject root {root}".format(root=config_values.PROJECT_ROOT))
+        config_values.PROJECT_ROOT = os.path.abspath(
+            os.path.dirname(self.config_path))
+        print("PRoject root {root}".format(root=config_values.PROJECT_ROOT))
+        
         self.module_cfgs = dict()
 
         self.build_cfgs = dict()

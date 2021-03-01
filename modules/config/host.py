@@ -16,7 +16,7 @@ import platform
 import pprint
 import logging
 from modules.helpers import LOGGER_NAME
-from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING
+from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
 
 class Host:
     """Holds all information about the host this is running on.
@@ -87,6 +87,13 @@ class Host:
             self._logger.error(
                 "You can add support of this OS to the file \"modules\config\host.py\"")
             self._logger.error("")
+
+        # set global constants       
+        config_values.HOST_OS = self.os       
+        config_values.HOST_CPU_ARCH = self.cpu_arch        
+        config_values.HOST_NAME = self.host_name        
+        config_values.HOST_NUM_CORES = self.num_cores        
+        config_values.HOST_NUM_LOG_CORES = self.num_logical_cores
 
     ###########################################################################
     def __repr__(self) -> str:
