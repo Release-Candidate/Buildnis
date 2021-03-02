@@ -32,7 +32,7 @@ class ConfigDirJson:
 
         writeJSON: Writes the configuration directory configuration to a JSON 
                     file with path `file_name`.
-    """   
+    """
 
     ############################################################################
     def __init__(self, file_name: FilePath, working_dir: FilePath, cfg_path: FilePath = "") -> None:
@@ -75,7 +75,6 @@ class ConfigDirJson:
                 error=excp, path=cfg_path))
 
     ############################################################################
-
     def writeJSON(self) -> None:
         """Writes the path to the project config directory to a JSON file with 
         the given path `json_path`.      
