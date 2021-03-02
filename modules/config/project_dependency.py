@@ -9,10 +9,11 @@
 from __future__ import annotations
 from modules.helpers.web import doDownload
 from modules.helpers.execute import doesExecutableWork, runCommand
-from modules.helpers.json import readJSON, writeJSON
+from modules.helpers.json import getJSONDict, readJSON, writeJSON
 
 from modules.helpers import LOGGER_NAME
 import os
+import pprint
 import logging
 import pathlib
 import datetime
@@ -323,5 +324,14 @@ class ProjectDependency:
         Args:
             json_path (FilePath): the path to the file to write the JSON to
         """       
-        writeJSON(self.dependency_cfg.__dict__, json_path=json_path, 
+        writeJSON(getJSONDict(self.dependency_cfg), json_path=json_path, 
             file_text="project dependencies", conf_file_name=PROJECT_DEP_FILE_NAME)
+
+    ###########################################################################
+    def __repr__(self) -> str:
+        """Returns a string representing the object.
+
+        Returns:
+            str: A strings representation of the objects data
+        """
+        return pprint.pformat(getJSONDict(self.dependency_cfg), indent=4, sort_dicts=False)

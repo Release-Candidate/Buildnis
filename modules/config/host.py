@@ -102,18 +102,7 @@ class Host:
         Returns:
             str: A strings representation of the objects data
         """
-        return pprint.pformat(vars(self))
-
-    ############################################################################
-    def returnJSONComp(self) -> dict:
-        """Returns a JSON compatible version of `self.__dict__`.
-
-        Copies `self.__dict__` except for the `_logger` attribute.
-
-        Returns:
-            dict: a JSON compatible version of `self.__dict__`
-        """
-        return getJSONDict(self)
+        return pprint.pformat(getJSONDict(self), indent=4, sort_dicts=False)   
 
 
     ###########################################################################
@@ -123,7 +112,7 @@ class Host:
         Args:
             json_path (str):  the path to write the json file to
         """      
-        writeJSON(self.returnJSONComp(), json_path=json_path, 
+        writeJSON(getJSONDict(self), json_path=json_path,
                 file_text="host", conf_file_name=HOST_FILE_NAME)
 
     #############################################################################  

@@ -33,10 +33,10 @@
             "install_cmd": "sphinx-quickstart",
             "install_arguments": 
             [
-                "--project='${../../../name}'",
-                "--author='${../../../author}'",
-                "-v '${../../../version}'",
-                "--release='${../../../version}'",
+                "--project='${../../../../../name}'",
+                "--author='${PROJECT_AUTHOR}'",
+                "-v '${../../../../../version}'",
+                "--release='${PROJECT_VERSION}'",
                 "--language=en",
                 "--no-makefile",
                 "--no-batchfile",

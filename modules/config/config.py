@@ -69,18 +69,18 @@ class Config:
 
         self.project_cfg_dir = os.path.abspath(
             os.path.dirname(self.config_path))
-        
+
         config_values.PROJECT_CONFIG_DIR_PATH = self.project_cfg_dir
-        config_values.PROJECT_NAME = self.project_cfg.name        
-        config_values.PROJECT_VERSION = self.project_cfg.version       
-        config_values.PROJECT_AUTHOR = self.project_cfg.author       
-        config_values.PROJECT_COMPANY = self.project_cfg.company        
-        config_values.PROJECT_COPYRIGHT_INFO = self.project_cfg.copyright_info       
-        config_values.PROJECT_WEB_URL = self.project_cfg.web_url        
-        config_values.PROJECT_EMAIL = self.project_cfg.email    
+        config_values.PROJECT_NAME = self.project_cfg.name
+        config_values.PROJECT_VERSION = self.project_cfg.version
+        config_values.PROJECT_AUTHOR = self.project_cfg.author
+        config_values.PROJECT_COMPANY = self.project_cfg.company
+        config_values.PROJECT_COPYRIGHT_INFO = self.project_cfg.copyright_info
+        config_values.PROJECT_WEB_URL = self.project_cfg.web_url
+        config_values.PROJECT_EMAIL = self.project_cfg.email
         config_values.PROJECT_ROOT = os.path.abspath(
-            os.path.dirname(self.config_path))      
-        
+            os.path.dirname(self.config_path))
+
         self.module_cfgs = dict()
 
         self.build_cfgs = dict()
@@ -147,21 +147,11 @@ class Config:
         Args:
             json_path (str):  the path to write the json file to
         """
-        writeJSON(self.returnJSONComp(), json_path=json_path,
+        writeJSON(getJSONDict(self.project_cfg), json_path=json_path,
                   file_text="project", conf_file_name=PROJECT_FILE_NAME)
 
     ###########################################################################
-    def returnJSONComp(self) -> dict:
-        """Returns a JSON compatible version of `self.project_cfg`.
 
-        Returns:
-            dict: a JSON compatible version of `self.project_cfg`
-        """
-        ret_val = getJSONDict(self.project_cfg)
-
-        return ret_val
-
-    ###########################################################################
     def setHostConfigPath(self, path: FilePath) -> None:
         """Sets the path to the generated host config JSON file.
 
@@ -228,7 +218,6 @@ class Config:
             element=self.project_dep_cfg.dependency_cfg, parents=[self.project_cfg, self.project_dep_cfg.dependency_cfg])
 
     ###########################################################################
-
     def checkDependencies(self, force_check: bool = False) -> None:
         """Calls the `checkDependencies` method of the project dependency 
         configuration.
@@ -248,4 +237,4 @@ class Config:
         Returns:
             str: A strings representation of the objects data
         """
-        return pprint.pformat(vars(self))
+        return pprint.pformat(getJSONDict(self.project_cfg), indent=4, sort_dicts=False)

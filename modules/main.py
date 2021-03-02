@@ -9,12 +9,12 @@
 
 from __future__ import annotations
 from modules.config import CFG_DIR_NAME
-
+from modules import EXT_ERR_IMP_MOD
 
 try:
     import sys
-    from modules import EXT_ERR_IMP_MOD
     import os
+    import pprint
     import logging
     import pathlib
     from typing import List, Tuple
@@ -81,6 +81,10 @@ def main():
             if not build_tools_filename_exists:
                 config_values.g_list_of_generated_files.append(
                     build_tools_filename)
+
+            logger.debug("Build tool config: \"\"\"{cfg}\"\"\"".format(
+                cfg=check_buildtools))
+
         else:
             logger.warning("JSON file \"{path}\" already exists, not checking for build tool configurations".format(
                 path=build_tools_filename))
@@ -99,7 +103,7 @@ def main():
         cfg.project_dep_cfg = project_dependency.ProjectDependency(
             cfg.project_cfg.project_dependency_config)
 
-        cfg.expandAllPlaceholders()
+        cfg.expandAllPlaceholders()        
 
         if not project_dep_filename_exists or commandline_args.do_configure == True:
             cfg.checkDependencies(force_check=True)
@@ -110,6 +114,11 @@ def main():
             cfg.checkDependencies(force_check=False)
 
         cfg.project_dep_cfg.writeJSON(project_dep_filename)
+        
+        logger.debug("Project config: \"\"\"{cfg}\"\"\"".format(
+            cfg=cfg))
+        logger.debug("Project dependency config: \"\"\"{cfg}\"\"\"".format(
+            cfg=cfg.project_dep_cfg))
 
         if not project_dep_filename_exists:
             config_values.g_list_of_generated_files.append(
@@ -126,20 +135,6 @@ def main():
 
         config_dir_config.writeJSON()
 
-        # print(cfg.project_cfg.__dict__)
-
-        # print("=======================================================")
-
-        # for module_key in cfg.module_cfgs:
-        #     print(module_key, cfg.module_cfgs[module_key].__dict__)
-        #     print("")
-
-        #     print("=======================================================")
-
-        #     for build_key in cfg.build_cfgs:
-        #         print(build_key, cfg.build_cfgs[build_key].__dict__)
-        #         print("")
-
     else:
         logger.warning(
             "Not doing anything but deleting files, a \"clean\" argument (\"--clean\" or \"--distclean\") has been given!")
@@ -152,6 +147,7 @@ def main():
     sys.exit(EXT_OK)
 
 ################################################################################
+
 
 def setUpConfDir(commandline_args, logger, project_cfg_dir):
     working_dir = os.path.abspath(os.path.dirname(
@@ -327,8 +323,10 @@ def setCmdLineArgsLogger() -> Tuple[object, logging.Logger]:
     logger = getProgramLogger(
         commandline_args.log_level, commandline_args.log_file)
 
+    pretty_args = pprint.pformat(
+        commandline_args.__dict__, indent=4, sort_dicts=False)
     logger.debug("Commandline arguments: \"{args}\"".format(
-        args=commandline_args.__dict__))
+        args=pretty_args))
 
     logger.info("Setting log level to \"{lvl}\"".format(
         lvl=logging.getLevelName(commandline_args.log_level)))
