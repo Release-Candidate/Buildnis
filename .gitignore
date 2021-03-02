@@ -157,4 +157,6 @@ x64/
 *.exp
 
 
+# ignore sphinx generated files
+**/doc/sphinx/
 
