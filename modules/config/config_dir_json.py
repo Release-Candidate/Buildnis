@@ -18,8 +18,21 @@ from modules.config import CFG_DIR_NAME, FilePath
 
 
 class ConfigDirJson:
-    
-   
+    """Class to handle the configuration of the directory all generated 
+    configuration files are written to.
+
+    Attributes:
+
+        file_name (FilePath):  The path to the JSON configuration file
+        cfg_path (FilePath): The directory to save generated configurations to
+        _logger (logging.Logger): Logger instance to log messages to `stdout` 
+                                    or file
+
+    Methods:
+
+        writeJSON: Writes the configuration directory configuration to a JSON 
+                    file with path `file_name`.
+    """   
 
     ############################################################################
     def __init__(self, file_name: FilePath, working_dir: FilePath, cfg_path: FilePath = "") -> None:
