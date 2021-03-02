@@ -134,6 +134,7 @@ conf_out/**
 
 *_host_config.json
 *_build_tool_config.json
+cfg_dir_config.json
 
 # OS X special files to ignore ...
 .DS_Store
@@ -159,4 +160,5 @@ x64/
 
 # ignore sphinx generated files
 **/doc/sphinx/
+
 

@@ -8,11 +8,11 @@
 
 __all__ = ["Config", "Host", "Check", "ProgramDependency", 
            "PROJECT_FILE_NAME", "PROGRAM_DEP_FILE_NAME", "MODULE_FILE_NAME", 
-           "BUILD_FILE_NAME", "HOST_FILE_NAME", "BUILD_TOOL_CONFIG_NAME", 
+           "BUILD_FILE_NAME", "HOST_FILE_NAME", "BUILD_TOOL_CONFIG_NAME", "CFG_DIR_NAME"
            "CFG_VERSION", "DEFAULT_CONFIG_FILE", "CONFIGURE_SCRIPTS_PATH",
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", 
            "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT",
-           "config_values"]
+           "config_values", "ConfigDirJson"]
 
 import collections
 from typing import NamedTuple
@@ -71,6 +71,8 @@ PROJECT_FILE_NAME = "project_config"
 MODULE_FILE_NAME = "module_config"
 
 BUILD_FILE_NAME = "build_config"
+
+CFG_DIR_NAME = "cfg_dir_config"
 
 HOST_FILE_NAME = "host_config"
 

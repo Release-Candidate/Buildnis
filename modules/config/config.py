@@ -77,11 +77,9 @@ class Config:
         config_values.PROJECT_COMPANY = self.project_cfg.company        
         config_values.PROJECT_COPYRIGHT_INFO = self.project_cfg.copyright_info       
         config_values.PROJECT_WEB_URL = self.project_cfg.web_url        
-        config_values.PROJECT_EMAIL = self.project_cfg.email       
-        print("PRoject root {root}".format(root=config_values.PROJECT_ROOT))
+        config_values.PROJECT_EMAIL = self.project_cfg.email    
         config_values.PROJECT_ROOT = os.path.abspath(
-            os.path.dirname(self.config_path))
-        print("PRoject root {root}".format(root=config_values.PROJECT_ROOT))
+            os.path.dirname(self.config_path))      
         
         self.module_cfgs = dict()
 

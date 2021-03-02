@@ -250,7 +250,7 @@ def expandItem(item: str, parents: List[object]) -> object:
     result = placeholder_regex.search(item)
     parent_to_use_id = 0
     if result:
-        print("Found Placeholder: {place}".format(place=result.group(1)))
+        #print("Found Placeholder: {place}".format(place=result.group(1)))
         placeholder = result.group(1)
         parent_regex = re.compile("(\.\./)")
 
@@ -264,13 +264,13 @@ def expandItem(item: str, parents: List[object]) -> object:
             parent = parents[parent_to_use_id]
 
             substitute = parent[placeholder]
-            print("Replace {ph} with: {elem}".format(
-                ph=placeholder, elem=substitute))
+            #print("Replace {ph} with: {elem}".format(
+            #    ph=placeholder, elem=substitute))
         except:
             try:
                 substitute = getattr(parent, placeholder)
-                print("Replace {ph} with: {elem}, class".format(ph=placeholder,
-                                                                elem=substitute))
+                #print("Replace {ph} with: {elem}, class".format(ph=placeholder,
+                #                                                elem=substitute))
             except:
                 return ret_val
 
@@ -298,13 +298,12 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
 
         object: The parsed and expanded object.
     """
-    print("parseConfigElement: {element}, parents: {parents}".format(
-        element=element.__class__, parents=len(parents)))
+    #print("parseConfigElement: {element}, parents: {parents}".format(
+    #    element=element.__class__, parents=len(parents)))
     local_parents = parents.copy()
     if isinstance(element, list):
         tmp_list = []
         for subitem in element:
-            local_parents = parents.copy()
 
             if hasattr(subitem, "__dict__"):
                 tmp_list.append(parseConfigElement(subitem, local_parents))

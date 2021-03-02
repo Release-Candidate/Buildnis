@@ -276,18 +276,6 @@ def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: obj
     if not pathlib.Path(ret_val.project_config_file).is_file():
         cmd_line_parser.print_help(file=sys.stderr)      
         cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: configuration file \"{config}\" not found or is not a file!"
-                             .format(config=ret_val.project_config_file))
-
-    
-    try:
-        working_dir = os.path.dirname(ret_val.project_config_file)
-        ret_val.conf_dir = "/".join(
-                [os.path.abspath(working_dir), ret_val.conf_dir])
-        makeDirIfNotExists(ret_val.conf_dir)
-    except Exception as excp:
-        cmd_line_parser.print_help(file=sys.stderr)
-        cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: \"{error}\" configuration directory \"{path}\" could not be generated or not a directory!"
-                            .format(error=excp,path=ret_val.conf_dir))
-
-
+                             .format(config=ret_val.project_config_file))   
+   
     return ret_val
