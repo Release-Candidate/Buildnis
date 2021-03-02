@@ -160,4 +160,17 @@ def readJSON(json_path: FilePath, file_text: str = "", conf_file_name: str = "")
             error=excp, path=json_path))
         sys.exit(EXT_ERR_NOT_VLD)
 
+    try:
+        if not hasattr(ret_val, "orig_file"):
+            ret_val.orig_file = FileCompare(json_path)
+        else:
+            tmp_file = FileCompare(json_path)
+            tmp_file.path = ret_val.orig_file.path
+            tmp_file.size = ret_val.orig_file.size
+            tmp_file.hash = ret_val.orig_file.hash
+            ret_val.orig_file = tmp_file
+    except Exception as excp:
+        _logger.critical("error \"{error}\" generating JSON file \"{file}\" checksum".format(
+            error=excp, file=json_path))
+
     return ret_val

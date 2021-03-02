@@ -103,7 +103,7 @@ def main():
         cfg.project_dep_cfg = project_dependency.ProjectDependency(
             cfg.project_cfg.project_dependency_config)
 
-        cfg.expandAllPlaceholders()        
+        cfg.expandAllPlaceholders()
 
         if not project_dep_filename_exists or commandline_args.do_configure == True:
             cfg.checkDependencies(force_check=True)
@@ -114,7 +114,7 @@ def main():
             cfg.checkDependencies(force_check=False)
 
         cfg.project_dep_cfg.writeJSON(project_dep_filename)
-        
+
         logger.debug("Project config: \"\"\"{cfg}\"\"\"".format(
             cfg=cfg))
         logger.debug("Project dependency config: \"\"\"{cfg}\"\"\"".format(

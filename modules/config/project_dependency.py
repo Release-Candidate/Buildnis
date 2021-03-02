@@ -75,6 +75,11 @@ class ProjDepConfig:
             self.generated_at: str = src.generated_at
         except AttributeError:
             self.generated_at: str = ""
+
+        try:
+            self.orig_file: object = src.orig_file
+        except AttributeError:
+            self.orig_file: str = ""
         try:
             tmp_list = src.dependencies
         except AttributeError:
