@@ -8,6 +8,7 @@
 
 from modules.config import config_values
 import re
+import datetime
 from logging import Logger
 from modules.helpers.files import FileCompare
 from typing import List
@@ -70,6 +71,26 @@ host_num_log_cores_regex = re.compile("\$\{(HOST_NUM_LOG_CORES)\}")
 """Regex to find the placeholder `${HOST_NUM_LOG_CORES}`.
 """
 
+current_time_regex = re.compile("\$\{(TIME)\}")
+"""Regex to find the placeholder `${TIME}`.
+"""
+
+current_date_regex = re.compile("\$\{(DATE)\}")
+"""Regex to find the placeholder `${DATE}`.
+"""
+
+current_year_regex = re.compile("\$\{(YEAR)}")
+"""Regex to find the placeholder `${YEAR}`.
+"""
+
+current_month_regex = re.compile("\$\{(MONTH)}")
+"""Regex to find the placeholder `${MONTH}`.
+"""
+
+current_day_regex = re.compile("\$\{(DAY)}")
+"""Regex to find the placeholder `${DAY}`.
+"""
+
 placeholder_regex = re.compile("\$\{(.*)\}")
 """Regex to find general placefolders, of the form `${STRING}`, where string
 is to be substituted for a value of another configuration item.
@@ -92,7 +113,7 @@ def replaceConstants(item: str) -> str:
     ret_val = item
 
     result = project_root_regex.search(item)
-    if result:      
+    if result:
         ret_val = project_root_regex.sub(
             config_values.PROJECT_ROOT.replace("\\", "\\\\"), item)
         return ret_val
@@ -102,7 +123,7 @@ def replaceConstants(item: str) -> str:
         ret_val = project_name_regex.sub(
             config_values.PROJECT_NAME.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = project_version_regex.search(item)
     if result:
         ret_val = project_version_regex.sub(
@@ -114,25 +135,25 @@ def replaceConstants(item: str) -> str:
         ret_val = project_author_regex.sub(
             config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = project_company_regex.search(item)
     if result:
         ret_val = project_company_regex.sub(
             config_values.PROJECT_COMPANY.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = project_copyright_info_regex.search(item)
     if result:
         ret_val = project_copyright_info_regex.sub(
             config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = project_web_url_regex.search(item)
     if result:
         ret_val = project_web_url_regex.sub(
             config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = project_email_regex.search(item)
     if result:
         ret_val = project_email_regex.sub(
@@ -144,7 +165,7 @@ def replaceConstants(item: str) -> str:
         ret_val = project_cfg_dir_regex.sub(
             config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = host_os_regex.search(item)
     if result:
         ret_val = host_os_regex.sub(
@@ -162,7 +183,7 @@ def replaceConstants(item: str) -> str:
         ret_val = host_cpu_arch_regex.sub(
             config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), item)
         return ret_val
-    
+
     result = host_num_cores_regex.search(item)
     if result:
         ret_val = host_num_cores_regex.sub(
@@ -173,6 +194,36 @@ def replaceConstants(item: str) -> str:
     if result:
         ret_val = host_num_log_cores_regex.sub(
             config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), item)
+        return ret_val
+
+    result = current_date_regex.search(item)
+    if result:
+        now_date = datetime.now()
+        ret_val = current_date_regex.sub(now_date.strftime("%d.%m.%Y"), item)
+        return ret_val
+
+    result = current_year_regex.search(item)
+    if result:
+        now_date = datetime.now()
+        ret_val = current_year_regex.sub(now_date.strftime("%Y"), item)
+        return ret_val
+
+    result = current_month_regex.search(item)
+    if result:
+        now_date = datetime.now()
+        ret_val = current_month_regex.sub(now_date.strftime("%m"), item)
+        return ret_val
+
+    result = current_day_regex.search(item)
+    if result:
+        now_date = datetime.now()
+        ret_val = current_day_regex.sub(now_date.strftime("%d"), item)
+        return ret_val
+
+    result = current_time_regex.search(item)
+    if result:
+        now_time = datetime.now()
+        ret_val = current_time_regex.sub(now_time.strftime("%H:%M:%S"))
         return ret_val
 
     return ret_val
