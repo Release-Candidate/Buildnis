@@ -10,23 +10,39 @@ from __future__ import annotations
 
 import logging
 import os
-from modules.helpers.files import FileCompare, checkIfIsFile, makeDirIfNotExists
-from modules.helpers import LOGGER_NAME
 
+from modules.helpers.files import checkIfIsFile, makeDirIfNotExists
+from modules.helpers import LOGGER_NAME
 from modules.helpers.json import getJSONDict, readJSON, writeJSON
 from modules.config import CFG_DIR_NAME, FilePath
 
 
 class ConfigDirJson:
+    
+   
 
-    ###########################################################################
+    ############################################################################
     def __init__(self, file_name: FilePath, working_dir: FilePath, cfg_path: FilePath = "") -> None:
+        """Loads an existing configuration directory configuration if it exists, 
+        or uses the given path from the command line argument `--generate-conf-dir`.
 
+        Args:
+            file_name (FilePath): The file name of the configuration directory configuration, should
+                                    be something like `working_dir/CFG_DIR_NAME`
+            working_dir (FilePath): path of the working directory, the directory the project config is
+                                    located in (needed to find an existing configuration directory 
+                                    configuration file)
+            cfg_path (FilePath, optional): The path to the configuration directory. Defaults to "".
+        """
         self.file_name = file_name
-        self._logger = logging.getLogger(LOGGER_NAME)       
+        self._logger = logging.getLogger(LOGGER_NAME)
 
         if cfg_path != "":
-            self.cfg_path = os.path.abspath("/".join([working_dir, cfg_path]))
+            if os.path.isabs(cfg_path):
+                self.cfg_path = os.path.normpath(cfg_path)
+            else:
+                self.cfg_path = os.path.abspath(
+                    "/".join([working_dir, cfg_path]))
         else:
             try:
                 if checkIfIsFile(file_name) == False:
@@ -45,9 +61,8 @@ class ConfigDirJson:
             self._logger.critical("error \"{error}\" trying to generate directory \"{path}\"".format(
                 error=excp, path=cfg_path))
 
-        
-
     ############################################################################
+
     def writeJSON(self) -> None:
         """Writes the path to the project config directory to a JSON file with 
         the given path `json_path`.      

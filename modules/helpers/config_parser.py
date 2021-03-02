@@ -268,6 +268,7 @@ def expandItem(item: str, parents: List[object]) -> object:
             #    ph=placeholder, elem=substitute))
         except:
             try:
+                parent = parents[parent_to_use_id]
                 substitute = getattr(parent, placeholder)
                 #print("Replace {ph} with: {elem}, class".format(ph=placeholder,
                 #                                                elem=substitute))

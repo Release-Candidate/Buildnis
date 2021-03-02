@@ -11,14 +11,12 @@ from __future__ import annotations
 from modules.config import CFG_DIR_NAME
 
 
-
 try:
     import sys
     from modules import EXT_ERR_IMP_MOD
     import os
     import logging
     import pathlib
-    import time
     from typing import List, Tuple
 except ImportError as exp:
     print("ERROR: error \"{error}\" importing modules".format(
@@ -28,13 +26,13 @@ except ImportError as exp:
 try:
     from modules.config.config_dir_json import ConfigDirJson
     from modules.config import config_values
-    from modules.helpers.files import checkIfIsFile 
+    from modules.helpers.files import checkIfIsFile
     from modules.config import PROJECT_FILE_NAME
     from modules.helpers.logging import getProgramLogger
     from modules.config import project_dependency
-    from modules.helpers.commandline import parseCommandLine  
-    import modules.config.config 
-    import modules.config.host 
+    from modules.helpers.commandline import parseCommandLine
+    import modules.config.config
+    import modules.config.host
     import modules.config.check
     from modules.config.host import Host
     from modules.config import FilePath, PROJECT_DEP_FILE_NAME
@@ -55,33 +53,21 @@ def main():
     """
     commandline_args, logger = setCmdLineArgsLogger()
 
-    project_cfg_dir = commandline_args.conf_dir  
+    project_cfg_dir = commandline_args.conf_dir
 
-    working_dir = os.path.abspath(os.path.dirname(commandline_args.project_config_file))
-    config_dir_filename = "/".join([working_dir, CFG_DIR_NAME])
-    config_dir_filename = ".".join([config_dir_filename, "json"])
-    config_dir_filename = os.path.abspath(config_dir_filename)
-    config_dir_config = ConfigDirJson(
-        file_name=config_dir_filename, working_dir=working_dir, cfg_path=project_cfg_dir)
-    config_values.g_list_of_generated_files.append(config_dir_config.file_name)
-
-    project_cfg_dir = config_dir_config.cfg_path
-    if project_cfg_dir != working_dir:
-        config_values.g_list_of_generated_dirs.append(project_cfg_dir)
-    logger.info("Setting project configuration directory to \"{path}\"".format(
-        path=project_cfg_dir))
+    project_cfg_dir, config_dir_config = setUpConfDir(
+        commandline_args, logger, project_cfg_dir)
 
     # Always create host config
     host_cfg, host_cfg_filename = setUpHostCfg(
-        config_values.g_list_of_generated_files, logger, project_cfg_dir)   
-
+        config_values.g_list_of_generated_files, logger, project_cfg_dir)
 
     (host_cfg_filename_exists, host_cfg_filename,
      build_tools_filename_exists, build_tools_filename,
      project_dep_filename_exists, project_dep_filename,
      project_config_filename_exists, project_config_filename) = setUpPaths(
         project_cfg_dir=project_cfg_dir, host_cfg_file=host_cfg_filename,
-        list_of_generated_files=config_values.g_list_of_generated_files, host_cfg=host_cfg)   
+        list_of_generated_files=config_values.g_list_of_generated_files, host_cfg=host_cfg)
 
     if not commandline_args.do_clean:
         host_cfg.writeJSON(json_path=host_cfg_filename)
@@ -139,7 +125,6 @@ def main():
                 project_config_filename)
 
         config_dir_config.writeJSON()
-    
 
         # print(cfg.project_cfg.__dict__)
 
@@ -165,6 +150,24 @@ def main():
                 config_values.g_list_of_generated_files, config_values.g_list_of_generated_dirs)
 
     sys.exit(EXT_OK)
+
+################################################################################
+
+def setUpConfDir(commandline_args, logger, project_cfg_dir):
+    working_dir = os.path.abspath(os.path.dirname(
+        commandline_args.project_config_file))
+    config_dir_filename = "/".join([working_dir, CFG_DIR_NAME])
+    config_dir_filename = ".".join([config_dir_filename, "json"])
+    config_dir_filename = os.path.abspath(config_dir_filename)
+    config_dir_config = ConfigDirJson(
+        file_name=config_dir_filename, working_dir=working_dir, cfg_path=project_cfg_dir)
+    config_values.g_list_of_generated_files.append(config_dir_config.file_name)
+    project_cfg_dir = config_dir_config.cfg_path
+    if project_cfg_dir != working_dir:
+        config_values.g_list_of_generated_dirs.append(project_cfg_dir)
+    logger.info("Setting project configuration directory to \"{path}\"".format(
+        path=project_cfg_dir))
+    return project_cfg_dir, config_dir_config
 
 ################################################################################
 
@@ -242,6 +245,8 @@ def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_gener
             project_config_filename_exists, project_config_filename)
 
 ################################################################################
+
+
 def doDistClean(commandline_args: object, logger: logging.Logger, list_of_generated_files: List[FilePath], list_of_generated_dirs: List[FilePath]) -> None:
     """Helper: if argument `distclean` is set, delete all generated files.
 
@@ -259,7 +264,7 @@ def doDistClean(commandline_args: object, logger: logging.Logger, list_of_genera
             for file_path in list_of_generated_files:
                 logger.warning(
                     "distclean: deleting file \"{name}\"".format(name=file_path))
-                pathlib.Path(file_path).unlink(missing_ok=True)          
+                pathlib.Path(file_path).unlink(missing_ok=True)
             for dir_path in list_of_generated_dirs:
                 logger.warning(
                     "distclean: deleting directory \"{name}\"".format(name=dir_path))
