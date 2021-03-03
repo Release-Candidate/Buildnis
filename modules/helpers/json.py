@@ -7,30 +7,34 @@
 ###############################################################################
 
 from __future__ import annotations
-from logging import Logger
+
 import logging
-from types import SimpleNamespace
-from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD, EXT_ERR_WR_FILE
-from modules.helpers import LOGGER_NAME
-from modules.config import CFG_VERSION, FilePath
-from typing import Dict
-from modules.helpers.files import FileCompare
+from logging import Logger
+from typing import Dict, List
+
 import os
 import io
 import sys
 import json
 import datetime
 
+from modules.helpers.files import FileCompare
+from types import SimpleNamespace
+from modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD, EXT_ERR_WR_FILE
+from modules.helpers import LOGGER_NAME
+from modules.config import CFG_VERSION, FilePath
+
 _logger = logging.getLogger(LOGGER_NAME)
 
 ################################################################################
-def getJSONDict(src: object) -> Dict:
+def getJSONDict(src: object, to_ignore: List[str] = []) -> Dict:
     """Returns a dictionary suitable to pass to `json.dump(s)`.
 
     Attention: only works with simple classes obtained from `json.load(s)`.
 
     Args:
-        src (object): The class to serialize
+        src (object): The class to serialize.
+        to_ignore (List[str]): The list of attribute names to ignore.
 
     Returns:
         Dict: The dictionary suitable to pass to `json.dump(s)`.
@@ -55,6 +59,9 @@ def getJSONDict(src: object) -> Dict:
             ret_val[item] = tmp_dict
 
         elif isinstance(src.__dict__[item], Logger):
+            pass
+
+        elif item in to_ignore:
             pass
 
         else:

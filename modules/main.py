@@ -101,7 +101,7 @@ def main():
                 project_config=project_config_filename)
 
         cfg.project_dep_cfg = project_dependency.ProjectDependency(
-            cfg.project_cfg.project_dependency_config)
+            cfg.project_dependency_config)
 
         cfg.expandAllPlaceholders()
 
@@ -157,7 +157,7 @@ def setUpConfDir(commandline_args, logger, project_cfg_dir):
     config_dir_filename = os.path.abspath(config_dir_filename)
     config_dir_config = ConfigDirJson(
         file_name=config_dir_filename, working_dir=working_dir, cfg_path=project_cfg_dir)
-    config_values.g_list_of_generated_files.append(config_dir_config.file_name)
+    config_values.g_list_of_generated_files.append(config_dir_config.json_path)
     project_cfg_dir = config_dir_config.cfg_path
     if project_cfg_dir != working_dir:
         config_values.g_list_of_generated_dirs.append(project_cfg_dir)

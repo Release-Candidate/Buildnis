@@ -26,7 +26,7 @@
             "result": "file",
             "result_name": "cpp_shared_library",
             "build_directory": "./build",
-            "sources": "${../sources}",
+            "sources": "${../../sources}",
             "include_paths": 
             [
                 "./"

@@ -15,18 +15,18 @@ from modules.helpers.files import checkIfIsFile, makeDirIfNotExists
 from modules.helpers import LOGGER_NAME
 from modules.helpers.json import getJSONDict, readJSON, writeJSON
 from modules.config import CFG_DIR_NAME, FilePath
+from modules.config.json_base_class import JSONBaseClass
 
 
-class ConfigDirJson:
+
+class ConfigDirJson(JSONBaseClass):
     """Class to handle the configuration of the directory all generated 
     configuration files are written to.
 
     Attributes:
 
         file_name (FilePath):  The path to the JSON configuration file
-        cfg_path (FilePath): The directory to save generated configurations to
-        _logger (logging.Logger): Logger instance to log messages to `stdout` 
-                                    or file
+        cfg_path (FilePath): The directory to save generated configurations to     
 
     Methods:
 
@@ -47,9 +47,11 @@ class ConfigDirJson:
                                     configuration file)
             cfg_path (FilePath, optional): The path to the configuration directory. Defaults to "".
         """
-        self.file_name = file_name
-        self._logger = logging.getLogger(LOGGER_NAME)
+        super().__init__(config_file_name=CFG_DIR_NAME,
+                         config_name="configuration directory")
 
+        self.json_path = file_name
+        
         if cfg_path != "":
             if os.path.isabs(cfg_path):
                 self.cfg_path = os.path.normpath(cfg_path)
@@ -61,9 +63,8 @@ class ConfigDirJson:
                 if checkIfIsFile(file_name) == False:
                     self.cfg_path = os.path.abspath(working_dir)
                 else:
-                    tmp_object = readJSON(
-                        json_path=file_name, file_text="configuration directory", conf_file_name=CFG_DIR_NAME)
-                    self.cfg_path = os.path.abspath(tmp_object.cfg_path)
+                    self.readJSON(json_path=file_name)
+                    self.cfg_path = os.path.abspath(self.cfg_path)
             except Exception as excp:
                 self._logger.critical("error \"{error}\" loading configuration directory configuration \"{path}\"".format(
                     error=excp, path=file_name))
@@ -80,8 +81,7 @@ class ConfigDirJson:
         the given path `json_path`.      
         """
         try:
-            writeJSON(getJSONDict(self), json_path=self.file_name,
-                      file_text="configuration directory", conf_file_name=CFG_DIR_NAME)
+            super().writeJSON(json_path=self.json_path)           
         except Exception as excp:
-            self._logger.critical("error \"\{error}\" trying to write configuration directory configuration \"{path}\"".format(
+            self._logger.critical("error \"{error}\" trying to write configuration directory configuration \"{path}\"".format(
                 error=excp, path=self.file_name))

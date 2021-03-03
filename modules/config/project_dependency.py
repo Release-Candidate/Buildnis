@@ -7,32 +7,34 @@
 ###############################################################################
 
 from __future__ import annotations
-from modules.helpers.web import doDownload
-from modules.helpers.execute import doesExecutableWork, runCommand
-from modules.helpers.json import getJSONDict, readJSON, writeJSON
 
-from modules.helpers import LOGGER_NAME
 import os
-import pprint
-import logging
 import pathlib
 import datetime
-from typing import Dict, List
-from modules.config import CFG_VERSION, FilePath, PROJECT_DEP_FILE_NAME
+from typing import Dict
+from modules.config import FilePath, PROJECT_DEP_FILE_NAME
+from modules.helpers.web import doDownload
+from modules.config.json_base_class import JSONBaseClass
+from modules.helpers.execute import doesExecutableWork, runCommand
 
-###############################################################################
-class ProjDepConfig:
-    """A class to hold all values of a project dependency configuration in its
-    attributes.
+################################################################################
+
+
+class ProjectDependency(JSONBaseClass):
+    """Parses the project dependency configuration file and checks the 
+    dependencies.
+
+    Parses the project dependency JSON file and saves the config file to 
+    `dependency_cfg`. Checks the dependencies and tries to download and
+    install missing dependencies. Writes the altered configuration to the JSON 
+    file.
 
     Attributes:
 
-        file_name (str): the JSON configuration file ID, should be `PROJECT_DEP_FILE_NAME`
-        file_version (str): the version of the JSON configuration file.
-        generated_at (str): the date and time this configuration has been checked
-        dependencies (List[Dict]): the list of actual dependencies.
+        config_path (FilePath): Path to the project dependency JSON file
+        dependencies (List[object]):  The list of dependencies    
 
-    Keys of dependency dictionary:
+        Dependency object attributes:
 
         name (str): the dependency's name
         website_url (str): website to get information about the dependency
@@ -53,145 +55,35 @@ class ProjDepConfig:
         is_checked (bool): if this is true, the dependency has been successfully 
                             installed
 
-    """
-    ############################################################################
-    def __init__(self, src: object) -> None:
-        """Constructs a full project dependency configuration object from 
-        the object `src`.
-
-        Args:
-            src (object): the object holding the project dependency
-                        configuration values read from the JSON
-        """
-        try:
-            self.file_name: str = src.file_name
-        except AttributeError:
-            self.file_name = PROJECT_DEP_FILE_NAME
-        try:
-            self.file_version: str = src.file_version
-        except AttributeError:
-            self.file_version: str = ".".join(CFG_VERSION)
-        try:
-            self.generated_at: str = src.generated_at
-        except AttributeError:
-            self.generated_at: str = ""
-
-        try:
-            self.orig_file: object = src.orig_file
-        except AttributeError:
-            self.orig_file: str = ""
-        try:
-            tmp_list = src.dependencies
-        except AttributeError:
-            self.dependencies: List[object] = []
-        
-        if tmp_list == None:
-            self.dependencies = []
-
-        tmp_dep = []
-        for dep in tmp_list:
-            tmp_dep.append(self.depObjToDict(dep))
-        
-        self.dependencies = tmp_dep
-
-    ############################################################################
-    def depObjToDict(self, dependency: object) -> Dict[str, str]:
-        """Creates a dictionary from the values of the given object `dependency`.
-
-        Nonexistent values get initialized.
-
-        Args:
-            dependency (object): the object containing the parsed dependency
-
-        Returns:
-            Dict[str, str]: a dictionary of the values of the given object.
-        """       
-        ret_val = dict()
-        try:
-            ret_val["name"] = dependency.name
-        except AttributeError:
-            ret_val["name"] = ""
-        try:
-            ret_val["website_url"] = dependency.website_url
-        except AttributeError:
-            ret_val["website_url"] = ""
-        try:
-            ret_val["download_url"] = dependency.download_url
-        except AttributeError:
-            ret_val["download_url"] = ""
-        try:
-            ret_val["download_dir"] = dependency.download_dir
-        except AttributeError:
-            ret_val["download_dir"] = ""
-        try:
-            ret_val["install_cmd"] = dependency.install_cmd
-        except AttributeError:
-            ret_val["install_cmd"] = ""
-        try:
-            ret_val["install_arguments"] = dependency.install_arguments
-        except AttributeError:
-            ret_val["install_arguments"] = []
-        try:
-            ret_val["ok_if_exists"] = dependency.ok_if_exists
-        except AttributeError:
-            ret_val["ok_if_exists"] = ""
-        try:
-            ret_val["executable_check_regex"] = dependency.executable_check_regex
-        except AttributeError:
-            ret_val["executable_check_regex"] = ""
-        try:
-            ret_val["executable_argument"] = dependency.executable_argument
-        except AttributeError:
-            ret_val["executable_argument"] = ""
-        try:
-            ret_val["ok_if_executable"] = dependency.ok_if_executable
-        except AttributeError:
-            ret_val["ok_if_executable"] = ""
-            ret_val["executable_argument"] = ""
-            ret_val["executable_check_regex"] = ""
-        ret_val["is_checked"] = "false"
-
-        return ret_val
-
-
-################################################################################
-class ProjectDependency:
-    """Parses the project dependency configuration file and checks the 
-    dependencies.
-
-    Parses the project dependency JSON file and saves the config file to 
-    `dependency_cfg`. Checks the dependencies and tries to download and
-    install missing dependencies. Writes the altered configuration to the JSON 
-    file.
-    
-    Attributes:
-
-        config_path (FilePath): path to the project dependency JSON file
-        dependency_cfg (ProgDepConfig): the project dependency config object
-        _logger (logging.Logger): the logger to use
-    
     Methods:
-            writeJSON: writes the changes to the project dependency 
-                        configuration file
-    
+
+        checkDependencies: Checks all dependencies in the list of dependencies 
+                            `dependencies`, if the dependency is installed.
+        isDependencyFulfilled: Returns `True`if the dependency has been 
+                            installed.
+        installDep: Installs the given dependency.
+        isExecuteableDep: Checks, if the given dependency's executable works,
+                        that is, returns the expected string.
     """
     ###########################################################################
-    def __init__(self, dependency_config:FilePath) -> None:
+
+    def __init__(self, dependency_config: FilePath) -> None:
         """Parses the project dependency JSON configuration file.
 
-        Stores the configuration in the attribute `dependency_cfg`.
-
         Args:
-            dependency_config (FilePath): the configuration file of project dependencies to load
+            dependency_config (FilePath): the configuration file of project 
+            dependencies to load
         """
-        self._logger = logging.getLogger(LOGGER_NAME)
+        super().__init__(config_file_name=PROJECT_DEP_FILE_NAME,
+                         config_name="project dependencies")
+
         self.config_path = os.path.normpath(dependency_config)
 
-        tmp_cfg = readJSON(dependency_config, file_text="project dependency",
-                           conf_file_name=PROJECT_DEP_FILE_NAME)
+        self.readJSON(json_path=self.config_path)
 
-        self.dependency_cfg = ProjDepConfig(tmp_cfg)
-        
+        if not hasattr(self, "dependencies"):
+            self.dependencies = []
+
     ############################################################################
     def checkDependencies(self, force_check: bool = False) -> None:
         """Runs all configured dependency checks.
@@ -205,97 +97,114 @@ class ProjectDependency:
                         dependency even if it has been checked before - if 
                         `is_checked` is `True`. Defaults to False.
         """
-        for dep in self.dependency_cfg.dependencies: 
-            if dep["is_checked"] == "false" or force_check == True:                
-                if not self.isDependencyFulfilled(dep): 
-                    self.installDep(dep)
-                    dep["is_checked"] = self.isDependencyFulfilled(dep)
-            else:
-                self._logger.info("Project dependency \"{name}\" has already been checked OK".format(
-                    dep["name"]))
+        for dep in self.dependencies:
 
-        self.dependency_cfg.generated_at = datetime.datetime.now(
+            must_have_attrs = ["name", "website_url",
+                               "download_url", "download_dir",
+                               "install_cmd", "ok_if_exists",
+                               "executable_check_regex", "executable_argument",
+                               "ok_if_executable"]
+
+            for attr in must_have_attrs:
+                if not hasattr(dep, attr):
+                    setattr(dep, attr, "")
+
+            if not hasattr(dep, "is_checked"):
+                setattr(dep, "is_checked", False)
+
+            if not hasattr(dep, "install_arguments"):
+                dep.install_arguments = []
+
+            if dep.is_checked == False or force_check == True:
+                if not self.isDependencyFulfilled(dep):
+                    self.installDep(dep)
+                    dep.is_checked = self.isDependencyFulfilled(dep)
+            else:
+                self._logger.info(
+                    "Project dependency \"{name}\" has already been checked OK".format(name=dep.name))
+
+        self.generated_at = datetime.datetime.now(
             tz=None).isoformat(sep=" ", timespec="seconds")
 
     ############################################################################
-    def isDependencyFulfilled(self, dep: Dict[str, str]) -> bool:
+    def isDependencyFulfilled(self, dep: object) -> bool:
         """Checks if the given dependency is installed.
 
         Checks if the configured path exist or the configured executable works.
 
         Args:
-            dep (Dict[str, str]): the dependency dictionary to check
+            dep (object): the dependency object to check
 
         Returns:
             bool: `True`, if the dependency has been found
                   `False` else 
         """
         self._logger.info("Checking if dependency \"{name}\" is installed ...".format(
-            name=dep["name"]))
+            name=dep.name))
 
-        if dep["ok_if_exists"] != "":
+        if dep.ok_if_exists != "":
             try:
-                if pathlib.Path(dep["ok_if_exists"]).is_file() or pathlib.Path(dep["ok_if_exists"]).is_dir():
+                if pathlib.Path(dep.ok_if_exists).is_file() or pathlib.Path(dep.ok_if_exists).is_dir():
                     self._logger.info("Path \"{path}\" exists, dependency \"{name}\" is installed".format(
-                        path=dep["ok_if_exists"], name=dep["name"]))
-                    dep["is_checked"] = True
+                        path=dep.ok_if_exists, name=dep.name))
+                    dep.is_checked = True
                     return True
                 else:
                     self._logger.error("Path \"{path}\" does not exist, dependency \"{name}\" not found!".format(
-                        path=dep["ok_if_exists"], name=dep["name"]))
+                        path=dep.ok_if_exists, name=dep.name))
             except Exception as excp:
                 self._logger.error("error \"{error}\"".format(error=excp))
-        
-        if dep["ok_if_executable"] != "":
+
+        if dep.ok_if_executable != "":
             self._logger.info("Checking executable \"{exe}\"".format(
-                exe=dep["ok_if_executable"]))
-            dep["is_checked"] = self.isExecuteableDep(dep)
-            if dep["is_checked"]:                
+                exe=dep.ok_if_executable))
+            dep.is_checked = self.isExecuteableDep(dep)
+            if dep.is_checked:
                 return True
 
         self._logger.error("dependency \"{name}\" not found!".format(
-            name=dep["name"]))
-        dep["is_checked"] = False
+            name=dep.name))
+        dep.is_checked = False
         return False
-    
+
     ############################################################################
     def installDep(self, dep: Dict[str, str]) -> None:
         """Download and/or install the given dependency.
 
         Args:
             dep (Dict[str, str]): the dependency to install or download
-        """       
-        if dep["download_url"] != "":
+        """
+        if dep.download_url != "":
             try:
                 self._logger.info("Trying to download \"{name}\" from URL \"{url}\" to \"{path}\"".format(
-                    name=dep["name"], url=dep["download_url"], path=dep["download_dir"]))
-                doDownload(url=dep["download_url"], to=dep["download_dir"])            
+                    name=dep.name, url=dep.download_url, path=dep.download_dir))
+                doDownload(url=dep.download_url, to=dep.download_dir)
             except Exception as excp:
                 self._logger.error("error \"{error}\" trying to download \"{name}\" from URL \"{url}\" to \"{path}\"".format(
-                    error=excp, name=dep["name"], url=dep["download_url"], path=dep["download_dir"]
+                    error=excp, name=dep.name, url=dep.download_url, path=dep.download_dir
                 ))
 
-        if dep["install_cmd"] != "":
+        if dep.install_cmd != "":
             try:
                 self._logger.info("trying to install \"{name}\" using command \"{cmd}\" with args \"{args}\"".format(
-                    name=dep["name"], cmd=dep["install_cmd"], args=dep["install_arguments"]))
+                    name=dep.name, cmd=dep.install_cmd, args=dep.install_arguments))
 
-                output = runCommand(dep["install_cmd"],
-                                    args=dep["install_arguments"])
+                output = runCommand(dep.install_cmd,
+                                    args=dep.install_arguments)
                 self._logger.debug(output.std_out)
                 self._logger.debug(output.err_out)
 
             except Exception as excp:
                 self._logger.error("error \"{error}\" trying to install \"{name}\" using command \"{cmd}\" with args \"{args}\"".format(
-                    error=excp, name=dep["name"], cmd=dep["install_cmd"], args=dep["install_arguments"]
+                    error=excp, name=dep.name, cmd=dep.install_cmd, args=dep.install_arguments
                 ))
 
     ############################################################################
-    def isExecuteableDep(self, dep: Dict[str, str]) -> bool:
+    def isExecuteableDep(self, dep: object) -> bool:
         """Execute the dependency, if that works, returns `True`.
 
         Args:
-            dep (Dict[str, str]): the dependency to run
+            dep (object): the dependency to run
 
         Returns:
             bool: `True` if the executable has been running OK and returns the 
@@ -304,39 +213,20 @@ class ProjectDependency:
         """
         self._logger.info(
             "Checking dependency \"{name}\", try to run executable \"{exe}\" with argument \"{arg}\" against regex \"{regex}\"".format(
-                name=dep["name"], exe=dep["ok_if_executable"], 
-                arg=dep["executable_argument"], regex=dep["executable_check_regex"]))
+                name=dep.name, exe=dep.ok_if_executable,
+                arg=dep.executable_argument, regex=dep.executable_check_regex))
 
         try:
             matched_string = doesExecutableWork(
-                exe=dep["ok_if_executable"], check_regex=dep["executable_check_regex"], 
-                args=[dep["executable_argument"]])
+                exe=dep.ok_if_executable, check_regex=dep.executable_check_regex,
+                args=[dep.executable_argument])
 
             if matched_string != "":
                 return True
 
         except Exception as excp:
             self._logger.error("error \"{error}\" dependency \"{name}\", trying to run executable \"{exe}\" with argument \"{arg}\" against regex \"{regex}\"".format(
-                error=excp, name=dep["name"], exe=dep["ok_if_executable"], 
-                arg=dep["executable_argument"], regex=dep["executable_check_regex"]))
+                error=excp, name=dep.name, exe=dep.ok_if_executable,
+                arg=dep.executable_argument, regex=dep.executable_check_regex))
 
         return False
-
-    ############################################################################
-    def writeJSON(self, json_path: FilePath) -> None:
-        """Writes the changes to the JSON file.
-
-        Args:
-            json_path (FilePath): the path to the file to write the JSON to
-        """       
-        writeJSON(getJSONDict(self.dependency_cfg), json_path=json_path, 
-            file_text="project dependencies", conf_file_name=PROJECT_DEP_FILE_NAME)
-
-    ###########################################################################
-    def __repr__(self) -> str:
-        """Returns a string representing the object.
-
-        Returns:
-            str: A strings representation of the objects data
-        """
-        return pprint.pformat(getJSONDict(self.dependency_cfg), indent=4, sort_dicts=False)

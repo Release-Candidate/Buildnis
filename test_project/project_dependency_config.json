@@ -33,9 +33,9 @@
             "install_cmd": "sphinx-quickstart",
             "install_arguments": 
             [
-                "--project='${../../../../../name}'",
+                "--project='${../../../../name}'",
                 "--author='${PROJECT_AUTHOR}'",
-                "-v '${../../../../../version}'",
+                "-v '${../../../../version}'",
                 "--release='${PROJECT_VERSION}'",
                 "--language=en",
                 "--no-makefile",

@@ -7,90 +7,21 @@
 ###############################################################################
 
 from __future__ import annotations
-import logging
-from modules.helpers.execute import doesExecutableWork, runCommand
-from modules.helpers.json import writeJSON
-from modules.helpers import LOGGER_NAME
 
 import os
 import sys
 import json
-import pprint
 import pathlib
-import datetime
-from types import SimpleNamespace
 from typing import Any
+from types import SimpleNamespace
 
 from modules import EXT_ERR_DIR
-from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CFG_VERSION, CONFIGURE_SCRIPTS_PATH, FilePath, LINUX_OS_STRING, OSName, OSX_OS_STRING
+from modules.config.json_base_class import JSONBaseClass
+from modules.helpers.execute import doesExecutableWork, runCommand
+from modules.config import Arch, BUILD_TOOL_CONFIG_NAME, CONFIGURE_SCRIPTS_PATH, LINUX_OS_STRING, OSName, OSX_OS_STRING
 
 
-class WriteCfg:
-    """Helper class to encode Check.build_tools_cfgs to JSON.
-    """
-
-    ############################################################################
-    def __init__(self, cfg_list: list) -> None:
-        """Converts the list of classes to a list of dictionaries suited to be 
-        dumped by the JSON writer `json.dump`
-
-        Args:           
-            cfg_list (list): the list of generated build tool configs
-        """
-
-        self.file_name = BUILD_TOOL_CONFIG_NAME
-        self.file_version = ".".join(CFG_VERSION)
-        self.build_tool_cfgs = []
-        self.generated_at = datetime.datetime.now(
-            tz=None).isoformat(sep=" ", timespec="seconds")
-
-        for cfg in cfg_list:
-            temp_dict = dict()
-            try:
-                temp_dict["name"] = cfg.name
-            except AttributeError:
-                temp_dict["name"] = ""
-            try:
-                temp_dict["name_long"] = cfg.name_long
-            except AttributeError:
-                temp_dict["name_long"] = ""
-            try:
-                temp_dict["version"] = cfg.version
-            except AttributeError:
-                temp_dict["version"] = ""
-            try:
-                temp_dict["build_tool_exe"] = cfg.build_tool_exe
-            except AttributeError:
-                temp_dict["build_tool_exe"] = ""
-            try:
-                temp_dict["install_path"] = cfg.install_path
-            except AttributeError:
-                temp_dict["install_path"] = ""
-            try:
-                temp_dict["env_script"] = cfg.env_script
-            except AttributeError:
-                temp_dict["env_script"] = ""
-            try:
-                temp_dict["env_script_arg"] = cfg.env_script_arg
-            except AttributeError:
-                temp_dict["env_script_arg"] = ""
-            try:
-                temp_dict["version_regex"] = cfg.version_regex
-            except AttributeError:
-                temp_dict["version_regex"] = ""
-            try:
-                temp_dict["version_arg"] = cfg.version_arg
-            except AttributeError:
-                temp_dict["version_arg"] = ""
-            try:
-                temp_dict["is_checked"] = cfg.is_checked
-            except AttributeError:
-                temp_dict["is_checked"] = False
-
-            self.build_tool_cfgs.append(temp_dict)
-
-
-class Check:
+class Check(JSONBaseClass):
     """Checks if all build tools are present.
 
     Runs all build tool script_paths in `configure_script_paths` in the subdirectory 
@@ -114,12 +45,9 @@ class Check:
         os_name (OSName): the OS we are building for
         arch (Arch): the CPU architecture we are building for
         build_tool_cfgs (list): the list of build tool configurations returned from 
-                        the script_paths in `configure_script_paths/OS`
-        _logger (logging.Logger): the logger to use
+                        the script_paths in `configure_script_paths/OS`        
 
-    Methods:
-        writeJSON: writes the gathered build tool configurations to the given 
-                    JSON config file.
+    Methods:        
         isBuildToolCfgOK: checks if the build tool config has the minimum 
                             needed attributes
         checkVersions: runs all build tools with the version argument, to check
@@ -139,10 +67,10 @@ class Check:
             os_name (OSName): the OS we are building for
             arch (Arch): the CPU architecture we are building for
         """
+        super().__init__(config_file_name=BUILD_TOOL_CONFIG_NAME, config_name="build tools")
+
         self.os = os_name
         self.arch = arch
-
-        self._logger = logging.getLogger(LOGGER_NAME)
 
         working_dir = pathlib.Path(os.path.normpath(
             "/".join([CONFIGURE_SCRIPTS_PATH, os_name])))
@@ -193,47 +121,20 @@ class Check:
             bool: True, if `cfg` has all needed attributes
                   False else
         """
-        try:
-            cfg.name
-        except AttributeError:
-            self._logger.error("ERROR: build config has no attribute \"name\"")
-            return False
-        try:
-            cfg.name_long
-        except AttributeError:
-            cfg.name_long = ""
-        try:
-            cfg.version
-        except AttributeError:
-            cfg.version = ""
-        try:
-            cfg.build_tool_exe
-        except AttributeError:
-            self._logger.error(
-                "ERROR: build config has no attribute \"build_tool_exe\"")
-            return False
-        try:
-            cfg.install_path
-        except AttributeError:
-            cfg.install_path = ""
-        try:
-            cfg.env_script
-        except AttributeError:
-            cfg.env_script = ""
-        try:
-            cfg.env_script_arg
-        except AttributeError:
-            cfg.env_script_arg = ""
-        try:
-            cfg.version_regex
-        except AttributeError:
-            self._logger.error(
-                "ERROR: build config has no attribute \"version_regex\"")
-            return False
-        try:
-            cfg.version_arg
-        except AttributeError:
-            cfg.version_arg = ""
+        # TODO add 'provides' (like "C++", "Java", "Python")
+        must_have_attrs = ["name", "build_tool_exe", "version_regex"]
+
+        for attr in must_have_attrs:
+            if not hasattr(cfg, attr):
+                self._logger.error(
+                    "build config has no attribute \"{name}\"".format(name=attr))
+                return False
+
+        attribute_list = ["name_long", "version", "install_path",
+                          "env_script", "env_script_arg", "version_arg"]
+        for attribute in attribute_list:
+            if not hasattr(cfg, attribute):
+                setattr(cfg, attribute, "")
 
         return True
 
@@ -288,24 +189,3 @@ class Check:
             except Exception as excp:
                 self._logger.error("error \"{error}\" parsing version of \"{exe} {opt}\" using version regex \"{regex}\"".format(
                     error=excp, exe=exe_path, opt=tool.version_arg, regex=tool.version_regex))
-
-    ############################################################################
-    def writeJSON(self, json_path: FilePath) -> None:
-        """Writes the gathered build tool configurations to a file.
-
-        Args:
-            json_path (FilePath): path to write the JSON build tools configuration to
-        """
-        write_cfg = WriteCfg(self.build_tool_cfgs)
-        writeJSON(write_cfg.__dict__, file_text="build tools",
-                  json_path=json_path, conf_file_name=BUILD_TOOL_CONFIG_NAME)
-
-    ############################################################################
-    def __repr__(self) -> str:
-        """Returns a string representing the object.
-
-        Returns:
-            str: A strings representation of the objects data
-        """
-        write_cfg = WriteCfg(self.build_tool_cfgs)
-        return pprint.pformat(write_cfg.__dict__, indent=4, sort_dicts=False)

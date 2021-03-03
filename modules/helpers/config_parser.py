@@ -6,10 +6,10 @@
 # Date:     28.Feb.2021
 ###############################################################################
 
+import logging
 from modules.config import config_values
 import re
 import datetime
-from logging import Logger
 from modules.helpers.files import FileCompare
 from typing import List
 
@@ -250,7 +250,7 @@ def expandItem(item: str, parents: List[object]) -> object:
     result = placeholder_regex.search(item)
     parent_to_use_id = 0
     if result:
-        #print("Found Placeholder: {place}".format(place=result.group(1)))
+        print("Found Placeholder: {place}".format(place=result.group(1)))
         placeholder = result.group(1)
         parent_regex = re.compile("(\.\./)")
 
@@ -264,14 +264,14 @@ def expandItem(item: str, parents: List[object]) -> object:
             parent = parents[parent_to_use_id]
 
             substitute = parent[placeholder]
-            #print("Replace {ph} with: {elem}".format(
-            #    ph=placeholder, elem=substitute))
+            print("Replace {ph} with: {elem}".format(
+               ph=placeholder, elem=substitute))
         except:
             try:
                 parent = parents[parent_to_use_id]
                 substitute = getattr(parent, placeholder)
-                #print("Replace {ph} with: {elem}, class".format(ph=placeholder,
-                #                                                elem=substitute))
+                print("Replace {ph} with: {elem}, class".format(ph=placeholder,
+                                                               elem=substitute))
             except:
                 return ret_val
 
@@ -299,8 +299,8 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
 
         object: The parsed and expanded object.
     """
-    #print("parseConfigElement: {element}, parents: {parents}".format(
-    #    element=element.__class__, parents=len(parents)))
+    print("parseConfigElement: {element}, parents: {parents}".format(
+       element=element.__class__, parents=len(parents)))
     local_parents = parents.copy()
     if isinstance(element, list):
         tmp_list = []
@@ -321,22 +321,24 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
                     tmp_list.append(expandItem(subitem, local_parents))
                 else:
                     tmp_list.append(subitem)
-        return tmp_list
-
-    elif hasattr(element, "__dict__"):
-        local_parents = parents.copy()
-        for key in element.__dict__:
-            element.__dict__[key] = parseConfigElement(
-                element.__dict__[key], local_parents)
-        return element
+        return tmp_list   
 
     elif isinstance(element, FileCompare):
         return element
 
-    elif isinstance(element, Logger):
+    elif isinstance(element, logging.Logger):        
         return element
 
     elif isinstance(element, str):
         return expandItem(element, local_parents)
+
+    elif hasattr(element, "__dict__"):
+        local_parents = parents.copy()
+        local_parents.append(element)
+        for key in element.__dict__:            
+            element.__dict__[key] = parseConfigElement(
+                element.__dict__[key], local_parents)
+        return element
+    
     else:
         return element

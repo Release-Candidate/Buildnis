@@ -11,7 +11,7 @@ from __future__ import annotations
 import pprint
 import logging
 import sys
-from typing import List
+from typing import Dict, List
 
 from modules.helpers.config_parser import parseConfigElement
 from modules import EXT_ERR_LD_FILE
@@ -31,9 +31,13 @@ class JSONBaseClass:
         expandAllPlaceholders: Replaces all placeholders (like `${PLACEHOLDER}`)
                                 in the instance's attribute values.
         readJSON: Reads the JSON config file and saves the values to attributes.
-        reReadIfChangedOnDisk
+        reReadIfChangedOnDisk: Checks if the original read file has changed on 
+                                disk, and if yes, rereads the file from disk.
         writeJSON: Writes the attributes and their values to the JSON file.
-        reWriteIfChangedOnDisk
+        reWriteIfChangedOnDisk: Checks if the original read file has changed on 
+                                disk, and if yes, rereads the file from disk 
+                                and rewrites it to the generated JSON's file 
+                                path.
     """
 
     ###########################################################################
@@ -62,7 +66,7 @@ class JSONBaseClass:
         """
         try:
             tmp_obj = readJSON(json_path=json_path,
-                               file_text=self.name, config_file_name=self.file_name)
+                               file_text=self.name, conf_file_name=self.file_name)
 
             for item in tmp_obj.__dict__:
                 if isinstance(item, str):
@@ -76,7 +80,7 @@ class JSONBaseClass:
             sys.exit(EXT_ERR_LD_FILE)
 
     ############################################################################
-    def expandAllPlaceholders(self, parents: List[object]) -> None:
+    def expandAllPlaceholders(self, parents: List[object] = []) -> None:
         """Goes through all configurations and replaces placeholders in their
         elements. A Placeholder is a string like `${PLACEHOLDER}`, a dollar
         sign followed by a curly opening brace, the string to replace and the 
@@ -99,14 +103,15 @@ class JSONBaseClass:
                     "error expanding placeholders of file \"{file}\": found item \"{item}\" in object dictionary that isn't a string!".format(file=self.name, item=item))
 
     ############################################################################
-    def writeJSON(self, json_path: FilePath) -> None:
+    def writeJSON(self, json_path: FilePath, to_ignore: List[str] = []) -> None:
         """Writes the class instance to the JSON file.
 
         Args:
-            json_path (FilePath): the path to the file to write the JSON to
+            json_path (FilePath): The path to the file to write the JSON to
+            to_ignore (List[str]): The list of attributes to ignore
         """
         self.json_path = json_path
-        writeJSON(getJSONDict(self.dependency_cfg), json_path=json_path,
+        writeJSON(getJSONDict(self, to_ignore), json_path=json_path,
                   file_text=self.name, conf_file_name=self.file_name)
 
     ###########################################################################
@@ -131,7 +136,7 @@ class JSONBaseClass:
         """Checks if the JSON configuration file has been changed since the 
         time the checksum has been calculated, if yes, it is reread from disk.
         """
-        try:        
+        try:
             if self.orig_file.hasChanged(not_exist_is_excp=True):
                 tmp_json_path = self.json_path
                 self.readJSON(json_path=self.orig_file.path)
@@ -157,9 +162,24 @@ class JSONBaseClass:
         except Exception as excp:
             self._logger.error("error \"{error}\" checking whether to rewrite JSON file \"{path}\"".format(
                 error=excp, path=self.orig_file.path))
-           
+
+    ##########################################################################
+    def addAttributesIfNotExist(self, attributes: Dict[str, object]) -> None:
+        """Adds each attribute in the given dictionary of attributes.
+
+        The key of the dictionary is the attribute's name, the value the 
+        deault value to set the attribute to, if it didn't exist.
+
+        Args:
+            attributes (Dict[str, object]): The dictionary of attributes and 
+                                            default values
+        """
+        for attribute in attributes:
+            if not hasattr(self, attribute):
+                setattr(self, attribute, attributes[attribute])
 
     ###########################################################################
+
     def __repr__(self) -> str:
         """Returns a string representing the JSON object.
 

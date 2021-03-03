@@ -7,18 +7,20 @@
 ###############################################################################
 
 from __future__ import annotations
+
+
+import platform
+import logging
+
+from modules.config.json_base_class import JSONBaseClass
 from modules.helpers.files import checkIfExists
 from modules.helpers.execute import runCommand
-
-
 from modules.helpers.json import getJSONDict, writeJSON
-import platform
-import pprint
-import logging
 from modules.helpers import LOGGER_NAME
 from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
 
-class Host:
+
+class Host(JSONBaseClass):
     """Holds all information about the host this is running on.
 
     Stores hostname, OS, OS version, CPU architecture, RAM, CPU name, ...
@@ -39,11 +41,9 @@ class Host:
         ram_total (int):      Amount of physical RAM in bytes
         gpu List[str]:        The list of names of all GPUs
         python_version (str): The version of this host's Python interpreter
-        json_path(str):       The path to the written JSON host config file
-        _logger(logging.Logger): The logger to use
+        json_path(str):       The path to the written JSON host config file       
 
-    Methods:
-        writeJSON: saves the information to a JSON file.
+    Methods:       
         collectWindowsConfig: adds information, that has to be collected in a
                             Windows specific way
         collectLinuxConfig: adds information, that has to be collected in a
@@ -52,16 +52,17 @@ class Host:
                             Mac OS X specific way
     """
     ###########################################################################
+
     def __init__(self) -> None:
         """Constructor of class Host, gathers and sets the host's environment.
 
         Like OS, hostname, OS version, CPU architecture, ...
         """
-        self._logger= logging.getLogger(LOGGER_NAME)
-        
+        super().__init__(config_file_name=HOST_FILE_NAME, config_name="host")
+
         self._logger.info("Gathering information about this host ...")
 
-        self.file_name=HOST_FILE_NAME
+        self.file_name = HOST_FILE_NAME
         self.file_version = ".".join(CFG_VERSION)
 
         self.os, self.host_name, self.os_vers_major, self.os_vers, self.cpu_arch, self.cpu = platform.uname()
@@ -88,34 +89,15 @@ class Host:
                 "You can add support of this OS to the file \"modules\config\host.py\"")
             self._logger.error("")
 
-        # set global constants       
-        config_values.HOST_OS = self.os       
-        config_values.HOST_CPU_ARCH = self.cpu_arch        
-        config_values.HOST_NAME = self.host_name        
-        config_values.HOST_NUM_CORES = self.num_cores        
+        # set global constants
+        config_values.HOST_OS = self.os
+        config_values.HOST_CPU_ARCH = self.cpu_arch
+        config_values.HOST_NAME = self.host_name
+        config_values.HOST_NUM_CORES = self.num_cores
         config_values.HOST_NUM_LOG_CORES = self.num_logical_cores
 
-    ###########################################################################
-    def __repr__(self) -> str:
-        """Returns a string representing the object.
+    #############################################################################
 
-        Returns:
-            str: A strings representation of the objects data
-        """
-        return pprint.pformat(getJSONDict(self), indent=4, sort_dicts=False)   
-
-
-    ###########################################################################
-    def writeJSON(self, json_path: FilePath) -> None:
-        """Writes the host's config to a JSON file
-
-        Args:
-            json_path (str):  the path to write the json file to
-        """      
-        writeJSON(getJSONDict(self), json_path=json_path,
-                file_text="host", conf_file_name=HOST_FILE_NAME)
-
-    #############################################################################  
     def collectWindowsConfig(self) -> None:
         """Collect information about the hardware we're running on on Windows.
 
@@ -127,7 +109,7 @@ class Host:
         """
         try:
             cpu_info_cmd = runCommand(exe="wmic", args=[
-                                      "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"])        
+                                      "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"])
             for line in cpu_info_cmd.std_out.strip().split("\n"):
                 if "L2CacheSize" in line:
                     continue
@@ -141,13 +123,13 @@ class Host:
                     except:
                         pass
 
-            cpu_name_cmd = runCommand(exe="wmic", args=["cpu", "get","Name"])           
+            cpu_name_cmd = runCommand(exe="wmic", args=["cpu", "get", "Name"])
             for line in cpu_name_cmd.std_out.strip().split("\n"):
                 if "Name" in line:
                     continue
                 if line != "":
                     self.cpu = line
-             
+
             gpu_info_cmd = runCommand(
                 exe="wmic", args=["path", "win32_VideoController", "get", "name"])
             self.gpu = []
@@ -164,17 +146,17 @@ class Host:
                 if "Capacity" in line:
                     continue
                 if line != "":
-                    try:                    
-                        self.ram_total += int(line)                        
+                    try:
+                        self.ram_total += int(line)
                     except:
                         pass
-      
-        except Exception as excp2:
-           self._logger.error(
-                "error \"{error}\" calling wmic".format(error=excp2))
- 
+
+        except Exception as excp:
+            self._logger.error(
+                "error \"{error}\" calling wmic".format(error=excp))
+
     #############################################################################
-    # 
+    #
     def collectLinuxConfig(self) -> None:
         """Collect information about the hardware we're running on on Linux.
 
@@ -197,13 +179,13 @@ class Host:
             try:
                 if checkIfExists("/etc/os-release") == True:
                     os_vers_maj = runCommand(
-                        exe="bash", args=["-c", 
-                        "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                        exe="bash", args=["-c",
+                                          "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
                     self.os_vers_major = os_vers_maj.std_out.strip()
-                    
-                    os_vers  = runCommand(
-                        exe="bash", args=["-c", 
-                        "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+
+                    os_vers = runCommand(
+                        exe="bash", args=["-c",
+                                          "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
                     self.os_vers = os_vers.std_out.strip()
             except:
                 pass
@@ -211,7 +193,7 @@ class Host:
             cpu_name_cmd = runCommand(
                 exe="bash", args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"])
             self.cpu = cpu_name_cmd.std_out.strip()
-            
+
             cpu_num_cores = runCommand(
                 exe="bash", args=["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"])
             self.num_cores = int(cpu_num_cores.std_out.strip())
@@ -228,26 +210,29 @@ class Host:
                 exe="bash", args=["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"])
             self.level3_cache = int(cpu_l3_cache.std_out.strip())
 
-            ram_size = runCommand(exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"])
+            ram_size = runCommand(
+                exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"])
             self.ram_total = int(ram_size.std_out.strip())
 
             self.gpu = []
-            gpu_info_cmd = runCommand(exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"])
-            for line in gpu_info_cmd.std_out.strip().split("\n"):               
+            gpu_info_cmd = runCommand(
+                exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"])
+            for line in gpu_info_cmd.std_out.strip().split("\n"):
                 if line != "":
                     self.gpu.append(line.strip())
-                    
+
             if self.gpu == []:
-                gpu_info_cmd = runCommand(exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"])
-                for line in gpu_info_cmd.std_out.strip().split("\n"):               
+                gpu_info_cmd = runCommand(
+                    exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"])
+                for line in gpu_info_cmd.std_out.strip().split("\n"):
                     if line != "":
-                        self.gpu.append(line.strip())                   
+                        self.gpu.append(line.strip())
 
         except Exception as excp:
             self._logger.error(
                 "error \"{error}\" getting Linux host information".format(error=excp))
 
-    #############################################################################   
+    #############################################################################
     def collectOSXConfig(self) -> None:
         """Collect information about the hardware we're running on on MacOS X.
 
@@ -267,12 +252,15 @@ class Host:
             self.os_vers = os_name.std_out.strip()
 
             os_vers_2_digits_list = self.os_vers.rsplit(".")
-            self.os_vers_major = OSX_NAME_DICT[".".join(os_vers_2_digits_list[:-1])]            
+            self.os_vers_major = OSX_NAME_DICT[".".join(
+                os_vers_2_digits_list[:-1])]
 
-            cpu_name_cmd = runCommand(exe="sysctl", args=["-n", "machdep.cpu.brand_string"])
+            cpu_name_cmd = runCommand(
+                exe="sysctl", args=["-n", "machdep.cpu.brand_string"])
             self.cpu = cpu_name_cmd.std_out.strip()
 
-            cpu_num_cores = runCommand(exe="sysctl", args=["-n", "hw.physicalcpu"])
+            cpu_num_cores = runCommand(
+                exe="sysctl", args=["-n", "hw.physicalcpu"])
             self.num_cores = int(cpu_num_cores.std_out)
 
             cpu_num_log_cpus = runCommand(
@@ -298,13 +286,14 @@ class Host:
                 "error \"{error}\" gathering information on OS X".format(error=excp))
 
 ################################################################################
+
+
 def printHostInfo() -> None:
     """To test the collection of the host's information, print all to stdout.
     """
     print(Host())
 
+
 ################################################################################
 if __name__ == '__main__':
     printHostInfo()
-
-
