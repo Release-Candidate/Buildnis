@@ -89,8 +89,6 @@ class WriteCfg:
 
             self.build_tool_cfgs.append(temp_dict)
 
-# TODO add protocol for the config class
-
 
 class Check:
     """Checks if all build tools are present.

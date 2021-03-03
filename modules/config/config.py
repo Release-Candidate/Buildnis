@@ -9,16 +9,12 @@
 from __future__ import annotations
 
 import logging
-import modules
 from modules.helpers.config_parser import parseConfigElement
 from modules.helpers.json import getJSONDict, readJSON, writeJSON
 from modules.helpers import LOGGER_NAME
 import os
 import pprint
 from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, config_values, project_dependency
-
-
-# TODO add protocols for config classes
 
 
 class Config:

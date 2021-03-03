@@ -14,11 +14,13 @@ import os
 import pathlib
 import hashlib
 
+
 class FileCompareException(BuildnisException):
     """Exception raised if a given file path can't be accessed or read to 
     generate the hash.
     """
     pass
+
 
 class FileCompare:
     """Holds information about a file to compare it to another version of itself
@@ -68,9 +70,9 @@ class FileCompare:
             self.size = self.path_obj.stat().st_size
 
             self.hash = hashFile(self.path)
-            
+
         except Exception as excp:
-            raise FileCompareException (excp)
+            raise FileCompareException(excp)
 
     ############################################################################
     def generateHash(self) -> str:
@@ -90,7 +92,7 @@ class FileCompare:
     def isSameFile(self, other: FileCompare) -> bool:
         """Checks whether two `FileComare` instances hold the same file content.
 
-        
+
         Compares `self` against another FileCompare instance, comparing file size
         and hash.
 
@@ -112,7 +114,7 @@ class FileCompare:
         if self.size == other.size and self.hash == other.hash:
             return True
         else:
-            return False 
+            return False
 
     ############################################################################
     def isSame(self, file: FilePath, not_exist_is_excp: bool = False) -> bool:
@@ -161,6 +163,47 @@ class FileCompare:
 
         return True
 
+    ############################################################################
+    def hasChanged(self, not_exist_is_excp: bool = False) -> bool:
+        """Checks if the stored file has changed on disk since taking the last
+        checksum.
+
+        If the file has changed (another file size or checksum) or it doesn't 
+        exist any more, `True` is returned. If the file still has the same 
+        checksum as the stored one, `False` is returned.
+
+        Args:
+            not_exist_is_excp (bool, optional): Should an exception be raised if 
+                                    the file doesn't exist anymore? Defaults to 
+                                    False.
+
+        Raises:
+            FileCompareException:  if something went wrong
+
+        Returns:
+            bool: `True`, if the file has changed since calculating the checksum,
+                    `False` else.
+        """
+        try:
+            if not checkIfIsFile(self.path):
+                if not_exist_is_excp == True:
+                    raise FileCompareException(
+                        "file \"{path}\" does not exist or is not a file!".format(path=self.path))
+                else:
+                    return True
+            else:
+                file_size_now = self.path_obj.stat().st_size
+                if file_size_now != self.size:
+                    return True
+                hash_now = hashFile(self.path)
+                if hash_now != self.hash:
+                    return True
+                
+                return False
+
+        except Exception as excp:
+            raise FileCompareException(excp)
+
 ################################################################################
 def areHashesSame(file1: FilePath, file2: FilePath, not_exist_is_excp: bool = False) -> bool:
     """Compares the BLAKE2 hashes of the given files.
@@ -182,14 +225,14 @@ def areHashesSame(file1: FilePath, file2: FilePath, not_exist_is_excp: bool = Fa
               `False` else
     """
     try:
-        if not checkIfIsFile(file1):       
+        if not checkIfIsFile(file1):
             if not_exist_is_excp == True:
                 raise FileCompareException(
                     "file \"{path}\" does not exist or is not a file!".format(path=file1))
             else:
                 return False
 
-        if not checkIfIsFile(file2):       
+        if not checkIfIsFile(file2):
             if not_exist_is_excp == True:
                 raise FileCompareException(
                     "file \"{path}\" does not exist or is not a file!".format(path=file2))
@@ -336,7 +379,7 @@ def makeDirIfNotExists(dir: FilePath) -> None:
         if dir_path_obj.exists:
             if not dir_path_obj.is_dir:
                 raise FileCompareException(
-                    "error creating directory, \"{path}\" exists but is not a directory!".format(path=dir))        
+                    "error creating directory, \"{path}\" exists but is not a directory!".format(path=dir))
 
         dir_path_obj.mkdir(parents=True, exist_ok=True)
 

@@ -27,10 +27,13 @@ class JSONBaseClass:
     `_logger`, the `loggin.Logger` instance).
 
     Methods:
+        hasConfigChangedOnDisk
         expandAllPlaceholders: Replaces all placeholders (like `${PLACEHOLDER}`)
                                 in the instance's attribute values.
         readJSON: Reads the JSON config file and saves the values to attributes.
+        reReadIfChangedOnDisk
         writeJSON: Writes the attributes and their values to the JSON file.
+        reWriteIfChangedOnDisk
     """
 
     ###########################################################################
@@ -39,8 +42,11 @@ class JSONBaseClass:
         file name to `config_name`.
 
         Args:
-            config_file_name (str): [description]
-            config_name (str): [description]
+            config_file_name (str): The 'nice', human readable, name of the 
+                                    config file
+            config_name (str): The internal name of the configuration file,
+                                also saved as element in the JSON file to 
+                                check the validity.
         """
         self.file_name = config_file_name
         self.name = config_name
@@ -104,22 +110,54 @@ class JSONBaseClass:
                   file_text=self.name, conf_file_name=self.file_name)
 
     ###########################################################################
-    def hasConfigChanged(self) -> bool:
-        """[summary]
+    def hasConfigChangedOnDisk(self) -> bool:
+        """Returns `True` if the JSON file has been changed since the time the
+        checksum has been calculated.
 
         Returns:
             bool: `True` if the original JSON file has changed since the time
-                    the files checksum has been saved.
+                    the file's checksum has been saved.
                    `False` else
         """
-        ret_val = False
-
         try:
-            ret_val = self.orig_file.isSame(self.)
-        except:
-            return ret_val
+            return self.orig_file.hasChanged(not_exist_is_excp=True)
+        except Exception as excp:
+            self._logger.error("error \"{error}\" calculating checksum of JSON file \"{path}\"".format(
+                error=excp, path=self.orig_file.path))
+            return True
 
-        return ret_val
+    ###########################################################################
+    def reReadIfChangedOnDisk(self) -> None:
+        """Checks if the JSON configuration file has been changed since the 
+        time the checksum has been calculated, if yes, it is reread from disk.
+        """
+        try:        
+            if self.orig_file.hasChanged(not_exist_is_excp=True):
+                tmp_json_path = self.json_path
+                self.readJSON(json_path=self.orig_file.path)
+                self.json_path = tmp_json_path
+
+        except Exception as excp:
+            self._logger.error("error \"{error}\" checking whether to reread JSON file \"{path}\"".format(
+                error=excp, path=self.orig_file.path))
+
+    ###########################################################################
+    def reWriteIfChangedOnDisk(self) -> None:
+        """Checks if the JSON configuration file has been changed since the 
+        time the checksum has been calculated, if yes, it is reread from disk 
+        and the generated JSON file is written to it's file path.
+        """
+        try:
+            if self.orig_file.hasChanged(not_exist_is_excp=True):
+                tmp_json_path = self.json_path
+                self.readJSON(json_path=self.orig_file.path)
+                self.json_path = tmp_json_path
+                self.writeJSON(json_path=self.json_path)
+
+        except Exception as excp:
+            self._logger.error("error \"{error}\" checking whether to rewrite JSON file \"{path}\"".format(
+                error=excp, path=self.orig_file.path))
+           
 
     ###########################################################################
     def __repr__(self) -> str:
