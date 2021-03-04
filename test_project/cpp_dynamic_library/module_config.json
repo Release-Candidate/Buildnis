@@ -44,7 +44,7 @@
             "result": "file",
             "result_name": "cpp_shared_library-dbg",
             "build_directory": "./build-dbg",
-            "sources": "${../sources}",
+            "sources": "${../../sources}",
             "include_paths": [
                 "./"
             ],

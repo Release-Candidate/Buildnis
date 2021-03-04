@@ -24,7 +24,7 @@
             "result": "file",
             "result_name": "fortran_executable",
             "build_directory": "./build",
-            "sources": "${../sources}",
+            "sources": "${../../sources}",
             "include_paths": [
                 "./"
             ],
@@ -41,7 +41,7 @@
             "result": "file",
             "result_name": "fortran_executable-dbg",
             "build_directory": "./build-dbg",
-            "sources": "${../sources}",
+            "sources": "${../../sources}",
             "include_paths": [
                 "./"
             ],

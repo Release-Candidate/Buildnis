@@ -26,7 +26,7 @@
             "result": "file",
             "result_name": "fortran_shared_library",
             "build_directory": "./build",
-            "sources": "${../sources}",
+            "sources": "${../../sources}",
             "include_paths": 
             [
                 "./"
@@ -44,7 +44,7 @@
             "result": "file",
             "result_name": "fortran_shared_library-dbg",
             "build_directory": "./build-dbg",
-            "sources": "${../sources}",
+            "sources": "${../../sources}",
             "include_paths": [
                 "./"
             ],

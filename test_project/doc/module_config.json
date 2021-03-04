@@ -26,7 +26,7 @@
             "result": "file",
             "result_name": "index.html",
             "build_directory": "./",
-            "sources": "${../sources}"           
+            "sources": "${../../sources}"           
         },
         {
             "name": "install",
