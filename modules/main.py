@@ -89,19 +89,19 @@ def main():
             logger.warning("JSON file \"{path}\" already exists, not checking for build tool configurations".format(
                 path=build_tools_filename))
 
-        if not project_config_filename_exists or commandline_args.do_configure == True:
-            cfg = modules.config.config.Config(
-                project_config=commandline_args.project_config_file)
+        if project_config_filename_exists and commandline_args.do_configure == True:
+            try:
+                pathlib.Path(project_config_filename).unlink()
+                project_config_filename_exists = False
+            except Exception as excp:
+                logger.error(
+                    "error \"{error}\" deleting generated project config file to reconfigure project".format(error=excp))            
 
-            if not project_config_filename_exists:
-                config_values.g_list_of_generated_files.append(
-                    project_config_filename)
-        else:
-            cfg = modules.config.config.Config(
-                project_config=project_config_filename)
+        cfg = modules.config.config.Config(
+            project_config=commandline_args.project_config_file, json_path=project_config_filename)
 
         cfg.project_dep_cfg = project_dependency.ProjectDependency(
-            cfg.project_dependency_config)
+            cfg.project_dependency_config, json_path=project_dep_filename)
 
         cfg.expandAllPlaceholders()
 
@@ -113,22 +113,21 @@ def main():
                 path=project_dep_filename))
             cfg.checkDependencies(force_check=False)
 
-        cfg.project_dep_cfg.writeJSON(project_dep_filename)
+        cfg.project_dep_cfg.writeJSON()
+
+        if not project_dep_filename_exists:
+            config_values.g_list_of_generated_files.append(
+                project_dep_filename)
 
         logger.debug("Project config: \"\"\"{cfg}\"\"\"".format(
             cfg=cfg))
         logger.debug("Project dependency config: \"\"\"{cfg}\"\"\"".format(
             cfg=cfg.project_dep_cfg))
 
-        if not project_dep_filename_exists:
-            config_values.g_list_of_generated_files.append(
-                project_dep_filename)
-
         cfg.setBuildToolCfgPath(build_tools_filename)
-        cfg.setHostConfigPath(host_cfg_filename)
-        cfg.setProjDepCfgPath(project_dep_filename)
+        cfg.setHostConfigPath(host_cfg_filename)        
 
-        cfg.writeJSON(project_config_filename)
+        cfg.writeJSON()
         if not project_config_filename_exists:
             config_values.g_list_of_generated_files.append(
                 project_config_filename)

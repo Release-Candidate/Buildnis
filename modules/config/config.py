@@ -7,6 +7,8 @@
 ###############################################################################
 
 from __future__ import annotations
+from modules.config.module import ModuleCfg
+from modules.helpers.files import returnExistingFile
 
 import os
 
@@ -43,24 +45,27 @@ class Config(JSONBaseClass):
     """
     ###########################################################################
 
-    def __init__(self, project_config: FilePath) -> None:
+    def __init__(self, project_config: FilePath, json_path: FilePath) -> None:
         """Constructor of class Config.
 
         Parses the project's JSON configuration and stores it to project_cfg.
 
         Parameters:
-            project_config: the path to the project's JSON configuration file.
+            project_config (FilePath): the path to the project's JSON configuration 
+                                        file to read.
+            json_path (FilePath): The path to the JSON file to write the result.
         """
         super().__init__(config_file_name=PROJECT_FILE_NAME, config_name="project")
 
         self.project_dep_cfg: project_dependency.ProjectDependency = None        
         self.config_path = project_config
+        self.json_path = json_path
 
-        self.readJSON(json_path=self.config_path)
+        read_config_path = returnExistingFile(
+            [self.json_path, self.config_path])
 
-        # self.project_cfg = readJSON(
-        #     json_path=self.config_path, file_text="project", conf_file_name=PROJECT_FILE_NAME)
-
+        self.readJSON(json_path=read_config_path)
+       
         self.project_dependency_config = os.path.abspath("/".join([
             os.path.dirname(self.config_path), os.path.basename(self.project_dependency_config)]))
 
@@ -84,13 +89,26 @@ class Config(JSONBaseClass):
         config_values.PROJECT_ROOT = os.path.abspath(
             os.path.dirname(self.config_path))
 
-        self.module_cfgs = []
+        # only if not reading from already written configs.
+        if read_config_path == self.config_path:
+            self.module_cfgs = []
 
-        self.build_cfgs = dict()
+            self.build_cfgs = []
 
-        self.parseModuleCfgs()
+            self.parseModuleCfgs()
 
-        self.parseBuildCfgs()
+            self.parseBuildCfgs()
+        else:
+            tmp_modules = []
+            for module in self.module_cfgs:
+                tmp_module = ModuleCfg.fromReadJSON(module)
+                tmp_modules.append(tmp_module)
+
+            self.module_cfgs = tmp_modules
+
+            self.reReadIfChangedOnDisk()
+            for module in self.module_cfgs:              
+                module.reReadIfChangedOnDisk()
 
     ###########################################################################
     def parseModuleCfgs(self) -> None:
@@ -106,8 +124,7 @@ class Config(JSONBaseClass):
             module_path = os.path.abspath(os.path.join(
                 self.project_cfg_dir, module))
 
-            module_cfg = readJSON(
-                json_path=module_path, file_text="module", conf_file_name=MODULE_FILE_NAME)
+            module_cfg = ModuleCfg(module_config=module_path, json_path="bla")
 
             tmp_module_paths.append(module_path)
 
@@ -116,7 +133,7 @@ class Config(JSONBaseClass):
 
             self.module_cfgs.append(module_cfg)
 
-            self.modules = tmp_module_paths
+        self.modules = tmp_module_paths
 
     ###########################################################################
     def parseBuildCfgs(self) -> None:
@@ -140,17 +157,14 @@ class Config(JSONBaseClass):
 
                 module_build_cfg.build_config_file = build_cfg_path
 
-                self.build_cfgs[build_cfg_path] = build_cfg
+                self.build_cfgs.append(build_cfg)
 
     ############################################################################
-    def writeJSON(self, json_path: FilePath) -> None:
-        """Writes the project's config to a JSON file
-
-        Args:
-            json_path (str):  the path to write the json file to
+    def writeJSON(self) -> None:
+        """Writes the project's config to a JSON file.
         """
-        super().writeJSON(json_path=json_path, to_ignore=[
-            "module_cfgs", "project_dep_cfg"])
+        super().writeJSON(json_path=self.json_path, to_ignore=[
+            "project_dep_cfg"])
 
     ###########################################################################
     def setHostConfigPath(self, path: FilePath) -> None:
@@ -186,38 +200,7 @@ class Config(JSONBaseClass):
         sign followed by a curly opening brace, the string to replace and the 
         closing curly brace.       
         """
-        super().expandAllPlaceholders()
-        # # for key in self.project_cfg.__dict__:
-        # #     # print("Project {key}: {value}".format(key=key, value=self.project_cfg.__dict__[key]))
-        # #     self.project_cfg.__dict__[key] = parseConfigElement(element=self.project_cfg.__dict__[key], parents=[self.project_cfg])
-        # self.project_cfg = parseConfigElement(
-        #     element=self, parents=[self])
-
-        # for module in self.module_cfgs:
-        #     # for key in self.module_cfgs[module].__dict__:
-        #     #     # print("Module {key}: {value}".format(key=key,
-        #     #     #                                      value=self.module_cfgs[module].__dict__[key]))
-        #     #     self.module_cfgs[module].__dict__[key] = parseConfigElement(element=self.module_cfgs[module].__dict__[
-        #     #         key], parents=[self.project_cfg])
-        #     self.module_cfgs[module] = parseConfigElement(
-        #         element=self.module_cfgs[module], parents=[self.project_cfg, self.module_cfgs[module]])
-
-        # for build_cfg in self.build_cfgs:
-        #     # for key in build_cfg.__dict__:
-        #     #     print("Build CFG {key}: {value}".format(key=key,
-        #     #                                             value=build_cfg[key]))
-        #     #     self.build_cfgs[build_cfg].__dict__[key] = parseConfigElement(element=self.build_cfgs[build_cfg].__dict__[
-        #     #                        key], parents=[self.project_cfg])
-        #     self.build_cfgs[build_cfg] = parseConfigElement(
-        #         element=self.build_cfgs[build_cfg], parents=[self.project_cfg, self.build_cfgs[build_cfg]])
-
-        # # for key in self.project_dep_cfg.dependency_cfg.__dict__:
-        # #     # print("Dep CFG {key}: {value}".format(key=key,
-        # #     #                                       value=self.project_dep_cfg.dependency_cfg.__dict__[key]))
-        # #     self.project_dep_cfg.dependency_cfg.__dict__[key] = parseConfigElement(
-        # #         element=self.project_dep_cfg.dependency_cfg.__dict__[key], parents=[self.project_cfg])
-        # self.project_dep_cfg.dependency_cfg = parseConfigElement(
-        #     element=self.project_dep_cfg.dependency_cfg, parents=[self.project_cfg, self.project_dep_cfg.dependency_cfg])
+        super().expandAllPlaceholders()       
 
     ###########################################################################
     def checkDependencies(self, force_check: bool = False) -> None:
@@ -232,11 +215,4 @@ class Config(JSONBaseClass):
         if self.project_dep_cfg != None:
             self.project_dep_cfg.checkDependencies(force_check)
 
-    # ###########################################################################
-    # def __repr__(self) -> str:
-    #     """Returns a string representing the object.
 
-    #     Returns:
-    #         str: A strings representation of the objects data
-    #     """
-    #     return pprint.pformat(getJSONDict(self.project_cfg), indent=4, sort_dicts=False)

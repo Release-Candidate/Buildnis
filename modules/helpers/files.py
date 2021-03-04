@@ -8,11 +8,14 @@
 
 from __future__ import annotations
 
-from modules import BuildnisException
-from modules.config import FilePath
+
 import os
 import pathlib
 import hashlib
+from typing import List
+
+from modules import BuildnisException
+from modules.config import FilePath
 
 
 class FileCompareException(BuildnisException):
@@ -198,13 +201,15 @@ class FileCompare:
                 hash_now = hashFile(self.path)
                 if hash_now != self.hash:
                     return True
-                
+
                 return False
 
         except Exception as excp:
             raise FileCompareException(excp)
 
 ################################################################################
+
+
 def areHashesSame(file1: FilePath, file2: FilePath, not_exist_is_excp: bool = False) -> bool:
     """Compares the BLAKE2 hashes of the given files.
 
@@ -256,6 +261,8 @@ def areHashesSame(file1: FilePath, file2: FilePath, not_exist_is_excp: bool = Fa
         raise FileCompareException(excp)
 
 ################################################################################
+
+
 def checkIfExists(file: FilePath) -> bool:
     """Returns `True` if the given file exists.
 
@@ -283,6 +290,8 @@ def checkIfExists(file: FilePath) -> bool:
     return False
 
 ################################################################################
+
+
 def checkIfIsFile(file: FilePath) -> bool:
     """Returns `True` if the given file exists and is a file.
 
@@ -310,6 +319,8 @@ def checkIfIsFile(file: FilePath) -> bool:
     return False
 
 ################################################################################
+
+
 def checkIfIsDir(dir: FilePath) -> bool:
     """Returns `True` if the given file exists and is a directory.
 
@@ -337,6 +348,8 @@ def checkIfIsDir(dir: FilePath) -> bool:
     return False
 
 ################################################################################
+
+
 def checkIfIsLink(link: FilePath) -> bool:
     """Returns `True` if the given file exists and is a symlink.
 
@@ -364,6 +377,8 @@ def checkIfIsLink(link: FilePath) -> bool:
     return False
 
 ################################################################################
+
+
 def makeDirIfNotExists(dir: FilePath) -> None:
     """Creates the directory `dir` if it doesn't exist yet.
 
@@ -387,6 +402,8 @@ def makeDirIfNotExists(dir: FilePath) -> None:
         raise FileCompareException(excp)
 
 ################################################################################
+
+
 def hashFile(file: FilePath) -> str:
     """Generates a BLAKE2 hash of the file with the given path.
 
@@ -413,5 +430,30 @@ def hashFile(file: FilePath) -> str:
         ret_val = hash_func.hexdigest()
     except Exception as excp:
         raise FileCompareException(excp)
+
+    return ret_val
+
+################################################################################
+def returnExistingFile(file_list: List[FilePath]) -> FilePath:
+    """Returns the first existing path in the list of given paths, and `""` 
+    the empty string, if none of the paths points to an existing file.
+
+    Raises:
+            FileCompareException: if something goes wrong
+
+    Args:
+        file_list (List[FilePath]): The list of file paths to check for existence.
+
+    Returns:
+        FilePath: The first of the given file paths that exists as a file, the 
+                    empty string (`""`) if none exists.
+    """
+    ret_val = ""
+    try:
+        for path in file_list:
+            if checkIfExists(path):
+                return path
+    except FileCompareException as excp:
+        raise excp
 
     return ret_val

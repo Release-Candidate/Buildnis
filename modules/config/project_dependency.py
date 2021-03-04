@@ -7,6 +7,7 @@
 ###############################################################################
 
 from __future__ import annotations
+from modules.helpers.files import returnExistingFile
 
 import os
 import pathlib
@@ -67,19 +68,24 @@ class ProjectDependency(JSONBaseClass):
     """
     ###########################################################################
 
-    def __init__(self, dependency_config: FilePath) -> None:
+    def __init__(self, dependency_config: FilePath, json_path: FilePath) -> None:
         """Parses the project dependency JSON configuration file.
 
         Args:
             dependency_config (FilePath): the configuration file of project 
-            dependencies to load
+                                            dependencies to load            
+            json_path (FilePath): The path to the JSON file to write the result.
         """
         super().__init__(config_file_name=PROJECT_DEP_FILE_NAME,
                          config_name="project dependencies")
 
         self.config_path = os.path.normpath(dependency_config)
+        self.json_path = json_path
 
-        self.readJSON(json_path=self.config_path)
+        read_config_path = returnExistingFile(
+            [self.json_path, self.config_path])
+
+        self.readJSON(json_path=read_config_path)
 
         if not hasattr(self, "dependencies"):
             self.dependencies = []
@@ -230,3 +236,9 @@ class ProjectDependency(JSONBaseClass):
                 arg=dep.executable_argument, regex=dep.executable_check_regex))
 
         return False
+
+    ############################################################################
+    def writeJSON(self) -> None:
+        """Writes the generated dependency configuration to disk.
+        """
+        super().writeJSON(self.json_path)

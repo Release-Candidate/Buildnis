@@ -27,7 +27,9 @@ class JSONBaseClass:
     `_logger`, the `loggin.Logger` instance).
 
     Methods:
-        hasConfigChangedOnDisk
+        hasConfigChangedOnDisk: Returns `True` if the JSON configuration has 
+                                changed since the time the checksum has been 
+                                calculated.
         expandAllPlaceholders: Replaces all placeholders (like `${PLACEHOLDER}`)
                                 in the instance's attribute values.
         readJSON: Reads the JSON config file and saves the values to attributes.
@@ -53,7 +55,7 @@ class JSONBaseClass:
                                 check the validity.
         """
         self.file_name = config_file_name
-        self.name = config_name
+        self.config_name = config_name
         self.file_version = ".".join(CFG_VERSION)
         self._logger = logging.getLogger(LOGGER_NAME)
 
@@ -66,7 +68,7 @@ class JSONBaseClass:
         """
         try:
             tmp_obj = readJSON(json_path=json_path,
-                               file_text=self.name, conf_file_name=self.file_name)
+                               file_text=self.config_name, conf_file_name=self.file_name)
 
             for item in tmp_obj.__dict__:
                 if isinstance(item, str):
@@ -100,7 +102,7 @@ class JSONBaseClass:
                 setattr(self, item, tmp_obj.__dict__[item])
             else:
                 self._logger.error(
-                    "error expanding placeholders of file \"{file}\": found item \"{item}\" in object dictionary that isn't a string!".format(file=self.name, item=item))
+                    "error expanding placeholders of {file} configuration: found item \"{item}\" in object dictionary that isn't a string!".format(file=self.config_name, item=item))
 
     ############################################################################
     def writeJSON(self, json_path: FilePath, to_ignore: List[str] = []) -> None:
@@ -112,7 +114,7 @@ class JSONBaseClass:
         """
         self.json_path = json_path
         writeJSON(getJSONDict(self, to_ignore), json_path=json_path,
-                  file_text=self.name, conf_file_name=self.file_name)
+                  file_text=self.config_name, conf_file_name=self.file_name)
 
     ###########################################################################
     def hasConfigChangedOnDisk(self) -> bool:
@@ -138,10 +140,12 @@ class JSONBaseClass:
         """
         try:
             if self.orig_file.hasChanged(not_exist_is_excp=True):
+                self._logger.warning("Rereading {name} configuration from JSON file \"{json_path}\"".format(
+                    name=self.config_name, json_path=self.orig_file.path))
                 tmp_json_path = self.json_path
                 self.readJSON(json_path=self.orig_file.path)
                 self.json_path = tmp_json_path
-
+         
         except Exception as excp:
             self._logger.error("error \"{error}\" checking whether to reread JSON file \"{path}\"".format(
                 error=excp, path=self.orig_file.path))
@@ -186,5 +190,5 @@ class JSONBaseClass:
         Returns:
             str: A strings representation of the object's data
         """
-        return "{name}:\n{config}".format(name=self.name, config=pprint.pformat(
+        return "{name}:\n{config}".format(name=self.config_name, config=pprint.pformat(
             getJSONDict(self), indent=4, sort_dicts=False))

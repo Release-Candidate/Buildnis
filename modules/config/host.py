@@ -10,14 +10,11 @@ from __future__ import annotations
 
 
 import platform
-import logging
 
 from modules.config.json_base_class import JSONBaseClass
 from modules.helpers.files import checkIfExists
 from modules.helpers.execute import runCommand
-from modules.helpers.json import getJSONDict, writeJSON
-from modules.helpers import LOGGER_NAME
-from modules.config import AMD64_ARCH_STRING, CFG_VERSION, FilePath, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
+from modules.config import AMD64_ARCH_STRING, CFG_VERSION, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
 
 
 class Host(JSONBaseClass):
@@ -156,7 +153,6 @@ class Host(JSONBaseClass):
                 "error \"{error}\" calling wmic".format(error=excp))
 
     #############################################################################
-    #
     def collectLinuxConfig(self) -> None:
         """Collect information about the hardware we're running on on Linux.
 

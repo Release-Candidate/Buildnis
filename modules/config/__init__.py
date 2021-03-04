@@ -13,7 +13,7 @@ __all__ = ["Config", "Host", "Check", "ProgramDependency",
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", 
            "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT",
            "config_values", "ConfigDirJson", 
-           "json_base_class"]
+           "JSONBaseClass", "ModuleCfg"]
 
 import collections
 from typing import NamedTuple

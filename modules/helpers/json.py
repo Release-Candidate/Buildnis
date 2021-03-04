@@ -169,13 +169,18 @@ def readJSON(json_path: FilePath, file_text: str = "", conf_file_name: str = "")
 
     try:
         if not hasattr(ret_val, "orig_file"):
-            ret_val.orig_file = FileCompare(json_path)
+            ret_val.orig_file = FileCompare(json_path)            
         else:
-            tmp_file = FileCompare(json_path)
-            tmp_file.path = ret_val.orig_file.path
-            tmp_file.size = ret_val.orig_file.size
-            tmp_file.hash = ret_val.orig_file.hash
-            ret_val.orig_file = tmp_file
+            if ret_val.orig_file.path == json_path:
+                ret_val.orig_file = FileCompare(json_path)                
+            else:
+                # to get a FileCompare instance, not SimpleNamespace                
+                tmp_orig = FileCompare(ret_val.orig_file.path)
+                tmp_orig.path = ret_val.orig_file.path
+                tmp_orig.hash = ret_val.orig_file.hash
+                tmp_orig.size = ret_val.orig_file.size
+                ret_val.orig_file = tmp_orig
+
     except Exception as excp:
         _logger.critical("error \"{error}\" generating JSON file \"{file}\" checksum".format(
             error=excp, file=json_path))
