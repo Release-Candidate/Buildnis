@@ -7,7 +7,7 @@
 ###############################################################################
 
 import logging
-from modules.config import config_values
+from modules.config import LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
 import re
 import datetime
 from modules.helpers.files import FileCompare
@@ -69,6 +69,18 @@ host_num_cores_regex = re.compile("\$\{(HOST_NUM_CORES)\}")
 
 host_num_log_cores_regex = re.compile("\$\{(HOST_NUM_LOG_CORES)\}")
 """Regex to find the placeholder `${HOST_NUM_LOG_CORES}`.
+"""
+
+os_name_windows_regex = re.compile("\$\{(OS_NAME_WINDOWS)\}")
+"""Regex to find the placeholder `${OS_NAME_WINDOWS}`.
+"""
+
+os_name_linux_regex = re.compile("\$\{(OS_NAME_LINUX)\}")
+"""Regex to find the placeholder `${OS_NAME_LINUX}`.
+"""
+
+os_name_osx_regex = re.compile("\$\{(OS_NAME_OSX)\}")
+"""Regex to find the placeholder `${OS_NAME_OSX}`.
 """
 
 current_time_regex = re.compile("\$\{(TIME)\}")
@@ -196,6 +208,22 @@ def replaceConstants(item: str) -> str:
             config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), item)
         return ret_val
 
+
+    result = os_name_osx_regex.search(item)
+    if result:
+        ret_val = os_name_osx_regex.sub(OSX_OS_STRING, item)
+        return ret_val
+
+    result = os_name_linux_regex.search(item)
+    if result:
+        ret_val = os_name_linux_regex.sub(LINUX_OS_STRING, item)
+        return ret_val
+
+    result = os_name_windows_regex.search(item)
+    if result:
+        ret_val = os_name_windows_regex.sub(WINDOWS_OS_STRING, item)
+        return ret_val
+
     result = current_date_regex.search(item)
     if result:
         now_date = datetime.now()
@@ -247,10 +275,10 @@ def expandItem(item: str, parents: List[object]) -> object:
     """
     ret_val = replaceConstants(item)
 
-    result = placeholder_regex.search(item)
+    result = placeholder_regex.search(ret_val)
     parent_to_use_id = 0
     if result:
-        # print("Found Placeholder: {place}".format(place=result.group(1)))
+        print("Found Placeholder: {place}".format(place=result.group(1)))
         placeholder = result.group(1)
         parent_regex = re.compile("(\.\./)")
 
@@ -263,15 +291,21 @@ def expandItem(item: str, parents: List[object]) -> object:
         try:
             parent = parents[parent_to_use_id]
 
-            substitute = parent[placeholder]
-            # print("Replace {ph} with: {elem}".format(
-            #    ph=placeholder, elem=substitute))
+            if isinstance(parent[placeholder], str):
+                substitute = parent[placeholder].replace("\\", "\\\\")
+            else:
+                substitute = parent[placeholder]
+            print("Replace {ph} with: {elem}".format(
+               ph=placeholder, elem=substitute))
         except:
             try:
                 parent = parents[parent_to_use_id]
-                substitute = getattr(parent, placeholder)
-                # print("Replace {ph} with: {elem}, class".format(ph=placeholder,
-                #                                                elem=substitute))
+                if isinstance(getattr(parent, placeholder), str):
+                    substitute = getattr(parent, placeholder).replace("\\", "\\\\")
+                else:
+                    substitute = getattr(parent, placeholder)
+                print("Replace {ph} with: {elem}, class".format(ph=placeholder,
+                                                               elem=substitute))
             except:
                 return ret_val
 

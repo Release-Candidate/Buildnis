@@ -4,15 +4,19 @@
     "dependencies":
     [
         {
-            "name": "Doxygen",
-            "website_url": "https://www.doxygen.nl/index.html",
+            "name": "Breathe",
+            "website_url": "https://breathe.readthedocs.io/en/latest/",
             "download_url": "",
             "download_dir": "",
-            "install_cmd": "",
+            "install_cmd": "pip",
+            "install_arguments": [
+                "install",
+                "breathe"
+            ],
             "ok_if_exists": "",
-            "ok_if_executable": "%programFiles%\\doxygen\\bin\\Doxygen",
-            "executable_argument": "-v",
-            "executable_check_regex": "(\\S+) \\("
+            "ok_if_executable": "pip",
+            "executable_argument": "list",
+            "executable_check_regex": "(breathe) "
         },
         {
             "name": "Sphinx",

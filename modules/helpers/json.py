@@ -42,7 +42,7 @@ def getJSONDict(src: object, to_ignore: List[str] = []) -> Dict:
     ret_val = dict()
 
     for item in src.__dict__:
-        if isinstance(src.__dict__[item], list):
+        if isinstance(src.__dict__[item], list):           
             sub_list = []            
             for subitem in src.__dict__[item]:
                 if hasattr(subitem, "__dict__"):
@@ -63,8 +63,12 @@ def getJSONDict(src: object, to_ignore: List[str] = []) -> Dict:
 
         elif item in to_ignore:
             pass
+    
+        elif hasattr(src.__dict__[item], "__dict__"):
+            ret_val[item] = getJSONDict(
+                src.__dict__[item], to_ignore=to_ignore)
 
-        else:
+        else:           
             ret_val[item] = src.__dict__[item]
 
     return ret_val

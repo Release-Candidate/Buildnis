@@ -76,7 +76,7 @@ class Check(JSONBaseClass):
             "/".join([CONFIGURE_SCRIPTS_PATH, os_name])))
         if not working_dir.is_dir():
             self._logger.critical(
-                "error: \"\{path}\" does not exist or is not a directory!".format(path=working_dir))
+                "error calling build tool scripts, \"\{path}\" does not exist or is not a directory!".format(path=working_dir))
             sys.exit(EXT_ERR_DIR)
 
         self.build_tool_cfgs = []

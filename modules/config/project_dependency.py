@@ -166,6 +166,8 @@ class ProjectDependency(JSONBaseClass):
                 exe=dep.ok_if_executable))
             dep.is_checked = self.isExecuteableDep(dep)
             if dep.is_checked:
+                self._logger.info("executable \"{exe}\" works, dependency \"{name}\" is installed".format(
+                    exe=dep.ok_if_executable, name=dep.name))
                 return True
 
         self._logger.error("dependency \"{name}\" not found!".format(

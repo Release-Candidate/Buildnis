@@ -7,14 +7,16 @@
 ###############################################################################
 
 from __future__ import annotations
-from modules.config.module import ModuleCfg
-from modules.helpers.files import returnExistingFile
 
 import os
+import pathlib
 
+from modules import EXT_ERR_DIR
+from modules.config.module import ModuleCfg
+from modules.helpers.files import returnExistingFile
+from modules.config.build_config import BuildCfg
 from modules.config.json_base_class import JSONBaseClass
-from modules.helpers.json import readJSON
-from modules.config import BUILD_FILE_NAME, FilePath, MODULE_FILE_NAME, PROJECT_FILE_NAME, config_values, project_dependency
+from modules.config import BUILD_CONF_PATH, FilePath, PROJECT_FILE_NAME, config_values, project_dependency
 
 
 class Config(JSONBaseClass):
@@ -106,9 +108,20 @@ class Config(JSONBaseClass):
 
             self.module_cfgs = tmp_modules
 
+            tmp_build_cfgs = []
+            for build_cfg in self.build_cfgs:
+                tmp_bcfg = BuildCfg.fromReadJSON(build_cfg)
+                tmp_build_cfgs.append(tmp_bcfg)
+
+            self.build_cfgs = tmp_build_cfgs      
+
             self.reReadIfChangedOnDisk()
             for module in self.module_cfgs:              
                 module.reReadIfChangedOnDisk()
+            for build_cfg in self.build_cfgs:
+                build_cfg.reReadIfChangedOnDisk()
+        
+        self.connectModulesBuildTools()
 
     ###########################################################################
     def parseModuleCfgs(self) -> None:
@@ -139,25 +152,41 @@ class Config(JSONBaseClass):
     def parseBuildCfgs(self) -> None:
         """Parses the build JSON configurations.
 
-        Parses and stores all module JSON configurations configured in the
-        modules setups stored in self.module_cfgs. Stores the configurations
-        in build_cfgs.
+        Parses all JSON build configurations in `./build_conf`.
         """
-        for module_cfg in self.module_cfgs:           
+        config_dir = pathlib.Path(
+            "/".join([self.project_cfg_dir, BUILD_CONF_PATH]))
+        if not config_dir.is_dir():
+            self._logger.critical(
+                "error loading build configurations, \"\{path}\" does not exist or is not a directory!".format(path=config_dir))
+            os.system.exit(EXT_ERR_DIR)
 
-            for module_build_cfg in module_cfg.supported_builds:
-                build_cfg_path = os.path.abspath(os.path.join(module_cfg.module_path,
-                                                              module_build_cfg.build_config_file))
+        self.build_cfgs = []
+        for config_file in config_dir.glob("*.json"):
+            try:
+                tmp_cfg = BuildCfg(build_config=str(
+                    config_file.absolute()), json_path="bla")
+                self.build_cfgs.append(tmp_cfg)
+            except Exception as excp:
+                self._logger.error("error \"{error}\" loading build configuration \"{path}\"".format(
+                    error=excp, path=config_file))
+        
+        # TODO OS dir configs!
 
-                build_cfg = readJSON(
-                    json_path=build_cfg_path, file_text="build", conf_file_name=BUILD_FILE_NAME)
 
-                build_cfg.build_cfg_path = os.path.normpath(os.path.dirname(
-                    build_cfg_path))
-
-                module_build_cfg.build_config_file = build_cfg_path
-
-                self.build_cfgs.append(build_cfg)
+    ############################################################################
+    def connectModulesBuildTools (self) -> None:
+        """For each target in each module: search for the build tool and put it
+        into this module's target.
+        """
+        for module in self.module_cfgs:
+            for target in module.targets:
+                build_type = target.build_type
+                build_subtype = target.build_subtype
+                build_tool_type = target.build_tool_type
+                for build_cfg in self.build_cfgs:
+                    if build_cfg.build_type == build_type and build_cfg.build_subtype == build_subtype and build_cfg.build_tool_type == build_tool_type:
+                        target.build_tool = build_cfg
 
     ############################################################################
     def writeJSON(self) -> None:
@@ -200,6 +229,8 @@ class Config(JSONBaseClass):
         sign followed by a curly opening brace, the string to replace and the 
         closing curly brace.       
         """
+        if self.project_dep_cfg != None:
+            self.project_dep_cfg.reReadIfChangedOnDisk()
         super().expandAllPlaceholders()       
 
     ###########################################################################
@@ -212,7 +243,7 @@ class Config(JSONBaseClass):
                         dependency even if it has been checked before - if 
                         `is_checked` is `True`. Defaults to False.
         """
-        if self.project_dep_cfg != None:
+        if self.project_dep_cfg != None:            
             self.project_dep_cfg.checkDependencies(force_check)
 
 

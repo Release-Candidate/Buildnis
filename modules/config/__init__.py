@@ -13,7 +13,7 @@ __all__ = ["Config", "Host", "Check", "ProgramDependency",
            "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", 
            "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT",
            "config_values", "ConfigDirJson", 
-           "JSONBaseClass", "ModuleCfg"]
+           "JSONBaseClass", "ModuleCfg", "BuildCfg"]
 
 import collections
 from typing import NamedTuple
@@ -90,3 +90,6 @@ I86_ARCH_STRING = "x86"
 CONFIGURE_SCRIPTS_PATH = "./configure_scripts"
 
 BUILD_TOOL_CONFIG_NAME = "build_tool_config"
+
+BUILD_CONF_PATH = "./build_conf"
+
