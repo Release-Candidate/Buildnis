@@ -14,8 +14,8 @@ import pathlib
 import hashlib
 from typing import List
 
-from modules import BuildnisException
-from modules.config import FilePath
+from buildnis.modules import BuildnisException
+from buildnis.modules.config import FilePath
 
 
 class FileCompareException(BuildnisException):

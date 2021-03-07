@@ -15,6 +15,7 @@ class BuildnisException(Exception):
     pass
 
 
+import os
 from typing import NamedTuple
 
 VersionString = str
@@ -38,7 +39,9 @@ class ProgramVersion(NamedTuple):
         )
 
 
-VERSION = ProgramVersion(major=0, minor=1, patch=0)
+VERSION = ProgramVersion(major=0, minor=1, patch=5)
+
+MODULE_DIR_PATH = os.path.abspath(os.path.dirname(__file__) + "/../")
 
 # Exit constants, constants passed to ´sys.exit´
 EXT_OK = 0

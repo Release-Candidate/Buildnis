@@ -11,12 +11,12 @@ from __future__ import annotations
 import os
 import pathlib
 
-from modules import EXT_ERR_DIR
-from modules.config.module import ModuleCfg
-from modules.helpers.files import returnExistingFile
-from modules.config.build_config import BuildCfg
-from modules.config.json_base_class import JSONBaseClass
-from modules.config import (
+from buildnis.modules import EXT_ERR_DIR
+from buildnis.modules.config.module import ModuleCfg
+from buildnis.modules.helpers.files import returnExistingFile
+from buildnis.modules.config.build_config import BuildCfg
+from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.config import (
     BUILD_CONF_PATH,
     FilePath,
     PROJECT_FILE_NAME,

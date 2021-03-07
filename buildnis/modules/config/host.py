@@ -11,10 +11,10 @@ from __future__ import annotations
 
 import platform
 
-from modules.config.json_base_class import JSONBaseClass
-from modules.helpers.files import checkIfExists
-from modules.helpers.execute import runCommand
-from modules.config import (
+from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.helpers.files import checkIfExists
+from buildnis.modules.helpers.execute import runCommand
+from buildnis.modules.config import (
     AMD64_ARCH_STRING,
     CFG_VERSION,
     HOST_FILE_NAME,

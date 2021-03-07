@@ -36,6 +36,7 @@ __all__ = [
 import collections
 from typing import NamedTuple
 
+from buildnis.modules import MODULE_DIR_PATH
 
 # Types to use for type hints
 
@@ -108,7 +109,7 @@ AMD64_ARCH_STRING = "x64"
 
 I86_ARCH_STRING = "x86"
 
-CONFIGURE_SCRIPTS_PATH = "./configure_scripts"
+CONFIGURE_SCRIPTS_PATH = "/".join([MODULE_DIR_PATH, "./configure_scripts"])
 
 BUILD_TOOL_CONFIG_NAME = "build_tool_config"
 

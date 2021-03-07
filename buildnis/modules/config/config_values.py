@@ -6,7 +6,7 @@
 # Date:     01.Mar.2021
 ###############################################################################
 
-from modules.config import FilePath
+from buildnis.modules.config import FilePath
 from typing import List
 
 

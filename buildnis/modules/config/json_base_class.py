@@ -13,11 +13,11 @@ import logging
 import sys
 from typing import Dict, List
 
-from modules.helpers.config_parser import parseConfigElement
-from modules import EXT_ERR_LD_FILE
-from modules.helpers.json import getJSONDict, readJSON, writeJSON
-from modules.config import CFG_VERSION, FilePath
-from modules.helpers import LOGGER_NAME
+from buildnis.modules.helpers.config_parser import parseConfigElement
+from buildnis.modules import EXT_ERR_LD_FILE
+from buildnis.modules.helpers.json import getJSONDict, readJSON, writeJSON
+from buildnis.modules.config import CFG_VERSION, FilePath
+from buildnis.modules.helpers import LOGGER_NAME
 
 
 class JSONBaseClass:

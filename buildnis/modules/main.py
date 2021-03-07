@@ -8,8 +8,8 @@
 ###############################################################################
 
 from __future__ import annotations
-from modules.config import CFG_DIR_NAME
-from modules import EXT_ERR_IMP_MOD
+from buildnis.modules.config import CFG_DIR_NAME
+from buildnis.modules import EXT_ERR_IMP_MOD
 
 try:
     import sys
@@ -23,21 +23,20 @@ except ImportError as exp:
     sys.exit(EXT_ERR_IMP_MOD)
 
 try:
-    from modules.config.config_dir_json import ConfigDirJson
-    from modules.config import config_values
-    from modules.helpers.files import checkIfIsFile
-    from modules.config import PROJECT_FILE_NAME
-    from modules.helpers.logging import getProgramLogger
-    from modules.config import project_dependency
-    from modules.helpers.commandline import parseCommandLine
-    import modules.config.config
-    import modules.config.host
-    import modules.config.check
-    from modules.config.host import Host
-    from modules.config import FilePath, PROJECT_DEP_FILE_NAME
-    from modules import EXT_OK
-    from modules.config import HOST_FILE_NAME
-    from modules.config import BUILD_TOOL_CONFIG_NAME
+    from buildnis.modules.config.config_dir_json import ConfigDirJson
+    from buildnis.modules.config import config_values
+    from buildnis.modules.config import config
+    from buildnis.modules.helpers.files import checkIfIsFile
+    from buildnis.modules.config import PROJECT_FILE_NAME
+    from buildnis.modules.helpers.logging import getProgramLogger
+    from buildnis.modules.config import project_dependency
+    from buildnis.modules.helpers.commandline import parseCommandLine
+    from buildnis.modules.config import check
+    from buildnis.modules.config.host import Host
+    from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
+    from buildnis.modules import EXT_OK
+    from buildnis.modules.config import HOST_FILE_NAME
+    from buildnis.modules.config import BUILD_TOOL_CONFIG_NAME
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),
@@ -86,7 +85,7 @@ def main():
         config_values.g_list_of_generated_files.append(host_cfg_filename)
 
         if not build_tools_filename_exists or commandline_args.do_configure == True:
-            check_buildtools = modules.config.check.Check(
+            check_buildtools = check.Check(
                 os_name=host_cfg.os, arch=host_cfg.cpu_arch
             )
 
@@ -114,7 +113,7 @@ def main():
                     )
                 )
 
-        cfg = modules.config.config.Config(
+        cfg = config.Config(
             project_config=commandline_args.project_config_file,
             json_path=project_config_filename,
         )
@@ -332,8 +331,6 @@ def doDistClean(
 
 
 ################################################################################
-
-
 def setUpHostCfg(
     list_of_generated_files: List[FilePath],
     logger: logging.Logger,

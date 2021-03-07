@@ -17,7 +17,10 @@ rmdir /S  /Q example_pkg_Release_Candidate_Username.egg-info
 
 python -m build
 
-twine upload --repository testpypi dist/* --config-file %APPDATA%\pip\pip.ini
+
+:: twine upload --repository testpypi dist/* --config-file %APPDATA%\pip\pip.ini
+
+twine upload --repository pypi dist/* --config-file %APPDATA%\pip\pip.ini
 
 GOTO :EOF
 

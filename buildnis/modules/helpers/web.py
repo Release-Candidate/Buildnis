@@ -11,7 +11,7 @@ import logging
 import pathlib
 import shutil
 import urllib.request
-from modules.helpers import LOGGER_NAME
+from buildnis.modules.helpers import LOGGER_NAME
 
 _logger = logging.getLogger(LOGGER_NAME)
 

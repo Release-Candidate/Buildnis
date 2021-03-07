@@ -1,21 +1,24 @@
 {
     "file_name": "build_config",
     "file_version": "1.0",
+    "build_type": "documentation",
+    "build_subtype": "HTML",
+    "build_tool_type": "Doxygen & Sphinx",
     "stages": 
     [
         {
-            "name": "STAGE 1",
+            "name": "Doxygen XML",
             "description": "WHAT_DOES_THIS_STAGE_DO",
             "build_tool_name": "BUILD_TOOL_NAME",
-            "build_tool_out_dir": "BUILD_TOOL_WD",
+            "build_tool_out_dir": "${../../build_directory}",
             "call_build_tool": "@FOR_EACH${sources}",
             "sources":
             [
-                "${../dependencies}"
+                "${../../dependencies}"
             ],
             "dependencies":
             [
-                "${../dependencies}"
+                "${../../dependencies}"
             ],
             "results": 
             [

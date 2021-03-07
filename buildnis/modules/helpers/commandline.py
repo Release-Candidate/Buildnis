@@ -7,8 +7,8 @@
 ###############################################################################
 
 import logging
-from modules import EXT_ERR_LD_FILE, VERSION
-from modules.config import DEFAULT_CONFIG_FILE, FilePath
+from buildnis.modules import EXT_ERR_LD_FILE, VERSION
+from buildnis.modules.config import DEFAULT_CONFIG_FILE, FilePath
 from typing import List
 import argparse
 import pathlib
@@ -145,7 +145,7 @@ Examples:
     To load the project config file in the directory 'local_test':
         python buildnis.py local_test\project_config.json
 
-    To configure the buildsystem:
+    To configure the build system:
         python buildnis.py --configure
 
     To build the default targets:

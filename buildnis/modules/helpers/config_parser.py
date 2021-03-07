@@ -6,17 +6,20 @@
 # Date:     28.Feb.2021
 ###############################################################################
 
+from __future__ import annotations
+
+import re
 import logging
-from modules.config import (
+import datetime
+from typing import List
+
+from buildnis.modules.helpers.files import FileCompare
+from buildnis.modules.config import (
     LINUX_OS_STRING,
     OSX_OS_STRING,
     WINDOWS_OS_STRING,
     config_values,
 )
-import re
-import datetime
-from modules.helpers.files import FileCompare
-from typing import List
 
 # regexes to use
 
@@ -115,7 +118,7 @@ is to be substituted for a value of another configuration item.
 
 
 ############################################################################
-def replaceConstants(item: str) -> str:
+def replaceConstants(item2: str) -> str:
     """Replaces all known constants defined in `config_values.py` in the given string.
 
     These are placeholders like `${PROJECT_ROOT}`, `${PROJECT_NAME}`, ...
@@ -127,150 +130,127 @@ def replaceConstants(item: str) -> str:
         str: The substitution if a placeholder has been found, the unaltered
                 string else.
     """
-    ret_val = item
+    ret_val = item2
 
-    # FIXME  not return, but keep parsing!
-
-    result = project_root_regex.search(item)
+    result = project_root_regex.search(ret_val)
     if result:
         ret_val = project_root_regex.sub(
-            config_values.PROJECT_ROOT.replace("\\", "\\\\"), item
+            config_values.PROJECT_ROOT.replace("\\", "\\\\"), ret_val
         )
-        return ret_val
-
-    result = project_name_regex.search(item)
+        
+    result = project_name_regex.search(ret_val)
     if result:
         ret_val = project_name_regex.sub(
-            config_values.PROJECT_NAME.replace("\\", "\\\\"), item
+            config_values.PROJECT_NAME.replace("\\", "\\\\"), ret_val
         )
-        return ret_val
 
-    result = project_version_regex.search(item)
+    result = project_version_regex.search(ret_val)
     if result:
         ret_val = project_version_regex.sub(
-            config_values.PROJECT_VERSION.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.PROJECT_VERSION.replace("\\", "\\\\"), ret_val
+        )       
 
-    result = project_author_regex.search(item)
+    result = project_author_regex.search(ret_val)
     if result:
         ret_val = project_author_regex.sub(
-            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), ret_val
+        )        
 
-    result = project_company_regex.search(item)
+    result = project_company_regex.search(ret_val)
     if result:
         ret_val = project_company_regex.sub(
-            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), ret_val
+        )        
 
-    result = project_copyright_info_regex.search(item)
+    result = project_copyright_info_regex.search(ret_val)
     if result:
         ret_val = project_copyright_info_regex.sub(
-            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), ret_val
+        )       
 
-    result = project_web_url_regex.search(item)
+    result = project_web_url_regex.search(ret_val)
     if result:
         ret_val = project_web_url_regex.sub(
-            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), ret_val
+        )      
 
-    result = project_email_regex.search(item)
+    result = project_email_regex.search(ret_val)
     if result:
         ret_val = project_email_regex.sub(
-            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), ret_val
+        )       
 
-    result = project_cfg_dir_regex.search(item)
+    result = project_cfg_dir_regex.search(ret_val)
     if result:
         ret_val = project_cfg_dir_regex.sub(
-            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), item
+            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), ret_val
         )
-        return ret_val
 
-    result = host_os_regex.search(item)
+    result = host_os_regex.search(ret_val)
     if result:
-        ret_val = host_os_regex.sub(config_values.HOST_OS.replace("\\", "\\\\"), item)
-        return ret_val
-
-    result = host_name_regex.search(item)
+        ret_val = host_os_regex.sub(config_values.HOST_OS.replace("\\", "\\\\"), ret_val)
+       
+    result = host_name_regex.search(ret_val)
     if result:
         ret_val = host_name_regex.sub(
-            config_values.HOST_NAME.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.HOST_NAME.replace("\\", "\\\\"), ret_val
+        )       
 
-    result = host_cpu_arch_regex.search(item)
+    result = host_cpu_arch_regex.search(ret_val)
     if result:
         ret_val = host_cpu_arch_regex.sub(
-            config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), ret_val
+        )       
 
-    result = host_num_cores_regex.search(item)
+    result = host_num_cores_regex.search(ret_val)
     if result:
         ret_val = host_num_cores_regex.sub(
-            config_values.HOST_NUM_CORES.replace("\\", "\\\\"), item
+            config_values.HOST_NUM_CORES.replace("\\", "\\\\"), ret_val
         )
-        return ret_val
 
-    result = host_num_log_cores_regex.search(item)
+    result = host_num_log_cores_regex.search(ret_val)
     if result:
         ret_val = host_num_log_cores_regex.sub(
-            config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), item
-        )
-        return ret_val
+            config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), ret_val
+        )      
 
-    result = os_name_osx_regex.search(item)
+    result = os_name_osx_regex.search(ret_val)
     if result:
-        ret_val = os_name_osx_regex.sub(OSX_OS_STRING, item)
-        return ret_val
+        ret_val = os_name_osx_regex.sub(OSX_OS_STRING, ret_val)
 
-    result = os_name_linux_regex.search(item)
+    result = os_name_linux_regex.search(ret_val)
     if result:
-        ret_val = os_name_linux_regex.sub(LINUX_OS_STRING, item)
-        return ret_val
+        ret_val = os_name_linux_regex.sub(LINUX_OS_STRING, ret_val)       
 
-    result = os_name_windows_regex.search(item)
+    result = os_name_windows_regex.search(ret_val)
     if result:
-        ret_val = os_name_windows_regex.sub(WINDOWS_OS_STRING, item)
-        return ret_val
+        ret_val = os_name_windows_regex.sub(WINDOWS_OS_STRING, ret_val)
 
-    result = current_date_regex.search(item)
+    result = current_date_regex.search(ret_val)
     if result:
         now_date = datetime.now()
-        ret_val = current_date_regex.sub(now_date.strftime("%d.%m.%Y"), item)
-        return ret_val
-
-    result = current_year_regex.search(item)
+        ret_val = current_date_regex.sub(now_date.strftime("%d.%m.%Y"), ret_val)
+      
+    result = current_year_regex.search(ret_val)
     if result:
         now_date = datetime.now()
-        ret_val = current_year_regex.sub(now_date.strftime("%Y"), item)
-        return ret_val
+        ret_val = current_year_regex.sub(now_date.strftime("%Y"), ret_val)      
 
-    result = current_month_regex.search(item)
+    result = current_month_regex.search(ret_val)
     if result:
         now_date = datetime.now()
-        ret_val = current_month_regex.sub(now_date.strftime("%m"), item)
-        return ret_val
-
-    result = current_day_regex.search(item)
+        ret_val = current_month_regex.sub(now_date.strftime("%m"), ret_val)
+     
+    result = current_day_regex.search(ret_val)
     if result:
         now_date = datetime.now()
-        ret_val = current_day_regex.sub(now_date.strftime("%d"), item)
-        return ret_val
+        ret_val = current_day_regex.sub(now_date.strftime("%d"), ret_val)
+     
 
-    result = current_time_regex.search(item)
+    result = current_time_regex.search(ret_val)
     if result:
         now_time = datetime.now()
-        ret_val = current_time_regex.sub(now_time.strftime("%H:%M:%S"))
-        return ret_val
+        ret_val = current_time_regex.sub(now_time.strftime("%H:%M:%S"), ret_val)   
 
     return ret_val
 
@@ -296,7 +276,7 @@ def expandItem(item: str, parents: List[object]) -> object:
     result = placeholder_regex.search(ret_val)
     parent_to_use_id = 0
     if result:
-        print("Found Placeholder: {place}".format(place=result.group(1)))
+        # print("Found Placeholder: {place}".format(place=result.group(1)))
         placeholder = result.group(1)
         parent_regex = re.compile("(\.\./)")
 
@@ -313,7 +293,7 @@ def expandItem(item: str, parents: List[object]) -> object:
                 substitute = parent[placeholder].replace("\\", "\\\\")
             else:
                 substitute = parent[placeholder]
-            print("Replace {ph} with: {elem}".format(ph=placeholder, elem=substitute))
+            # print("Replace {ph} with: {elem}".format(ph=placeholder, elem=substitute))
         except:
             try:
                 parent = parents[parent_to_use_id]
@@ -321,11 +301,11 @@ def expandItem(item: str, parents: List[object]) -> object:
                     substitute = getattr(parent, placeholder).replace("\\", "\\\\")
                 else:
                     substitute = getattr(parent, placeholder)
-                print(
-                    "Replace {ph} with: {elem}, class".format(
-                        ph=placeholder, elem=substitute
-                    )
-                )
+                # print(
+                #     "Replace {ph} with: {elem}, class".format(
+                #         ph=placeholder, elem=substitute
+                #     )
+                # )
             except:
                 return ret_val
 

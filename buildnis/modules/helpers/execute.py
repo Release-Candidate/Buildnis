@@ -11,7 +11,7 @@ import re
 from typing import List
 import subprocess
 
-from modules.config import CmdOutput, FilePath
+from buildnis.modules.config import CmdOutput, FilePath
 
 
 class ExecuteException(Exception):

@@ -10,9 +10,9 @@ from __future__ import annotations
 
 import os
 
-from modules.helpers.files import checkIfIsFile, makeDirIfNotExists
-from modules.config import CFG_DIR_NAME, FilePath
-from modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.helpers.files import checkIfIsFile, makeDirIfNotExists
+from buildnis.modules.config import CFG_DIR_NAME, FilePath
+from buildnis.modules.config.json_base_class import JSONBaseClass
 
 
 class ConfigDirJson(JSONBaseClass):

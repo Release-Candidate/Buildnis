@@ -10,7 +10,8 @@
 
 call env_to_test\Scripts\activate.bat
 
-python -m pip install --index-url https://test.pypi.org/simple/ example_pkg_Release_Candidate_Username
+:: python -m pip install --upgrade -i https://test.pypi.org/simple/ example-pkg-Release-Candidate-example_pkg_Release_Candidate_Username
+python -m pip install --upgrade buildnis
 
 GOTO :EOF
 

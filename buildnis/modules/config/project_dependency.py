@@ -7,16 +7,16 @@
 ###############################################################################
 
 from __future__ import annotations
-from modules.helpers.files import returnExistingFile
 
 import os
 import pathlib
 import datetime
 from typing import Dict
-from modules.config import FilePath, PROJECT_DEP_FILE_NAME
-from modules.helpers.web import doDownload
-from modules.config.json_base_class import JSONBaseClass
-from modules.helpers.execute import doesExecutableWork, runCommand
+from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
+from buildnis.modules.helpers.web import doDownload
+from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.helpers.execute import doesExecutableWork, runCommand
+from buildnis.modules.helpers.files import returnExistingFile
 
 
 class ProjectDependency(JSONBaseClass):

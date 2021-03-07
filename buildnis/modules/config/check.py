@@ -15,10 +15,10 @@ import pathlib
 from typing import Any
 from types import SimpleNamespace
 
-from modules import EXT_ERR_DIR
-from modules.config.json_base_class import JSONBaseClass
-from modules.helpers.execute import doesExecutableWork, runCommand
-from modules.config import (
+from buildnis.modules import EXT_ERR_DIR, MODULE_DIR_PATH
+from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.helpers.execute import doesExecutableWork, runCommand
+from buildnis.modules.config import (
     Arch,
     BUILD_TOOL_CONFIG_NAME,
     CONFIGURE_SCRIPTS_PATH,
@@ -79,7 +79,7 @@ class Check(JSONBaseClass):
         )
 
         self.os = os_name
-        self.arch = arch
+        self.arch = arch        
 
         working_dir = pathlib.Path(
             os.path.normpath("/".join([CONFIGURE_SCRIPTS_PATH, os_name]))
