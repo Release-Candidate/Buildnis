@@ -14,6 +14,7 @@
 rmdir /S /Q build 
 rmdir /S /Q dist
 rmdir /S  /Q example_pkg_Release_Candidate_Username.egg-info
+rmdir /S  /Q buildnis.egg-info
 
 python -m build
 
