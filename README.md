@@ -152,7 +152,7 @@ See website https://github.com/Release-Candidate/Buildnis for a detailed descrip
 
 See file [CONTRIBUTING.md](https://github.com/Release-Candidate/Buildnis/blob/main/CONTRIBUTING.md) for details.
 
-## Project Websites 
+## Project Websites
 
 Main project website containing the source code at [GitHub](https://github.com/Release-Candidate/Buildnis)
 
