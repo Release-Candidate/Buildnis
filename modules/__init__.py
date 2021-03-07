@@ -38,7 +38,7 @@ class ProgramVersion(NamedTuple):
         )
 
 
-VERSION = ProgramVersion(major=0, minor=0, patch=2)
+VERSION = ProgramVersion(major=0, minor=1, patch=0)
 
 # Exit constants, constants passed to ´sys.exit´
 EXT_OK = 0
