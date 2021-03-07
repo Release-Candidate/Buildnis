@@ -14,7 +14,16 @@ import platform
 from modules.config.json_base_class import JSONBaseClass
 from modules.helpers.files import checkIfExists
 from modules.helpers.execute import runCommand
-from modules.config import AMD64_ARCH_STRING, CFG_VERSION, HOST_FILE_NAME, LINUX_OS_STRING, OSX_NAME_DICT, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
+from modules.config import (
+    AMD64_ARCH_STRING,
+    CFG_VERSION,
+    HOST_FILE_NAME,
+    LINUX_OS_STRING,
+    OSX_NAME_DICT,
+    OSX_OS_STRING,
+    WINDOWS_OS_STRING,
+    config_values,
+)
 
 
 class Host(JSONBaseClass):
@@ -29,7 +38,7 @@ class Host(JSONBaseClass):
         os_vers (str):        Excact version string
         cpu_arch (str):       CPU architecture, like "x64" or "x86"
         cpu (str):            The detailed name of the CPU
-        file_name (str):      The JSON identifier of the host config file, part 
+        file_name (str):      The JSON identifier of the host config file, part
                               of the file name
         level2_cache (int):   Size of the CPU's level 2 cache, in bytes
         level3_cache (int):   Size of the CPU's level 3 cache, in bytes
@@ -38,9 +47,9 @@ class Host(JSONBaseClass):
         ram_total (int):      Amount of physical RAM in bytes
         gpu List[str]:        The list of names of all GPUs
         python_version (str): The version of this host's Python interpreter
-        json_path(str):       The path to the written JSON host config file       
+        json_path(str):       The path to the written JSON host config file
 
-    Methods:       
+    Methods:
         collectWindowsConfig: adds information, that has to be collected in a
                             Windows specific way
         collectLinuxConfig: adds information, that has to be collected in a
@@ -48,8 +57,8 @@ class Host(JSONBaseClass):
         collectOSXConfig:   adds information, that has to be collected in a
                             Mac OS X specific way
     """
-    ###########################################################################
 
+    ###########################################################################
     def __init__(self) -> None:
         """Constructor of class Host, gathers and sets the host's environment.
 
@@ -62,7 +71,14 @@ class Host(JSONBaseClass):
         self.file_name = HOST_FILE_NAME
         self.file_version = ".".join(CFG_VERSION)
 
-        self.os, self.host_name, self.os_vers_major, self.os_vers, self.cpu_arch, self.cpu = platform.uname()
+        (
+            self.os,
+            self.host_name,
+            self.os_vers_major,
+            self.os_vers,
+            self.cpu_arch,
+            self.cpu,
+        ) = platform.uname()
         if self.os == "Darwin":
             self.os = OSX_OS_STRING
         if self.cpu_arch == "AMD64" or self.cpu_arch == "x86_64":
@@ -81,9 +97,11 @@ class Host(JSONBaseClass):
 
         else:
             self._logger.error(
-                "error, \"{os_name}\" is a unknown OS!".format(os_name=self.os))
+                'error, "{os_name}" is a unknown OS!'.format(os_name=self.os)
+            )
             self._logger.error(
-                "You can add support of this OS to the file \"modules\config\host.py\"")
+                'You can add support of this OS to the file "modules\config\host.py"'
+            )
             self._logger.error("")
 
         # set global constants
@@ -94,7 +112,6 @@ class Host(JSONBaseClass):
         config_values.HOST_NUM_LOG_CORES = self.num_logical_cores
 
     #############################################################################
-
     def collectWindowsConfig(self) -> None:
         """Collect information about the hardware we're running on on Windows.
 
@@ -105,13 +122,24 @@ class Host(JSONBaseClass):
         wmic path win32_VideoController get name
         """
         try:
-            cpu_info_cmd = runCommand(exe="wmic", args=[
-                                      "cpu", "get", "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores"])
+            cpu_info_cmd = runCommand(
+                exe="wmic",
+                args=[
+                    "cpu",
+                    "get",
+                    "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores",
+                ],
+            )
             for line in cpu_info_cmd.std_out.strip().split("\n"):
                 if "L2CacheSize" in line:
                     continue
                 if line != "":
-                    level2_cache, level3_cache, num_cores, num_logical_cores = line.split()
+                    (
+                        level2_cache,
+                        level3_cache,
+                        num_cores,
+                        num_logical_cores,
+                    ) = line.split()
                     try:
                         self.level2_cache = int(level2_cache)
                         self.level3_cache = int(level3_cache)
@@ -128,7 +156,8 @@ class Host(JSONBaseClass):
                     self.cpu = line
 
             gpu_info_cmd = runCommand(
-                exe="wmic", args=["path", "win32_VideoController", "get", "name"])
+                exe="wmic", args=["path", "win32_VideoController", "get", "name"]
+            )
             self.gpu = []
             for line in gpu_info_cmd.std_out.strip().split("\n"):
                 if "Name" in line:
@@ -137,7 +166,8 @@ class Host(JSONBaseClass):
                     self.gpu.append(line.strip())
 
             mem_info_cmd = runCommand(
-                exe="wmic", args=["memorychip", "get", "capacity"])
+                exe="wmic", args=["memorychip", "get", "capacity"]
+            )
             self.ram_total = 0
             for line in mem_info_cmd.std_out.strip().split("\n"):
                 if "Capacity" in line:
@@ -149,8 +179,7 @@ class Host(JSONBaseClass):
                         pass
 
         except Exception as excp:
-            self._logger.error(
-                "error \"{error}\" calling wmic".format(error=excp))
+            self._logger.error('error "{error}" calling wmic'.format(error=excp))
 
     #############################################################################
     def collectLinuxConfig(self) -> None:
@@ -158,11 +187,11 @@ class Host(JSONBaseClass):
 
         Calls the following commands:
 
-        cat /etc/os-release 
+        cat /etc/os-release
         NAME="Red Hat Enterprise Linux"
         VERSION="8.3 (Ootpa)"
 
-        grep "model name" /proc/cpuinfo |uniq|cut -d':' -f2   
+        grep "model name" /proc/cpuinfo |uniq|cut -d':' -f2
         getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'
         getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'
         grep "cpu cores" /proc/cpuinfo |uniq|cut -d':' -f2
@@ -175,58 +204,80 @@ class Host(JSONBaseClass):
             try:
                 if checkIfExists("/etc/os-release") == True:
                     os_vers_maj = runCommand(
-                        exe="bash", args=["-c",
-                                          "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                        exe="bash",
+                        args=[
+                            "-c",
+                            "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'",
+                        ],
+                    )
                     self.os_vers_major = os_vers_maj.std_out.strip()
 
                     os_vers = runCommand(
-                        exe="bash", args=["-c",
-                                          "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'"])
+                        exe="bash",
+                        args=[
+                            "-c",
+                            "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'",
+                        ],
+                    )
                     self.os_vers = os_vers.std_out.strip()
             except:
                 pass
 
             cpu_name_cmd = runCommand(
-                exe="bash", args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"])
+                exe="bash",
+                args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"],
+            )
             self.cpu = cpu_name_cmd.std_out.strip()
 
             cpu_num_cores = runCommand(
-                exe="bash", args=["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"])
+                exe="bash",
+                args=["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"],
+            )
             self.num_cores = int(cpu_num_cores.std_out.strip())
 
             cpu_num_log_cpus = runCommand(
-                exe="bash", args=["-c", "grep siblings /proc/cpuinfo |uniq |cut -d':' -f2"])
+                exe="bash",
+                args=["-c", "grep siblings /proc/cpuinfo |uniq |cut -d':' -f2"],
+            )
             self.num_logical_cores = int(cpu_num_log_cpus.std_out.strip())
 
             cpu_l2_cache = runCommand(
-                exe="bash", args=["-c", "getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'"])
+                exe="bash",
+                args=["-c", "getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'"],
+            )
             self.level2_cache = int(cpu_l2_cache.std_out.strip())
 
             cpu_l3_cache = runCommand(
-                exe="bash", args=["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"])
+                exe="bash",
+                args=["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"],
+            )
             self.level3_cache = int(cpu_l3_cache.std_out.strip())
 
             ram_size = runCommand(
-                exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"])
+                exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"]
+            )
             self.ram_total = int(ram_size.std_out.strip())
 
             self.gpu = []
             gpu_info_cmd = runCommand(
-                exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"])
+                exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"]
+            )
             for line in gpu_info_cmd.std_out.strip().split("\n"):
                 if line != "":
                     self.gpu.append(line.strip())
 
             if self.gpu == []:
                 gpu_info_cmd = runCommand(
-                    exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"])
+                    exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"]
+                )
                 for line in gpu_info_cmd.std_out.strip().split("\n"):
                     if line != "":
                         self.gpu.append(line.strip())
 
         except Exception as excp:
             self._logger.error(
-                "error \"{error}\" getting Linux host information".format(error=excp))
+                'error "{error}" getting Linux host information'.format(error=excp)
+            )
 
     #############################################################################
     def collectOSXConfig(self) -> None:
@@ -248,48 +299,42 @@ class Host(JSONBaseClass):
             self.os_vers = os_name.std_out.strip()
 
             os_vers_2_digits_list = self.os_vers.rsplit(".")
-            self.os_vers_major = OSX_NAME_DICT[".".join(
-                os_vers_2_digits_list[:-1])]
+            self.os_vers_major = OSX_NAME_DICT[".".join(os_vers_2_digits_list[:-1])]
 
             cpu_name_cmd = runCommand(
-                exe="sysctl", args=["-n", "machdep.cpu.brand_string"])
+                exe="sysctl", args=["-n", "machdep.cpu.brand_string"]
+            )
             self.cpu = cpu_name_cmd.std_out.strip()
 
-            cpu_num_cores = runCommand(
-                exe="sysctl", args=["-n", "hw.physicalcpu"])
+            cpu_num_cores = runCommand(exe="sysctl", args=["-n", "hw.physicalcpu"])
             self.num_cores = int(cpu_num_cores.std_out)
 
-            cpu_num_log_cpus = runCommand(
-                exe="sysctl", args=["-n", "hw.logicalcpu"])
+            cpu_num_log_cpus = runCommand(exe="sysctl", args=["-n", "hw.logicalcpu"])
             self.num_logical_cores = int(cpu_num_log_cpus.std_out)
 
-            cpu_l2_cache = runCommand(
-                exe="sysctl", args=["-n", "hw.l2cachesize"])
+            cpu_l2_cache = runCommand(exe="sysctl", args=["-n", "hw.l2cachesize"])
             self.level2_cache = int(cpu_l2_cache.std_out)
 
-            cpu_l3_cache = runCommand(
-                exe="sysctl", args=["-n", "hw.l3cachesize"])
+            cpu_l3_cache = runCommand(exe="sysctl", args=["-n", "hw.l3cachesize"])
             self.level3_cache = int(cpu_l3_cache.std_out)
 
-            ram_size = runCommand(
-                exe="sysctl", args=["-n", "hw.memsize"])
+            ram_size = runCommand(exe="sysctl", args=["-n", "hw.memsize"])
             self.ram_total = int(ram_size.std_out)
 
             self.gpu = []
 
         except Exception as excp:
             self._logger.error(
-                "error \"{error}\" gathering information on OS X".format(error=excp))
+                'error "{error}" gathering information on OS X'.format(error=excp)
+            )
+
 
 ################################################################################
-
-
 def printHostInfo() -> None:
-    """To test the collection of the host's information, print all to stdout.
-    """
+    """To test the collection of the host's information, print all to stdout."""
     print(Host())
 
 
 ################################################################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     printHostInfo()

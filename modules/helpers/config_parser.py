@@ -7,7 +7,12 @@
 ###############################################################################
 
 import logging
-from modules.config import LINUX_OS_STRING, OSX_OS_STRING, WINDOWS_OS_STRING, config_values
+from modules.config import (
+    LINUX_OS_STRING,
+    OSX_OS_STRING,
+    WINDOWS_OS_STRING,
+    config_values,
+)
 import re
 import datetime
 from modules.helpers.files import FileCompare
@@ -124,90 +129,103 @@ def replaceConstants(item: str) -> str:
     """
     ret_val = item
 
+    # FIXME  not return, but keep parsing!
+
     result = project_root_regex.search(item)
     if result:
         ret_val = project_root_regex.sub(
-            config_values.PROJECT_ROOT.replace("\\", "\\\\"), item)
+            config_values.PROJECT_ROOT.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_name_regex.search(item)
     if result:
         ret_val = project_name_regex.sub(
-            config_values.PROJECT_NAME.replace("\\", "\\\\"), item)
+            config_values.PROJECT_NAME.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_version_regex.search(item)
     if result:
         ret_val = project_version_regex.sub(
-            config_values.PROJECT_VERSION.replace("\\", "\\\\"), item)
+            config_values.PROJECT_VERSION.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_author_regex.search(item)
     if result:
         ret_val = project_author_regex.sub(
-            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), item)
+            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_company_regex.search(item)
     if result:
         ret_val = project_company_regex.sub(
-            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), item)
+            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_copyright_info_regex.search(item)
     if result:
         ret_val = project_copyright_info_regex.sub(
-            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), item)
+            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_web_url_regex.search(item)
     if result:
         ret_val = project_web_url_regex.sub(
-            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), item)
+            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_email_regex.search(item)
     if result:
         ret_val = project_email_regex.sub(
-            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), item)
+            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = project_cfg_dir_regex.search(item)
     if result:
         ret_val = project_cfg_dir_regex.sub(
-            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), item)
+            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = host_os_regex.search(item)
     if result:
-        ret_val = host_os_regex.sub(
-            config_values.HOST_OS.replace("\\", "\\\\"), item)
+        ret_val = host_os_regex.sub(config_values.HOST_OS.replace("\\", "\\\\"), item)
         return ret_val
 
     result = host_name_regex.search(item)
     if result:
         ret_val = host_name_regex.sub(
-            config_values.HOST_NAME.replace("\\", "\\\\"), item)
+            config_values.HOST_NAME.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = host_cpu_arch_regex.search(item)
     if result:
         ret_val = host_cpu_arch_regex.sub(
-            config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), item)
+            config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = host_num_cores_regex.search(item)
     if result:
         ret_val = host_num_cores_regex.sub(
-            config_values.HOST_NUM_CORES.replace("\\", "\\\\"), item)
+            config_values.HOST_NUM_CORES.replace("\\", "\\\\"), item
+        )
         return ret_val
 
     result = host_num_log_cores_regex.search(item)
     if result:
         ret_val = host_num_log_cores_regex.sub(
-            config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), item)
+            config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), item
+        )
         return ret_val
-
 
     result = os_name_osx_regex.search(item)
     if result:
@@ -260,18 +278,18 @@ def replaceConstants(item: str) -> str:
 ############################################################################
 def expandItem(item: str, parents: List[object]) -> object:
     """Parses the given item, if it contains a placeholder, that placeholder
-        is expanded. If the item doesn't contain a placeholder, the item's
-        unaltered string is returned.
+    is expanded. If the item doesn't contain a placeholder, the item's
+    unaltered string is returned.
 
-        Args:
-            item (str): The item to parse and expand its placeholder
-            parents (List[object]): The parents of the item to search for
-                                    the placeholder's content.
+    Args:
+        item (str): The item to parse and expand its placeholder
+        parents (List[object]): The parents of the item to search for
+                                the placeholder's content.
 
-        Returns:
-            object: The expanded string if the item contained a placeholder, the
-                 original string else. If the placeholder points to another
-                 object that is not a string, this object is returned.
+    Returns:
+        object: The expanded string if the item contained a placeholder, the
+             original string else. If the placeholder points to another
+             object that is not a string, this object is returned.
     """
     ret_val = replaceConstants(item)
 
@@ -295,8 +313,7 @@ def expandItem(item: str, parents: List[object]) -> object:
                 substitute = parent[placeholder].replace("\\", "\\\\")
             else:
                 substitute = parent[placeholder]
-            print("Replace {ph} with: {elem}".format(
-               ph=placeholder, elem=substitute))
+            print("Replace {ph} with: {elem}".format(ph=placeholder, elem=substitute))
         except:
             try:
                 parent = parents[parent_to_use_id]
@@ -304,8 +321,11 @@ def expandItem(item: str, parents: List[object]) -> object:
                     substitute = getattr(parent, placeholder).replace("\\", "\\\\")
                 else:
                     substitute = getattr(parent, placeholder)
-                print("Replace {ph} with: {elem}, class".format(ph=placeholder,
-                                                               elem=substitute))
+                print(
+                    "Replace {ph} with: {elem}, class".format(
+                        ph=placeholder, elem=substitute
+                    )
+                )
             except:
                 return ret_val
 
@@ -346,8 +366,7 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
             elif isinstance(subitem, dict):
                 local_parents.append(element)
                 for key in subitem:
-                    subitem[key] = parseConfigElement(
-                        subitem[key], local_parents)
+                    subitem[key] = parseConfigElement(subitem[key], local_parents)
 
                 tmp_list.append(subitem)
             else:
@@ -355,12 +374,12 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
                     tmp_list.append(expandItem(subitem, local_parents))
                 else:
                     tmp_list.append(subitem)
-        return tmp_list   
+        return tmp_list
 
     elif isinstance(element, FileCompare):
         return element
 
-    elif isinstance(element, logging.Logger):        
+    elif isinstance(element, logging.Logger):
         return element
 
     elif isinstance(element, str):
@@ -369,10 +388,11 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
     elif hasattr(element, "__dict__"):
         local_parents = parents.copy()
         local_parents.append(element)
-        for key in element.__dict__:            
+        for key in element.__dict__:
             element.__dict__[key] = parseConfigElement(
-                element.__dict__[key], local_parents)
+                element.__dict__[key], local_parents
+            )
         return element
-    
+
     else:
         return element

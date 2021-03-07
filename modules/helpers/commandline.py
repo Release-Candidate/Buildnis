@@ -7,8 +7,6 @@
 ###############################################################################
 
 import logging
-import os
-from modules.helpers.files import checkIfIsDir, makeDirIfNotExists
 from modules import EXT_ERR_LD_FILE, VERSION
 from modules.config import DEFAULT_CONFIG_FILE, FilePath
 from typing import List
@@ -16,7 +14,7 @@ import argparse
 import pathlib
 import sys
 
-################################################################################
+
 class CommandlineArguments:
     """Holds information about the command line arguments passed to the program.
 
@@ -24,9 +22,9 @@ class CommandlineArguments:
 
     Attributes:
 
-        project_config_file (FilePath): the path to the project config file to 
+        project_config_file (FilePath): the path to the project config file to
                                         use
-        conf_dir (FilePath): the path to the directory to write generated 
+        conf_dir (FilePath): the path to the directory to write generated
                                 configurations to
         log_file (FilePath): the path to the log file to write.
         log_level (int): the minimum log level
@@ -39,12 +37,13 @@ class CommandlineArguments:
         do_distclean (bool): delete all generated files (build and configuration)
         do_check_what_to_do (bool): do everything that has not been done yet.
     """
+
     ############################################################################
     def __init__(self, src: object) -> None:
         """Initializes all attributes to a sane default value.
 
         Args:
-            src (object): the object to use to fill the values of the command 
+            src (object): the object to use to fill the values of the command
                             line argument instance
         """
         try:
@@ -102,7 +101,7 @@ class CommandlineArguments:
 
     ############################################################################
     def checkTargetArgs(self, name: str) -> None:
-        """Checks the list stored in the attribute with the given name and 
+        """Checks the list stored in the attribute with the given name and
         flattens it to a single list if it contains another list.
 
         Args:
@@ -127,10 +126,10 @@ def parseCommandLine() -> CommandlineArguments:
     Parses the command line arguments, exits the program if an illegal argument
     has been given.
 
-    Parameters: 
+    Parameters:
         arguments: the command line arguments passed to the program
 
-    Returns: 
+    Returns:
        an `CommandlineArguments` instance containing the command line arguments as attributes.
     """
     description = """Buildnis is a build system used to build software.
@@ -173,56 +172,122 @@ Examples:
     To delete the generated configuration too:  
         python buildnis.py --distclean
 
-""".format(default_config=DEFAULT_CONFIG_FILE)
+""".format(
+        default_config=DEFAULT_CONFIG_FILE
+    )
 
-    cmd_line_parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+    cmd_line_parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter,
         description=description,
-        epilog="See website https://github.com/Release-Candidate/Buildnis for a detailed description.")
+        epilog="See website https://github.com/Release-Candidate/Buildnis for a detailed description.",
+    )
 
     cmd_line_parser.add_argument(
-        "--version", action="version", version="Buildnis {version}".format(version=VERSION))
-   
-    cmd_line_parser.add_argument("project_config_file", metavar="PROJECT_CONFIG_FILE", nargs="?",
-                                 help="path to the project config JSON file to use for the build. If no file is given, the default: \"{default_config}\" is used"
-                                 .format(default_config=DEFAULT_CONFIG_FILE), default=DEFAULT_CONFIG_FILE)
+        "--version",
+        action="version",
+        version="Buildnis {version}".format(version=VERSION),
+    )
 
-    log_group = cmd_line_parser.add_argument_group("Logging options", "Options that are about logging")
+    cmd_line_parser.add_argument(
+        "project_config_file",
+        metavar="PROJECT_CONFIG_FILE",
+        nargs="?",
+        help='path to the project config JSON file to use for the build. If no file is given, the default: "{default_config}" is used'.format(
+            default_config=DEFAULT_CONFIG_FILE
+        ),
+        default=DEFAULT_CONFIG_FILE,
+    )
 
-    log_group.add_argument("--log-file", dest="log_file", default="", metavar="LOG_FILE",
-                                 help="If this is set, the program writes verbose messages to LOG_FILE, does not change output to the console. Default is none.")
+    log_group = cmd_line_parser.add_argument_group(
+        "Logging options", "Options that are about logging"
+    )
 
-    log_exc_subgroup = log_group.add_mutually_exclusive_group()                                 
+    log_group.add_argument(
+        "--log-file",
+        dest="log_file",
+        default="",
+        metavar="LOG_FILE",
+        help="If this is set, the program writes verbose messages to LOG_FILE, does not change output to the console. Default is none.",
+    )
 
-    log_exc_subgroup.add_argument("-q","--quiet", default="False", action="store_true", dest="_is_quiet",
-                            help="Run quiet, only output error messages.")
-    log_exc_subgroup.add_argument("-v", "--verbose", default=0, action="count", dest="_verbosity",
-                            help="Increase verbosity of the program, get more messages. Can be used more than once, like \"-vv\"")
-    log_exc_subgroup.add_argument("--debug", default=False, action="store_true", dest="_debug",
-                                  help="Set logging level to the highest available, the same as \"-vv\"")
+    log_exc_subgroup = log_group.add_mutually_exclusive_group()
 
-    output_group = cmd_line_parser.add_argument_group("Output", "Sets options for the generated files")
+    log_exc_subgroup.add_argument(
+        "-q",
+        "--quiet",
+        default="False",
+        action="store_true",
+        dest="_is_quiet",
+        help="Run quiet, only output error messages.",
+    )
+    log_exc_subgroup.add_argument(
+        "-v",
+        "--verbose",
+        default=0,
+        action="count",
+        dest="_verbosity",
+        help='Increase verbosity of the program, get more messages. Can be used more than once, like "-vv"',
+    )
+    log_exc_subgroup.add_argument(
+        "--debug",
+        default=False,
+        action="store_true",
+        dest="_debug",
+        help='Set logging level to the highest available, the same as "-vv"',
+    )
 
-    output_group.add_argument("--generated-conf-dir", metavar="DIR_PATH", dest="conf_dir",
-                              help="The directory in which the autogenerated configuration files will be stored. Default: the same directory the project config PROJECT_CONFIG_FILE is in.")
+    output_group = cmd_line_parser.add_argument_group(
+        "Output", "Sets options for the generated files"
+    )
 
+    output_group.add_argument(
+        "--generated-conf-dir",
+        metavar="DIR_PATH",
+        dest="conf_dir",
+        help="The directory in which the autogenerated configuration files will be stored. Default: the same directory the project config PROJECT_CONFIG_FILE is in.",
+    )
 
     phase_group = cmd_line_parser.add_argument_group(
-        "Phases of the build", "Only run one of the phases of a full build.")
+        "Phases of the build", "Only run one of the phases of a full build."
+    )
 
-    phase_group.add_argument("--configure", help="Configure the project.",
-                             default=False, action="store_true", dest="do_configure")
     phase_group.add_argument(
-        "--build", help="Build the project. If a list of targets is given, these targets are build. The default is to build the default target.",
-        nargs="*", dest="build_targets", metavar="TARGET", action="append")
+        "--configure",
+        help="Configure the project.",
+        default=False,
+        action="store_true",
+        dest="do_configure",
+    )
     phase_group.add_argument(
-        "--install", help="Install the given targets. If no target is given, installs the project's default target.",
-        dest="install_targets", metavar="TARGET", nargs="*", action="append")
+        "--build",
+        help="Build the project. If a list of targets is given, these targets are build. The default is to build the default target.",
+        nargs="*",
+        dest="build_targets",
+        metavar="TARGET",
+        action="append",
+    )
     phase_group.add_argument(
-        "--clean", help="Clean the project. Deletes all files and directories generated during the build.",
-        default=False, action="store_true", dest="do_clean")
+        "--install",
+        help="Install the given targets. If no target is given, installs the project's default target.",
+        dest="install_targets",
+        metavar="TARGET",
+        nargs="*",
+        action="append",
+    )
     phase_group.add_argument(
-        "--distclean", help="Start from scratch, delete generated configuration. Deletes all files and directories generated during the build and the configuration.",
-        default=False, action="store_true", dest="do_distclean")
+        "--clean",
+        help="Clean the project. Deletes all files and directories generated during the build.",
+        default=False,
+        action="store_true",
+        dest="do_clean",
+    )
+    phase_group.add_argument(
+        "--distclean",
+        help="Start from scratch, delete generated configuration. Deletes all files and directories generated during the build and the configuration.",
+        default=False,
+        action="store_true",
+        dest="do_distclean",
+    )
 
     cmdline_args = cmd_line_parser.parse_args()
 
@@ -236,14 +301,17 @@ Examples:
     # attention: cmdline_args._verbosity == 0 per default, that overwrites log_level!
     if cmdline_args._is_quiet == True:
         cmdline_args.log_level = logging.ERROR
-    
+
     if cmdline_args._debug == True:
         cmdline_args.log_level = logging.DEBUG
 
     return checkCmdLineArgs(cmd_line_parser, cmdline_args)
 
+
 ################################################################################
-def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: object) -> CommandlineArguments:
+def checkCmdLineArgs(
+    cmd_line_parser: argparse.ArgumentParser, cmdline_args: object
+) -> CommandlineArguments:
     """[summary]
 
     Args:
@@ -270,12 +338,20 @@ def checkCmdLineArgs(cmd_line_parser: argparse.ArgumentParser, cmdline_args: obj
     if ret_val.conf_dir == None:
         ret_val.conf_dir = ""
 
-    if ret_val.do_configure == False and ret_val.do_build == False and ret_val.do_install == False:
+    if (
+        ret_val.do_configure == False
+        and ret_val.do_build == False
+        and ret_val.do_install == False
+    ):
         ret_val.do_check_what_to_do = True
 
     if not pathlib.Path(ret_val.project_config_file).is_file():
-        cmd_line_parser.print_help(file=sys.stderr)      
-        cmd_line_parser.exit(status=EXT_ERR_LD_FILE, message="ERROR: configuration file \"{config}\" not found or is not a file!"
-                             .format(config=ret_val.project_config_file))   
-   
+        cmd_line_parser.print_help(file=sys.stderr)
+        cmd_line_parser.exit(
+            status=EXT_ERR_LD_FILE,
+            message='ERROR: configuration file "{config}" not found or is not a file!'.format(
+                config=ret_val.project_config_file
+            ),
+        )
+
     return ret_val

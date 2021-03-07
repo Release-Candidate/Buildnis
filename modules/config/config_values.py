@@ -76,6 +76,3 @@ HOST_NUM_CORES: int = 1
 HOST_NUM_LOG_CORES: int = 1
 """The number of logical cores (including Hyperthreading) cores of this host's CPU.
 """
-
-
-

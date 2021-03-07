@@ -10,17 +10,19 @@ __all__ = ["config", "helpers", "VERSION", "main", "config_parser"]
 
 
 class BuildnisException(Exception):
-    """Base class of all custom exceptions used in this program.
-    """
+    """Base class of all custom exceptions used in this program."""
+
     pass
+
 
 from typing import NamedTuple
 
 VersionString = str
 
-class ProgramVersion (NamedTuple):
-    """Class to hold the program's version.
-    """
+
+class ProgramVersion(NamedTuple):
+    """Class to hold the program's version."""
+
     major: int = 0
     minor: int = 0
     patch: int = 0
@@ -31,9 +33,12 @@ class ProgramVersion (NamedTuple):
         Returns:
             [VersionString]: the programs version as a string `{major}.{minor}.{patch}`
         """
-        return "{major}.{minor}.{patch}".format(major=self.major, minor=self.minor, patch=self.patch)
+        return "{major}.{minor}.{patch}".format(
+            major=self.major, minor=self.minor, patch=self.patch
+        )
 
-VERSION = ProgramVersion(major=1, minor=0, patch=0)
+
+VERSION = ProgramVersion(major=0, minor=0, patch=2)
 
 # Exit constants, constants passed to ´sys.exit´
 EXT_OK = 0

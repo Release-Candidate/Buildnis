@@ -15,7 +15,7 @@ from modules.config.json_base_class import JSONBaseClass
 
 
 class ModuleCfg(JSONBaseClass):
-    """Holds a single module configuration read from a JSON module 
+    """Holds a single module configuration read from a JSON module
     configuration file.
 
     Methods:
@@ -26,20 +26,22 @@ class ModuleCfg(JSONBaseClass):
     """
 
     ###########################################################################
-    def __init__(self, module_config: FilePath, json_path: FilePath, load_json: bool = True):
+    def __init__(
+        self, module_config: FilePath, json_path: FilePath, load_json: bool = True
+    ):
         """Loads the file from one of the given JSON paths.
 
         If `json_path` exists, it is loaded from this file, else `module_config`
-        is read. 
+        is read.
 
         Args:
-            module_config (FilePath): The path to the original JSON module 
+            module_config (FilePath): The path to the original JSON module
                             configuration  file.
-            json_path (FilePath): The path where the parsed module configuration 
+            json_path (FilePath): The path where the parsed module configuration
                                     should be saved to. It is not used, because
-                                    the `ModuleCFG` instances are part of the 
+                                    the `ModuleCFG` instances are part of the
                                     project configuration file.
-            load_json (bool, optional): Should the configuration be read from the 
+            load_json (bool, optional): Should the configuration be read from the
                                     file `module_config`. Defaults to True.
         """
         super().__init__(config_file_name=MODULE_FILE_NAME, config_name="module")
@@ -48,25 +50,19 @@ class ModuleCfg(JSONBaseClass):
         self.json_path = json_path
 
         if load_json:
-            read_config_path = returnExistingFile(
-                [self.json_path, self.config_path])
+            read_config_path = returnExistingFile([self.json_path, self.config_path])
 
             self.readJSON(json_path=read_config_path)
 
-            must_have_attrs = {
-                "name": "", 
-                "targets": []
-                }
+            must_have_attrs = {"name": "", "targets": []}
             for attr in must_have_attrs:
                 if not hasattr(self, attr):
                     setattr(self, attr, must_have_attrs[attr])
 
-            
-
     ##############################################################################
     @classmethod
     def fromReadJSON(cls, instance: object) -> ModuleCfg:
-        """Converts a `SimpleNamespace` instance load from a JSON module 
+        """Converts a `SimpleNamespace` instance load from a JSON module
         configuration file to a ModuleCfg instance to use.
 
         Args:
@@ -75,12 +71,15 @@ class ModuleCfg(JSONBaseClass):
         Returns:
             ModuleCfg: The data of the given object as a `ModuleCfg` instance.
         """
-        ret_val = cls(module_config=instance.config_path,
-                      json_path=instance.json_path, load_json=False)
+        ret_val = cls(
+            module_config=instance.config_path,
+            json_path=instance.json_path,
+            load_json=False,
+        )
 
         for item in instance.__dict__:
             setattr(ret_val, item, instance.__dict__[item])
-        
+
         ret_val.orig_file = FileCompare(ret_val.orig_file.path)
         ret_val.orig_file.size = instance.orig_file.size
         ret_val.orig_file.hash = instance.orig_file.hash

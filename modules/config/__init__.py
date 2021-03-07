@@ -6,14 +6,32 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
-__all__ = ["Config", "Host", "Check", "ProgramDependency", 
-           "PROJECT_FILE_NAME", "PROGRAM_DEP_FILE_NAME", "MODULE_FILE_NAME", 
-           "BUILD_FILE_NAME", "HOST_FILE_NAME", "BUILD_TOOL_CONFIG_NAME", "CFG_DIR_NAME"
-           "CFG_VERSION", "DEFAULT_CONFIG_FILE", "CONFIGURE_SCRIPTS_PATH",
-           "WINDOWS_OS_STRING", "LINUX_OS_STRING", "OSX_OS_STRING", 
-           "AMD64_ARCH_STRING", "I86_ARCH_STRING", "OSX_NAME_DICT",
-           "config_values", "ConfigDirJson", 
-           "JSONBaseClass", "ModuleCfg", "BuildCfg"]
+__all__ = [
+    "Config",
+    "Host",
+    "Check",
+    "ProgramDependency",
+    "PROJECT_FILE_NAME",
+    "PROGRAM_DEP_FILE_NAME",
+    "MODULE_FILE_NAME",
+    "BUILD_FILE_NAME",
+    "HOST_FILE_NAME",
+    "BUILD_TOOL_CONFIG_NAME",
+    "CFG_DIR_NAME" "CFG_VERSION",
+    "DEFAULT_CONFIG_FILE",
+    "CONFIGURE_SCRIPTS_PATH",
+    "WINDOWS_OS_STRING",
+    "LINUX_OS_STRING",
+    "OSX_OS_STRING",
+    "AMD64_ARCH_STRING",
+    "I86_ARCH_STRING",
+    "OSX_NAME_DICT",
+    "config_values",
+    "ConfigDirJson",
+    "JSONBaseClass",
+    "ModuleCfg",
+    "BuildCfg",
+]
 
 import collections
 from typing import NamedTuple
@@ -30,15 +48,18 @@ OSName = str
 
 Arch = str
 
-class CmdOutput (NamedTuple):
+
+class CmdOutput(NamedTuple):
     """The return type of executed commands.
 
-    Attributes: 
+    Attributes:
         std_out (str): the `stdout` output of the executed command
         err_out (str): the `stderr` output of the executed command
     """
+
     std_out: str = ""
     err_out: str = ""
+
 
 OSX_NAME_DICT = {
     "10.0": "Cheetah",
@@ -92,4 +113,3 @@ CONFIGURE_SCRIPTS_PATH = "./configure_scripts"
 BUILD_TOOL_CONFIG_NAME = "build_tool_config"
 
 BUILD_CONF_PATH = "./build_conf"
-

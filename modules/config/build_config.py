@@ -14,7 +14,7 @@ from modules.config.json_base_class import JSONBaseClass
 
 
 class BuildCfg(JSONBaseClass):
-    """Holds a build tool configuration read from a JSON build tool 
+    """Holds a build tool configuration read from a JSON build tool
     configuration file.
 
     Methods:
@@ -25,20 +25,22 @@ class BuildCfg(JSONBaseClass):
     """
 
     ###########################################################################
-    def __init__(self, build_config: FilePath, json_path: FilePath, load_json: bool = True):
+    def __init__(
+        self, build_config: FilePath, json_path: FilePath, load_json: bool = True
+    ):
         """Loads the file from one of the given JSON paths.
 
         If `json_path` exists, it is loaded from this file, else `build_config`
-        is read. 
+        is read.
 
         Args:
-            build_config (FilePath): The path to the original JSON build  
+            build_config (FilePath): The path to the original JSON build
                                     configuration  file.
-            json_path (FilePath): The path where the parsed build tool configuration 
+            json_path (FilePath): The path where the parsed build tool configuration
                                     should be saved to. It is not used, because
-                                    the `BuildCfg` instances are part of the 
+                                    the `BuildCfg` instances are part of the
                                     project configuration file.
-            load_json (bool, optional): Should the configuration be read from the 
+            load_json (bool, optional): Should the configuration be read from the
                                     file `build_config`. Defaults to True.
         """
         super().__init__(config_file_name=BUILD_FILE_NAME, config_name="build")
@@ -47,8 +49,7 @@ class BuildCfg(JSONBaseClass):
         self.json_path = json_path
 
         if load_json:
-            read_config_path = returnExistingFile(
-                [self.json_path, self.config_path])
+            read_config_path = returnExistingFile([self.json_path, self.config_path])
 
             self.readJSON(json_path=read_config_path)
 
@@ -58,7 +59,7 @@ class BuildCfg(JSONBaseClass):
                 "build_subtype": "",
                 "build_tool_type": "",
                 "os": [],
-                "stages": []
+                "stages": [],
             }
             for attr in must_have_attrs:
                 if not hasattr(self, attr):
@@ -67,7 +68,7 @@ class BuildCfg(JSONBaseClass):
     ############################################################################
     @classmethod
     def fromReadJSON(cls, instance: object) -> BuildCfg:
-        """Converts a `SimpleNamespace` instance load from a JSON build tools 
+        """Converts a `SimpleNamespace` instance load from a JSON build tools
         configuration file to a BuildCfg instance to use.
 
         Args:
@@ -76,8 +77,11 @@ class BuildCfg(JSONBaseClass):
         Returns:
             BuildCfg: The data of the given object as a `BuildCfg` instance.
         """
-        ret_val = cls(build_config=instance.config_path,
-                      json_path=instance.json_path, load_json=False)
+        ret_val = cls(
+            build_config=instance.config_path,
+            json_path=instance.json_path,
+            load_json=False,
+        )
 
         for item in instance.__dict__:
             setattr(ret_val, item, instance.__dict__[item])

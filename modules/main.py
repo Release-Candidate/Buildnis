@@ -19,8 +19,7 @@ try:
     import pathlib
     from typing import List, Tuple
 except ImportError as exp:
-    print("ERROR: error \"{error}\" importing modules".format(
-        error=exp), file=sys.stderr)
+    print('ERROR: error "{error}" importing modules'.format(error=exp), file=sys.stderr)
     sys.exit(EXT_ERR_IMP_MOD)
 
 try:
@@ -40,8 +39,10 @@ try:
     from modules.config import HOST_FILE_NAME
     from modules.config import BUILD_TOOL_CONFIG_NAME
 except ImportError as exp:
-    print("ERROR: error \"{error}\" importing own modules".format(
-        error=exp), file=sys.stderr)
+    print(
+        'ERROR: error "{error}" importing own modules'.format(error=exp),
+        file=sys.stderr,
+    )
     sys.exit(EXT_ERR_IMP_MOD)
 
 
@@ -56,18 +57,29 @@ def main():
     project_cfg_dir = commandline_args.conf_dir
 
     project_cfg_dir, config_dir_config = setUpConfDir(
-        commandline_args, logger, project_cfg_dir)
+        commandline_args, logger, project_cfg_dir
+    )
 
     # Always create host config
     host_cfg, host_cfg_filename = setUpHostCfg(
-        config_values.g_list_of_generated_files, logger, project_cfg_dir)
+        config_values.g_list_of_generated_files, logger, project_cfg_dir
+    )
 
-    (host_cfg_filename_exists, host_cfg_filename,
-     build_tools_filename_exists, build_tools_filename,
-     project_dep_filename_exists, project_dep_filename,
-     project_config_filename_exists, project_config_filename) = setUpPaths(
-        project_cfg_dir=project_cfg_dir, host_cfg_file=host_cfg_filename,
-        list_of_generated_files=config_values.g_list_of_generated_files, host_cfg=host_cfg)
+    (
+        host_cfg_filename_exists,
+        host_cfg_filename,
+        build_tools_filename_exists,
+        build_tools_filename,
+        project_dep_filename_exists,
+        project_dep_filename,
+        project_config_filename_exists,
+        project_config_filename,
+    ) = setUpPaths(
+        project_cfg_dir=project_cfg_dir,
+        host_cfg_file=host_cfg_filename,
+        list_of_generated_files=config_values.g_list_of_generated_files,
+        host_cfg=host_cfg,
+    )
 
     if not commandline_args.do_clean:
         host_cfg.writeJSON(json_path=host_cfg_filename)
@@ -75,19 +87,21 @@ def main():
 
         if not build_tools_filename_exists or commandline_args.do_configure == True:
             check_buildtools = modules.config.check.Check(
-                os_name=host_cfg.os, arch=host_cfg.cpu_arch)
+                os_name=host_cfg.os, arch=host_cfg.cpu_arch
+            )
 
             check_buildtools.writeJSON(json_path=build_tools_filename)
             if not build_tools_filename_exists:
-                config_values.g_list_of_generated_files.append(
-                    build_tools_filename)
+                config_values.g_list_of_generated_files.append(build_tools_filename)
 
-            logger.debug("Build tool config: \"\"\"{cfg}\"\"\"".format(
-                cfg=check_buildtools))
+            logger.debug('Build tool config: """{cfg}"""'.format(cfg=check_buildtools))
 
         else:
-            logger.warning("JSON file \"{path}\" already exists, not checking for build tool configurations".format(
-                path=build_tools_filename))
+            logger.warning(
+                'JSON file "{path}" already exists, not checking for build tool configurations'.format(
+                    path=build_tools_filename
+                )
+            )
 
         if project_config_filename_exists and commandline_args.do_configure == True:
             try:
@@ -95,13 +109,19 @@ def main():
                 project_config_filename_exists = False
             except Exception as excp:
                 logger.error(
-                    "error \"{error}\" deleting generated project config file to reconfigure project".format(error=excp))            
+                    'error "{error}" deleting generated project config file to reconfigure project'.format(
+                        error=excp
+                    )
+                )
 
         cfg = modules.config.config.Config(
-            project_config=commandline_args.project_config_file, json_path=project_config_filename)
+            project_config=commandline_args.project_config_file,
+            json_path=project_config_filename,
+        )
 
         cfg.project_dep_cfg = project_dependency.ProjectDependency(
-            cfg.project_dependency_config, json_path=project_dep_filename)
+            cfg.project_dependency_config, json_path=project_dep_filename
+        )
 
         cfg.expandAllPlaceholders()
 
@@ -109,65 +129,77 @@ def main():
             cfg.checkDependencies(force_check=True)
 
         else:
-            logger.warning("JSON file \"{path}\" already exists, not checking project dependencies".format(
-                path=project_dep_filename))
+            logger.warning(
+                'JSON file "{path}" already exists, not checking project dependencies'.format(
+                    path=project_dep_filename
+                )
+            )
             cfg.checkDependencies(force_check=False)
 
         cfg.project_dep_cfg.writeJSON()
 
         if not project_dep_filename_exists:
-            config_values.g_list_of_generated_files.append(
-                project_dep_filename)
+            config_values.g_list_of_generated_files.append(project_dep_filename)
 
-        logger.debug("Project config: \"\"\"{cfg}\"\"\"".format(
-            cfg=cfg))
-        logger.debug("Project dependency config: \"\"\"{cfg}\"\"\"".format(
-            cfg=cfg.project_dep_cfg))
+        logger.debug('Project config: """{cfg}"""'.format(cfg=cfg))
+        logger.debug(
+            'Project dependency config: """{cfg}"""'.format(cfg=cfg.project_dep_cfg)
+        )
 
         cfg.setBuildToolCfgPath(build_tools_filename)
-        cfg.setHostConfigPath(host_cfg_filename)        
+        cfg.setHostConfigPath(host_cfg_filename)
 
         cfg.writeJSON()
         if not project_config_filename_exists:
-            config_values.g_list_of_generated_files.append(
-                project_config_filename)
+            config_values.g_list_of_generated_files.append(project_config_filename)
 
         config_dir_config.writeJSON()
 
     else:
         logger.warning(
-            "Not doing anything but deleting files, a \"clean\" argument (\"--clean\" or \"--distclean\") has been given!")
+            'Not doing anything but deleting files, a "clean" argument ("--clean" or "--distclean") has been given!'
+        )
 
     #! WARNING: no more logging after this function!
     # Logger is shut down
-    doDistClean(commandline_args, logger,
-                config_values.g_list_of_generated_files, config_values.g_list_of_generated_dirs)
+    doDistClean(
+        commandline_args=commandline_args,
+        logger=logger,
+        list_of_generated_files=config_values.g_list_of_generated_files,
+        list_of_generated_dirs=config_values.g_list_of_generated_dirs,
+    )
 
     sys.exit(EXT_OK)
 
+
 ################################################################################
-
-
 def setUpConfDir(commandline_args, logger, project_cfg_dir):
-    working_dir = os.path.abspath(os.path.dirname(
-        commandline_args.project_config_file))
+    working_dir = os.path.abspath(os.path.dirname(commandline_args.project_config_file))
     config_dir_filename = "/".join([working_dir, CFG_DIR_NAME])
     config_dir_filename = ".".join([config_dir_filename, "json"])
     config_dir_filename = os.path.abspath(config_dir_filename)
     config_dir_config = ConfigDirJson(
-        file_name=config_dir_filename, working_dir=working_dir, cfg_path=project_cfg_dir)
+        file_name=config_dir_filename, working_dir=working_dir, cfg_path=project_cfg_dir
+    )
     config_values.g_list_of_generated_files.append(config_dir_config.json_path)
     project_cfg_dir = config_dir_config.cfg_path
     if project_cfg_dir != working_dir:
         config_values.g_list_of_generated_dirs.append(project_cfg_dir)
-    logger.info("Setting project configuration directory to \"{path}\"".format(
-        path=project_cfg_dir))
+    logger.info(
+        'Setting project configuration directory to "{path}"'.format(
+            path=project_cfg_dir
+        )
+    )
     return project_cfg_dir, config_dir_config
 
+
 ################################################################################
-
-
-def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_generated_files: List[FilePath], host_cfg: Host) -> Tuple[bool, FilePath, bool, FilePath, bool, FilePath, bool, FilePath]:
+def setUpPaths(
+    project_cfg_dir: FilePath,
+    host_cfg_file: FilePath,
+    list_of_generated_files: List[FilePath],
+    host_cfg: Host,
+) -> Tuple[bool, FilePath, bool, FilePath, bool, FilePath, bool, FilePath]:
     """Helper: set up all pathnames of JSON files.
 
     Args:
@@ -177,7 +209,7 @@ def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_gener
         host_cfg (host_config.Host): host configuration object instance
 
     Returns:
-        Tuple[bool, FilePath, bool, FilePath, bool, FilePath]: the paths to the JSON 
+        Tuple[bool, FilePath, bool, FilePath, bool, FilePath]: the paths to the JSON
             files and a bool that is `True` if the file already has been created.
     """
     host_cfg_filename_exists = False
@@ -192,8 +224,7 @@ def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_gener
     build_tools_filename_exists = False
 
     build_tools_filename = "/".join([project_cfg_dir, host_cfg.host_name])
-    build_tools_filename = "_".join(
-        [build_tools_filename, BUILD_TOOL_CONFIG_NAME])
+    build_tools_filename = "_".join([build_tools_filename, BUILD_TOOL_CONFIG_NAME])
     build_tools_filename = ".".join([build_tools_filename, "json"])
     build_tools_filename = os.path.normpath(build_tools_filename)
 
@@ -207,8 +238,7 @@ def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_gener
     project_dep_filename_exists = False
 
     project_dep_filename = "/".join([project_cfg_dir, host_cfg.host_name])
-    project_dep_filename = "_".join(
-        [project_dep_filename, PROJECT_DEP_FILE_NAME])
+    project_dep_filename = "_".join([project_dep_filename, PROJECT_DEP_FILE_NAME])
     project_dep_filename = ".".join([project_dep_filename, "json"])
     project_dep_filename = os.path.normpath(project_dep_filename)
 
@@ -222,8 +252,7 @@ def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_gener
     project_config_filename_exists = False
 
     project_config_filename = "/".join([project_cfg_dir, host_cfg.host_name])
-    project_config_filename = "_".join(
-        [project_config_filename, PROJECT_FILE_NAME])
+    project_config_filename = "_".join([project_config_filename, PROJECT_FILE_NAME])
     project_config_filename = ".".join([project_config_filename, "json"])
     project_config_filename = os.path.normpath(project_config_filename)
 
@@ -234,15 +263,25 @@ def setUpPaths(project_cfg_dir: FilePath, host_cfg_file: FilePath, list_of_gener
     except:
         pass
 
-    return (host_cfg_filename_exists, host_cfg_file,
-            build_tools_filename_exists, build_tools_filename,
-            project_dep_filename_exists, project_dep_filename,
-            project_config_filename_exists, project_config_filename)
+    return (
+        host_cfg_filename_exists,
+        host_cfg_file,
+        build_tools_filename_exists,
+        build_tools_filename,
+        project_dep_filename_exists,
+        project_dep_filename,
+        project_config_filename_exists,
+        project_config_filename,
+    )
+
 
 ################################################################################
-
-
-def doDistClean(commandline_args: object, logger: logging.Logger, list_of_generated_files: List[FilePath], list_of_generated_dirs: List[FilePath]) -> None:
+def doDistClean(
+    commandline_args: object,
+    logger: logging.Logger,
+    list_of_generated_files: List[FilePath],
+    list_of_generated_dirs: List[FilePath],
+) -> None:
     """Helper: if argument `distclean` is set, delete all generated files.
 
     WARNING: Shuts down the logging mechanism, no more logging after this function!
@@ -251,38 +290,55 @@ def doDistClean(commandline_args: object, logger: logging.Logger, list_of_genera
         commandline_args (object): Command line argument object instance
         logger (logging.Logger): The logger to use and stop
         list_of_generated_files (List[FilePath]): The list of files to delete
-        list_of_generated_dirs (List[FilePath]): The list of directories to delete. 
+        list_of_generated_dirs (List[FilePath]): The list of directories to delete.
                             Attention: each directory must be empty!
     """
     if commandline_args.do_distclean == True:
         try:
             for file_path in list_of_generated_files:
                 logger.warning(
-                    "distclean: deleting file \"{name}\"".format(name=file_path))
+                    'distclean: deleting file "{name}"'.format(name=file_path)
+                )
                 pathlib.Path(file_path).unlink(missing_ok=True)
             for dir_path in list_of_generated_dirs:
                 logger.warning(
-                    "distclean: deleting directory \"{name}\"".format(name=dir_path))
+                    'distclean: deleting directory "{name}"'.format(name=dir_path)
+                )
                 pathlib.Path(dir_path).rmdir()
         except Exception as excp:
             logger.error(
-                "error \"{error}\" trying to delete file \"{name}\"".format(error=excp, name=file_path))
+                'error "{error}" trying to delete file "{name}"'.format(
+                    error=excp, name=file_path
+                )
+            )
 
     logging.shutdown()
 
     try:
         if commandline_args.log_file != "" and commandline_args.log_file != None:
-            print("distclean: trying to delete logfile \"{name}\"".format(
-                name=commandline_args.log_file))
+            print(
+                'distclean: trying to delete logfile "{name}"'.format(
+                    name=commandline_args.log_file
+                )
+            )
             pathlib.Path(commandline_args.log_file).unlink(missing_ok=True)
     except Exception as excp:
-        print("ERROR: distclean: error \"{error}\" trying to delete log file \"{name}\"".format(
-            error=excp, name=commandline_args.log_file), file=sys.sys.stderr)
+        print(
+            'ERROR: distclean: error "{error}" trying to delete log file "{name}"'.format(
+                error=excp, name=commandline_args.log_file
+            ),
+            file=sys.sys.stderr,
+        )
+
 
 ################################################################################
 
 
-def setUpHostCfg(list_of_generated_files: List[FilePath], logger: logging.Logger, project_cfg_dir: FilePath) -> Tuple[Host, FilePath]:
+def setUpHostCfg(
+    list_of_generated_files: List[FilePath],
+    logger: logging.Logger,
+    project_cfg_dir: FilePath,
+) -> Tuple[Host, FilePath]:
     """Helper: Sets up the host's configuration.
 
     Is always generated.
@@ -293,7 +349,7 @@ def setUpHostCfg(list_of_generated_files: List[FilePath], logger: logging.Logger
         project_cfg_dir (FilePath): Path to the project config JSON file
 
     Returns:
-        Tuple[Host, FilePath]: the host configuration object instance and the host 
+        Tuple[Host, FilePath]: the host configuration object instance and the host
                     configuration's filename as a tuple
     """
     host_cfg = Host()
@@ -303,35 +359,37 @@ def setUpHostCfg(list_of_generated_files: List[FilePath], logger: logging.Logger
     host_cfg_filename = ".".join([host_cfg_filename, "json"])
     host_cfg_filename = os.path.normpath(host_cfg_filename)
 
-    logger.debug("Host config: \"\"\"{cfg}\"\"\"".format(cfg=host_cfg))
+    logger.debug('Host config: """{cfg}"""'.format(cfg=host_cfg))
 
     return host_cfg, host_cfg_filename
 
+
 ################################################################################
-
-
 def setCmdLineArgsLogger() -> Tuple[object, logging.Logger]:
-    """Helper function: parses the command line, sets up the logger.  
+    """Helper function: parses the command line, sets up the logger.
 
     Returns:
-        Tuple[object, logging.Logger]: The commandline object instance and the 
+        Tuple[object, logging.Logger]: The commandline object instance and the
         logger instance to use
     """
     commandline_args = parseCommandLine()
 
-    logger = getProgramLogger(
-        commandline_args.log_level, commandline_args.log_file)
+    logger = getProgramLogger(commandline_args.log_level, commandline_args.log_file)
 
-    pretty_args = pprint.pformat(
-        commandline_args.__dict__, indent=4, sort_dicts=False)
-    logger.debug("Commandline arguments: \"{args}\"".format(
-        args=pretty_args))
+    pretty_args = pprint.pformat(commandline_args.__dict__, indent=4, sort_dicts=False)
+    logger.debug('Commandline arguments: "{args}"'.format(args=pretty_args))
 
-    logger.info("Setting log level to \"{lvl}\"".format(
-        lvl=logging.getLevelName(commandline_args.log_level)))
+    logger.info(
+        'Setting log level to "{lvl}"'.format(
+            lvl=logging.getLevelName(commandline_args.log_level)
+        )
+    )
 
-    logger.warning("Using project config \"{config}\"".format(
-        config=commandline_args.project_config_file))
+    logger.warning(
+        'Using project config "{config}"'.format(
+            config=commandline_args.project_config_file
+        )
+    )
 
     return commandline_args, logger
 

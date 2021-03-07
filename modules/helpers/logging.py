@@ -12,10 +12,10 @@ from modules.helpers import LOGGER_NAME
 import sys
 
 ################################################################################
-def getProgramLogger(level:int, logfile:FilePath) -> logging.Logger:
+def getProgramLogger(level: int, logfile: FilePath) -> logging.Logger:
     """Returns the logger to use for the program.
 
-    Always logs `DEBUG`, `INFO` and `WARNING` to `stdout`, 
+    Always logs `DEBUG`, `INFO` and `WARNING` to `stdout`,
     `ERROR` and `CRITICAL` go to `stderr`. If a `logfile` is given, everything
     is logged to this file too.
     `level` is the minimum log level to actually output messages.
@@ -42,8 +42,7 @@ def getProgramLogger(level:int, logfile:FilePath) -> logging.Logger:
     stdout_hdl = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter("%(message)s")
     stdout_hdl.setFormatter(formatter)
-    stdout_hdl.addFilter(
-        lambda lvl: lvl.levelno < logging.ERROR)
+    stdout_hdl.addFilter(lambda lvl: lvl.levelno < logging.ERROR)
     stdout_hdl.setLevel(level)
     ret_val.addHandler(stdout_hdl)
 
@@ -56,7 +55,8 @@ def getProgramLogger(level:int, logfile:FilePath) -> logging.Logger:
     if logfile != "" and logfile != None:
         file_hdl = logging.FileHandler(logfile, mode="w")
         file_formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s: %(message)s", datefmt="%d.%m.%Y %H:%M:%S")
+            "%(asctime)s %(levelname)s: %(message)s", datefmt="%d.%m.%Y %H:%M:%S"
+        )
         file_hdl.setFormatter(file_formatter)
         file_hdl.setLevel(logging.DEBUG)
         ret_val.addHandler(file_hdl)
