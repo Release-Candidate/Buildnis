@@ -9,6 +9,18 @@
 
 Distributed, platform independent build system that can handle C++20 and Fortran modules and is flexible enough to build any language and handle (almost ;) any build step imaginable.
 
+## Table of Contents
+
+- [Buildnis](#buildnis)
+  - [Table of Contents](#table-of-contents)
+  - [Installation and Usage](#installation-and-usage)
+    - [Installation](#installation)
+    - [Usage](#usage)
+  - [Contributing to the Project](#contributing-to-the-project)
+  - [Project Websites](#project-websites)
+  - [Changelog](#changelog)
+  - [License](#license)
+
 ## Installation and Usage
 
 ### Installation
@@ -139,6 +151,16 @@ See website https://github.com/Release-Candidate/Buildnis for a detailed descrip
 ## Contributing to the Project
 
 See file [CONTRIBUTING.md](https://github.com/Release-Candidate/Buildnis/blob/main/CONTRIBUTING.md) for details.
+
+## Project Websites 
+
+Main project website containing the source code at [GitHub](https://github.com/Release-Candidate/Buildnis)
+
+Documentation at [Read the Docs](https://buildnis.readthedocs.io/en/latest/)
+
+The PyPI (pip) package at [PyPI package](https://pypi.org/project/buildnis/)
+
+Continuos integration testing at [Travis CI](https://travis-ci.com/github/Release-Candidate/Buildnis)
 
 ## Changelog
 
