@@ -1,6 +1,12 @@
+![MIT license badge](https://img.shields.io/github/license/Release-Candidate/Buildnis)
+![Python version badge](https://img.shields.io/github/pipenv/locked/python-version/Release-Candidate/Buildnis)
+![PIP version badge](https://img.shields.io/pypi/v/buildnis)
+
 # Buildnis
 
 Distributed, platform independent build system that can handle C++20 and Fortran modules and is flexible enough to build any language and handle (almost ;) any build step imaginable.
+
+
 
 ## configure_scripts
 
