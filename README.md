@@ -1,7 +1,7 @@
 # Buildnis
 
 ![MIT license badge](https://img.shields.io/github/license/Release-Candidate/Buildnis)
-![Python version badge](https://img.shields.io/github/pipenv/locked/python-version/Release-Candidate/Buildnis)
+![Python version badge](https://img.shields.io/pypi/pyversions/buildnis)
 [![PIP version badge](https://img.shields.io/pypi/v/buildnis)](https://pypi.org/project/buildnis/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
