@@ -3,6 +3,8 @@
 ![MIT license badge](https://img.shields.io/github/license/Release-Candidate/Buildnis)
 ![Python version badge](https://img.shields.io/pypi/pyversions/buildnis)
 [![PIP version badge](https://img.shields.io/pypi/v/buildnis)](https://pypi.org/project/buildnis/)
+[![Travis CI Build Status](https://travis-ci.com/Release-Candidate/Buildnis.svg?branch=main)](https://travis-ci.com/Release-Candidate/Buildnis)
+[![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Distributed, platform independent build system that can handle C++20 and Fortran modules and is flexible enough to build any language and handle (almost ;) any build step imaginable.
