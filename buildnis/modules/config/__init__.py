@@ -22,7 +22,7 @@ __all__ = [
     "AMD64_ARCH_STRING",
     "I86_ARCH_STRING",
     "OSX_NAME_DICT",
-    "config_values"
+    "config_values",
 ]
 
 import collections
