@@ -170,12 +170,11 @@ class ProjectDependency(JSONBaseClass):
                     )
                     dep.is_checked = True
                     return True
-                else:
-                    self._logger.error(
-                        'Path "{path}" does not exist, dependency "{name}" not found!'.format(
-                            path=dep.ok_if_exists, name=dep.name
-                        )
+                self._logger.error(
+                    'Path "{path}" does not exist, dependency "{name}" not found!'.format(
+                        path=dep.ok_if_exists, name=dep.name
                     )
+                )
             except Exception as excp:
                 self._logger.error('error "{error}"'.format(error=excp))
 

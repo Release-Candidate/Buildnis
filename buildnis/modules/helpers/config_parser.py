@@ -356,16 +356,16 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
                     tmp_list.append(subitem)
         return tmp_list
 
-    elif isinstance(element, FileCompare):
+    if isinstance(element, FileCompare):
         return element
 
-    elif isinstance(element, logging.Logger):
+    if isinstance(element, logging.Logger):
         return element
 
-    elif isinstance(element, str):
+    if isinstance(element, str):
         return expandItem(element, local_parents)
 
-    elif hasattr(element, "__dict__"):
+    if hasattr(element, "__dict__"):
         local_parents = parents.copy()
         local_parents.append(element)
         for key in element.__dict__:
@@ -373,6 +373,4 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
                 element.__dict__[key], local_parents
             )
         return element
-
-    else:
-        return element
+    return element
