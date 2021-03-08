@@ -265,10 +265,8 @@ def areHashesSame(
         hash1 = hashFile(file1)
         hash2 = hashFile(file2)
 
-        if hash1 == hash2:
-            return True
-        else:
-            return False
+        return hash1 == hash2
+
     except Exception as excp:
         raise FileCompareException(excp)
 
