@@ -155,7 +155,7 @@ class FileCompare:
                             path=tmp_path
                         )
                     )
-                else:
+                if not not_exist_is_excp:
                     return False
 
             tmp_size = tmp_path_obj.stat().st_size
@@ -202,7 +202,7 @@ class FileCompare:
                             path=self.path
                         )
                     )
-                else:
+                if not not_exist_is_excp:
                     return True
             else:
                 file_size_now = self.path_obj.stat().st_size
@@ -246,7 +246,7 @@ def areHashesSame(
                 raise FileCompareException(
                     'file "{path}" does not exist or is not a file!'.format(path=file1)
                 )
-            else:
+            if not not_exist_is_excp:
                 return False
 
         if not checkIfIsFile(file2):
@@ -254,7 +254,7 @@ def areHashesSame(
                 raise FileCompareException(
                     'file "{path}" does not exist or is not a file!'.format(path=file2)
                 )
-            else:
+            if not not_exist_is_excp:
                 return False
 
         file_size1 = pathlib.Path(file1).stat().st_size
