@@ -25,6 +25,7 @@ from buildnis.modules.config import CFG_VERSION, FilePath
 
 _logger = logging.getLogger(LOGGER_NAME)
 
+
 ################################################################################
 def getJSONDict(src: object, to_ignore: List[str] = None) -> Dict:
     """Returns a dictionary suitable to pass to `json.dump(s)`.

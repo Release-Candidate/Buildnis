@@ -11,6 +11,7 @@ from buildnis.modules.config import FilePath
 from buildnis.modules.helpers import LOGGER_NAME
 import sys
 
+
 ################################################################################
 def getProgramLogger(level: int, logfile: FilePath) -> logging.Logger:
     """Returns the logger to use for the program.
