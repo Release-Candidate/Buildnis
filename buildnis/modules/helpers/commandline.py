@@ -217,7 +217,7 @@ Examples:
         "--quiet",
         default="False",
         action="store_true",
-        dest="_is_quiet",
+        dest="is_quiet",
         help="Run quiet, only output error messages.",
     )
     log_exc_subgroup.add_argument(
@@ -225,14 +225,14 @@ Examples:
         "--verbose",
         default=0,
         action="count",
-        dest="_verbosity",
+        dest="verbosity",
         help='Increase verbosity of the program, get more messages. Can be used more than once, like "-vv"',
     )
     log_exc_subgroup.add_argument(
         "--debug",
         default=False,
         action="store_true",
-        dest="_debug",
+        dest="debug",
         help='Set logging level to the highest available, the same as "-vv"',
     )
 
@@ -291,18 +291,18 @@ Examples:
 
     cmdline_args = cmd_line_parser.parse_args()
 
-    if cmdline_args._verbosity == 0:
+    if cmdline_args.verbosity == 0:
         cmdline_args.log_level = logging.WARNING
-    elif cmdline_args._verbosity == 1:
+    elif cmdline_args.verbosity == 1:
         cmdline_args.log_level = logging.INFO
     else:
         cmdline_args.log_level = logging.DEBUG
 
-    # attention: cmdline_args._verbosity == 0 per default, that overwrites log_level!
-    if cmdline_args._is_quiet == True:
+    # attention: cmdline_args.verbosity == 0 per default, that overwrites log_level!
+    if cmdline_args.is_quiet == True:
         cmdline_args.log_level = logging.ERROR
 
-    if cmdline_args._debug == True:
+    if cmdline_args.debug == True:
         cmdline_args.log_level = logging.DEBUG
 
     return checkCmdLineArgs(cmd_line_parser, cmdline_args)
