@@ -86,7 +86,7 @@ class Check(JSONBaseClass):
         )
         if not working_dir.is_dir():
             self._logger.critical(
-                'error calling build tool scripts, "\{path}" does not exist or is not a directory!'.format(
+                'error calling build tool scripts, "{path}" does not exist or is not a directory!'.format(
                     path=working_dir
                 )
             )
