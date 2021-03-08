@@ -115,14 +115,24 @@ class CommandlineArguments:
         """
         tmp_targets = []
         if getattr(self, name) is not None and getattr(self, name) != []:
-            for target in getattr(self, name):
-                if target != []:
-                    if isinstance(target, List):
-                        for sub_target in target:
-                            tmp_targets.append(sub_target)
-                    else:
-                        tmp_targets.append(target)
-            setattr(self, name, tmp_targets)
+            self.flattenList(name, tmp_targets)
+
+    ############################################################################
+    def flattenList(self, name: str, tmp_targets: List):
+        """Flattens the given list to a single list.
+
+        Args:
+            name (str): The attribute's name, the list to flatten.
+            tmp_targets (List): Where to sore the flattened list.
+        """
+        for target in getattr(self, name):
+            if target != []:
+                if isinstance(target, List):
+                    for sub_target in target:
+                        tmp_targets.append(sub_target)
+                else:
+                    tmp_targets.append(target)
+        setattr(self, name, tmp_targets)
 
 
 ################################################################################
