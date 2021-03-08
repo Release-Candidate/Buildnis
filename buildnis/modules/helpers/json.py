@@ -167,7 +167,7 @@ def readJSON(
         sys.exit(EXT_ERR_LD_FILE)
 
     try:
-        if conf_file_name != "" and ret_val.file_name != conf_file_name:
+        if conf_file_name not in ("", ret_val.file_name):
             _logger.critical(
                 'project file "{path}" is not a valid project file!'.format(
                     path=json_path

@@ -219,9 +219,7 @@ class Check(JSONBaseClass):
 
             try:
 
-                source_env_script = (
-                    self.os == LINUX_OS_STRING or self.os == OSX_OS_STRING
-                )
+                source_env_script = self.os in (LINUX_OS_STRING, OSX_OS_STRING)
 
                 tool.version = doesExecutableWork(
                     exe=exe_path,

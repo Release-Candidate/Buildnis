@@ -81,7 +81,7 @@ class Host(JSONBaseClass):
         ) = platform.uname()
         if self.os == "Darwin":
             self.os = OSX_OS_STRING
-        if self.cpu_arch == "AMD64" or self.cpu_arch == "x86_64":
+        if self.cpu_arch in ("AMD64", "x86_64"):
             self.cpu_arch = AMD64_ARCH_STRING
 
         self.python_version = platform.python_version()
