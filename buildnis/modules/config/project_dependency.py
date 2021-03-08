@@ -287,6 +287,14 @@ class ProjectDependency(JSONBaseClass):
         return False
 
     ############################################################################
-    def writeJSON(self) -> None:
-        """Writes the generated dependency configuration to disk."""
-        super().writeJSON(self.json_path)
+    def writeJSON(self, json_path="") -> None:
+        """Writes the generated dependency configuration to disk.
+        
+        Args:
+            json_path (str, optional): The path to the JSON file to write to.
+                                        Defaults to "", this uses the saved path.
+        """
+        if json_path == "":
+            super().writeJSON(json_path=self.json_path)
+        else:
+            super().writeJSON(json_path=json_path)

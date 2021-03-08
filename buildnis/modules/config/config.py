@@ -213,9 +213,17 @@ class Config(JSONBaseClass):
                         target.build_tool = build_cfg
 
     ############################################################################
-    def writeJSON(self) -> None:
-        """Writes the project's config to a JSON file."""
-        super().writeJSON(json_path=self.json_path, to_ignore=["project_dep_cfg"])
+    def writeJSON(self, json_path="") -> None:
+        """Writes the project's config to a JSON file.
+        
+         Args:
+            json_path (str, optional): The path to the JSON file to write to.
+                                        Defaults to "", this uses the saved path.
+        """
+        if json_path == "":
+            super().writeJSON(json_path=self.json_path, to_ignore=["project_dep_cfg"])
+        else:
+            super().writeJSON(json_path=json_path, to_ignore=["project_dep_cfg"])
 
     ###########################################################################
     def setHostConfigPath(self, path: FilePath) -> None:

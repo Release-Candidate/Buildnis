@@ -80,12 +80,20 @@ class ConfigDirJson(JSONBaseClass):
             )
 
     ############################################################################
-    def writeJSON(self) -> None:
+    def writeJSON(self, json_path="") -> None:
         """Writes the path to the project config directory to a JSON file with
         the given path `json_path`.
+
+        Args:
+            json_path (str, optional): The path to the JSON file to write to.
+                                        Defaults to "", this uses the saved path.
         """
         try:
-            super().writeJSON(json_path=self.json_path)
+            if json_path == "":
+                super().writeJSON(json_path=self.json_path)
+            else:
+                super().writeJSON(json_path=json_path)
+
         except Exception as excp:
             self._logger.critical(
                 'error "{error}" trying to write configuration directory configuration "{path}"'.format(

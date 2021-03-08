@@ -93,9 +93,16 @@ class BuildCfg(JSONBaseClass):
         return ret_val
 
     ##############################################################################
-    def writeJSON(self) -> None:
+    def writeJSON(self, json_path="") -> None:
         """Writes the generated config to disk.
 
         Not used, because it is part of the project configuration file.
+
+        Args:
+            json_path (str, optional): The path to the JSON file to write to.
+                                        Defaults to "", this uses the saved path.
         """
-        super().writeJSON(json_path=self.json_path)
+        if json_path == "":
+            super().writeJSON(json_path=self.json_path)
+        else:
+            super().writeJSON(json_path=json_path)
