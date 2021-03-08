@@ -287,7 +287,7 @@ class ProjectDependency(JSONBaseClass):
         return False
 
     ############################################################################
-    def writeJSON(self, , json_path: FilePath = "", to_ignore: List[str] = None) -> None:
+    def writeJSON(self, json_path: FilePath = "", to_ignore: List[str] = None) -> None:
         """Writes the generated dependency configuration to disk.
         
         Args:
