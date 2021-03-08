@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import os
+from typing import List
 
 from buildnis.modules.helpers.files import checkIfIsFile, makeDirIfNotExists
 from buildnis.modules.config import CFG_DIR_NAME, FilePath
@@ -80,19 +81,20 @@ class ConfigDirJson(JSONBaseClass):
             )
 
     ############################################################################
-    def writeJSON(self, json_path="") -> None:
+    def writeJSON(self, json_path: FilePath = "", to_ignore: List[str] = None) -> None:
         """Writes the path to the project config directory to a JSON file with
         the given path `json_path`.
 
         Args:
             json_path (str, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.
+             to_ignore (List[str]): The list of attributes to ignore
         """
         try:
             if json_path == "":
-                super().writeJSON(json_path=self.json_path)
+                super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
             else:
-                super().writeJSON(json_path=json_path)
+                super().writeJSON(json_path=json_path, to_ignore=to_ignore)
 
         except Exception as excp:
             self._logger.critical(

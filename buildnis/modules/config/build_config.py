@@ -7,8 +7,10 @@
 ###############################################################################
 
 from __future__ import annotations
-from buildnis.modules.config import BUILD_FILE_NAME, FilePath
 
+from typing import List
+
+from buildnis.modules.config import BUILD_FILE_NAME, FilePath
 from buildnis.modules.helpers.files import FileCompare, returnExistingFile
 from buildnis.modules.config.json_base_class import JSONBaseClass
 
@@ -93,7 +95,7 @@ class BuildCfg(JSONBaseClass):
         return ret_val
 
     ##############################################################################
-    def writeJSON(self, json_path="") -> None:
+    def writeJSON(self, json_path: FilePath = "", to_ignore: List[str] = None) -> None:
         """Writes the generated config to disk.
 
         Not used, because it is part of the project configuration file.
@@ -101,8 +103,9 @@ class BuildCfg(JSONBaseClass):
         Args:
             json_path (str, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.
+            to_ignore (List[str]): The list of attributes to ignore
         """
         if json_path == "":
-            super().writeJSON(json_path=self.json_path)
+            super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
         else:
-            super().writeJSON(json_path=json_path)
+            super().writeJSON(json_path=json_path, to_ignore=to_ignore)

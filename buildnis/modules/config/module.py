@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+from typing import List
 
 from buildnis.modules.helpers.files import FileCompare, returnExistingFile
 from buildnis.modules.config import FilePath, MODULE_FILE_NAME
@@ -87,16 +88,17 @@ class ModuleCfg(JSONBaseClass):
         return ret_val
 
     ##############################################################################
-    def writeJSON(self, json_path="") -> None:
+    def writeJSON(self, json_path: FilePath = "", to_ignore: List[str] = None) -> None:
         """Writes the generated config to disk.
 
         Not used, because it is part of the project configuration file.
 
         Args:
-            json_path (str, optional): The path to the JSON file to write to.
+            json_path (FilePath, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.
+            to_ignore (List[str]): The list of attributes to ignore.
         """
         if json_path == "":
-            super().writeJSON(json_path=self.json_path)
+            super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
         else:
-            super().writeJSON(json_path=json_path)
+            super().writeJSON(json_path=json_path, to_ignore=to_ignore)

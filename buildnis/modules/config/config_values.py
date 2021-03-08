@@ -6,8 +6,11 @@
 # Date:     01.Mar.2021
 ###############################################################################
 
-from buildnis.modules.config import FilePath
+from __future__ import annotations
+
 from typing import List
+
+from buildnis.modules.config import FilePath
 
 
 # List of files and directories to delete if this has been called with

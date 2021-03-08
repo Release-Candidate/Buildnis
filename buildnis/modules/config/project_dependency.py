@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 import pathlib
 import datetime
-from typing import Dict
+from typing import Dict, List
 from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
 from buildnis.modules.helpers.web import doDownload
 from buildnis.modules.config.json_base_class import JSONBaseClass
@@ -287,14 +287,15 @@ class ProjectDependency(JSONBaseClass):
         return False
 
     ############################################################################
-    def writeJSON(self, json_path="") -> None:
+    def writeJSON(self, , json_path: FilePath = "", to_ignore: List[str] = None) -> None:
         """Writes the generated dependency configuration to disk.
         
         Args:
-            json_path (str, optional): The path to the JSON file to write to.
+            json_path (FilePath, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.
+            to_ignore (List[str]): The list of attributes to ignore.
         """
         if json_path == "":
-            super().writeJSON(json_path=self.json_path)
+            super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
         else:
-            super().writeJSON(json_path=json_path)
+            super().writeJSON(json_path=json_path, to_ignore=to_ignore)
