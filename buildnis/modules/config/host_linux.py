@@ -14,10 +14,11 @@ from buildnis.modules.helpers.execute import ExeArgs, runCommand
 
 ################################################################################
 def getOSMajVers() -> CmdOutput:
-    """[summary]
+    """Returns the major OS version.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -32,10 +33,11 @@ def getOSMajVers() -> CmdOutput:
 
 ################################################################################
 def getOSVer() -> CmdOutput:
-    """[summary]
+    """Returns the minor OS version.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -50,10 +52,11 @@ def getOSVer() -> CmdOutput:
 
 ################################################################################
 def getCPUNameLinux() -> CmdOutput:
-    """[summary]
+    """Returns the CPU's name.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -65,10 +68,11 @@ def getCPUNameLinux() -> CmdOutput:
 
 ################################################################################
 def getNumCoresLinux() -> CmdOutput:
-    """[summary]
+    """Returns the number of physical cores.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -80,10 +84,11 @@ def getNumCoresLinux() -> CmdOutput:
 
 ################################################################################
 def getNumLogCoresLinux() -> CmdOutput:
-    """[summary]
+    """Returns the number of logical cores, including the hyperthreading.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -95,10 +100,11 @@ def getNumLogCoresLinux() -> CmdOutput:
 
 ################################################################################
 def getL2CacheLinux() -> CmdOutput:
-    """[summary]
+    """Returns the size of the CPU's level 2 cache.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -110,10 +116,11 @@ def getL2CacheLinux() -> CmdOutput:
 
 ################################################################################
 def getL3CacheLinux() -> CmdOutput:
-    """[summary]
+    """Returns the size of the CPU's level 3 cache.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -125,10 +132,11 @@ def getL3CacheLinux() -> CmdOutput:
 
 ################################################################################
 def getRAMSizeLinux() -> CmdOutput:
-    """[summary]
+    """Returns the RAM size in bytes.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs("bash", ["-c", "free -b|grep 'Mem:'|awk '{print $2}'"])
@@ -137,20 +145,23 @@ def getRAMSizeLinux() -> CmdOutput:
 
 ################################################################################
 def getGPUNamesLinux() -> CmdOutput:
-    """[summary]
+    """Returns the names of the GPUs.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("bash", ["-c", "lspci|grep VGA|cut -f3 -d':'"]))
 
 
 ################################################################################
 def getGPUNamesSbinLinux() -> CmdOutput:
-    """[summary]
+    """Returns the names of the GPUs, using `/sbin/lspci` because some distributions
+    don't have `lspci` in `/usr/bin`
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs("bash", ["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"])

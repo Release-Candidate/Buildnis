@@ -14,69 +14,76 @@ from buildnis.modules.helpers.execute import ExeArgs, runCommand
 
 ################################################################################
 def getOSName() -> CmdOutput:
-    """[summary]
+    """Returns the OS version of OS X.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sw_vers", ["-productVersion"]))
 
 
 ################################################################################
 def getCPUNameOSX() -> CmdOutput:
-    """[summary]
+    """Returns the CPU name.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "machdep.cpu.brand_string"]))
 
 
 ################################################################################
 def getNumCoresOSX() -> CmdOutput:
-    """[summary]
+    """Returns the number of physical cores.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.physicalcpu"]))
 
 
 ################################################################################
 def getNumLogCoresOSX() -> CmdOutput:
-    """[summary]
+    """Returns the number of logical cores, including hyperthreading.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.logicalcpu"]))
 
 
 ################################################################################
 def getL2CacheOSX() -> CmdOutput:
-    """[summary]
+    """Returns the size of the CPU's level 2 cache.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.l2cachesize"]))
 
 
 ################################################################################
 def getL3CacheOSX() -> CmdOutput:
-    """[summary]
+    """Returns the size of the CPU's level 3 cache.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.l3cachesize"]))
 
 
 ################################################################################
 def getRAMSizeOSX() -> CmdOutput:
-    """[summary]
+    """Returns the RAM size in bytes.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.memsize"]))

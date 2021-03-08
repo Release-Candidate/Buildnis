@@ -14,10 +14,11 @@ from buildnis.modules.helpers.execute import ExeArgs, runCommand
 
 ################################################################################
 def getCPUInfo() -> CmdOutput:
-    """Gets CPU info using`wmic`.
+    """Gets CPU info using `wmic`.
 
     Returns:
-        CmdOutput: The output of the command, as tuple `stdout`, `stderr`.
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs(
@@ -33,20 +34,22 @@ def getCPUInfo() -> CmdOutput:
 
 ################################################################################
 def getCPUName() -> CmdOutput:
-    """[summary]
+    """Gets the CPU name using `wmic`
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("wmic", ["cpu", "get", "Name"]))
 
 
 ################################################################################
 def getGPUInfo() -> CmdOutput:
-    """[summary]
+    """Returns the GPU names.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(
         exe_args=ExeArgs("wmic", ["path", "win32_VideoController", "get", "name"])
@@ -55,9 +58,10 @@ def getGPUInfo() -> CmdOutput:
 
 ################################################################################
 def getMemInfo() -> CmdOutput:
-    """[summary]
+    """Returns the RAM size in bytes.
 
     Returns:
-        CmdOutput: [description]
+        CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("wmic", ["memorychip", "get", "capacity"]))
