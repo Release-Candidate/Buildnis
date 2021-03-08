@@ -23,8 +23,6 @@ class FileCompareException(BuildnisException):
     generate the hash.
     """
 
-    pass
-
 
 class FileCompare:
     """Holds information about a file to compare it to another version of itself
