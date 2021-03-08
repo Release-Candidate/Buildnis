@@ -15,6 +15,7 @@ __all__ = [
     "json",
     "logging",
     "web",
+    "placeholder_regex.py",
 ]
 
 LOGGER_NAME = "Buildnis"
