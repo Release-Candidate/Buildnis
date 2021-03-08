@@ -331,7 +331,7 @@ def doDistClean(
     logging.shutdown()
 
     try:
-        if commandline_args.log_file != "" and commandline_args.log_file != None:
+        if commandline_args.log_file != "" and commandline_args.log_file is not None:
             print(
                 'distclean: trying to delete logfile "{name}"'.format(
                     name=commandline_args.log_file

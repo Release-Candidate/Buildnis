@@ -270,7 +270,7 @@ class Config(JSONBaseClass):
             parents (List[object], optional): The list of parent objects.
                                             Defaults to None.
         """
-        if self.project_dep_cfg != None:
+        if self.project_dep_cfg is not None:
             self.project_dep_cfg.reReadIfChangedOnDisk()
         super().expandAllPlaceholders(parents=parents)
 
@@ -284,5 +284,5 @@ class Config(JSONBaseClass):
                         dependency even if it has been checked before - if
                         `is_checked` is `True`. Defaults to False.
         """
-        if self.project_dep_cfg != None:
+        if self.project_dep_cfg is not None:
             self.project_dep_cfg.checkDependencies(force_check)

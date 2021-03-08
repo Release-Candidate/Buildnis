@@ -282,7 +282,7 @@ def expandItem(item: str, parents: List[object]) -> object:
         parent_regex = re.compile(r"(\.\./)")
 
         result = parent_regex.match(placeholder)
-        while result != None:
+        while result is not None:
             placeholder = placeholder.removeprefix("../")
             result = parent_regex.match(placeholder)
             parent_to_use_id -= 1

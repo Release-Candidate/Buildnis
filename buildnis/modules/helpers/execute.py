@@ -147,12 +147,12 @@ def doesExecutableWork(
         )
 
         run_regex = re.search(check_regex, output.std_out)
-        if run_regex != None and run_regex.group(regex_group):
+        if run_regex is not None and run_regex.group(regex_group):
             ret_val = run_regex.group(regex_group)
 
         else:
             run_regex = re.search(check_regex, output.err_out)
-            if run_regex != None and run_regex.group(regex_group):
+            if run_regex is not None and run_regex.group(regex_group):
                 ret_val = run_regex.group(regex_group).strip()
 
     except Exception as excp:

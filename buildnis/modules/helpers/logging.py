@@ -53,7 +53,7 @@ def getProgramLogger(level: int, logfile: FilePath) -> logging.Logger:
     stderr_hdl.setLevel(logging.ERROR)
     ret_val.addHandler(stderr_hdl)
 
-    if logfile != "" and logfile != None:
+    if logfile != "" and logfile is not None:
         file_hdl = logging.FileHandler(logfile, mode="w")
         file_formatter = logging.Formatter(
             "%(asctime)s %(levelname)s: %(message)s", datefmt="%d.%m.%Y %H:%M:%S"

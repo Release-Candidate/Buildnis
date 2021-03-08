@@ -108,7 +108,7 @@ class CommandlineArguments:
             name (str): the name of the attribute to check the stored list of
         """
         tmp_targets = []
-        if getattr(self, name) != None and getattr(self, name) != []:
+        if getattr(self, name) is not None and getattr(self, name) != []:
             for target in getattr(self, name):
                 if target != []:
                     if isinstance(target, List):
@@ -325,19 +325,19 @@ def checkCmdLineArgs(
     """
     ret_val = CommandlineArguments(cmdline_args)
 
-    if ret_val.build_targets == None:
+    if ret_val.build_targets is None:
         ret_val.do_build = False
         ret_val.build_targets = []
     else:
         ret_val.do_build = True
 
-    if ret_val.install_targets == None:
+    if ret_val.install_targets is None:
         ret_val.do_install = False
         ret_val.install_targets = []
     else:
         ret_val.do_install = True
 
-    if ret_val.conf_dir == None:
+    if ret_val.conf_dir is None:
         ret_val.conf_dir = ""
 
     if (
