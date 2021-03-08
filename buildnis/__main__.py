@@ -28,6 +28,6 @@ if sys.version_info.major < 3 or sys.version_info.minor < 8:
 if __name__ == "__main__":
     # execute only if run as a script
     from buildnis.modules import main
-    
+
     main.main()
-    
+

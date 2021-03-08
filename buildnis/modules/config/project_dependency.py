@@ -289,7 +289,7 @@ class ProjectDependency(JSONBaseClass):
     ############################################################################
     def writeJSON(self, json_path: FilePath = "", to_ignore: List[str] = None) -> None:
         """Writes the generated dependency configuration to disk.
-        
+
         Args:
             json_path (FilePath, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.

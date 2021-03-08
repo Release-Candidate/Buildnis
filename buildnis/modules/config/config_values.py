@@ -22,7 +22,7 @@ g_list_of_generated_dirs: List[FilePath] = []
 # Most of this is configured in the project config file `project_config.json`.
 
 PROJECT_ROOT: str = "./"
-"""The root directory of the project, the directory `project_config.json` is 
+"""The root directory of the project, the directory `project_config.json` is
 located in.
 """
 

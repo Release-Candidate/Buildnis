@@ -216,13 +216,13 @@ class Config(JSONBaseClass):
     ############################################################################
     def writeJSON(self, json_path: FilePath="", to_ignore=["project_dep_cfg"]) -> None:
         """Writes the project's config to a JSON file.
-        
+
         Args:
             json_path (FilePath, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.
-            to_ignore (list, optional): List of attributes to ignore, to not save to disk. 
+            to_ignore (list, optional): List of attributes to ignore, to not save to disk.
                                         Defaults to ["project_dep_cfg"].
-        """   
+        """
         if json_path == "":
             super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
         else:
@@ -263,7 +263,7 @@ class Config(JSONBaseClass):
         closing curly brace.
 
         Args:
-            parents (List[object], optional): The list of parent objects. 
+            parents (List[object], optional): The list of parent objects.
                                             Defaults to None.
         """
         if self.project_dep_cfg != None:
