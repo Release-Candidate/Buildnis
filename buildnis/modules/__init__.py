@@ -14,10 +14,20 @@ from typing import NamedTuple
 __all__ = [
     "config",
     "helpers",
-    "VERSION",
     "main",
     "BuildnisException",
     "ProgramVersion",
+    "VersionString",
+    "MODULE_DIR_PATH",
+    "VERSION",
+    "EXT_OK",
+    "EXT_ERR_LD_FILE",
+    "EXT_ERR_CMDLINE",
+    "EXT_ERR_DIR",
+    "EXT_ERR_WR_FILE",
+    "EXT_ERR_PYTH_VERS",
+    "EXT_ERR_IMP_MOD",
+    "EXT_ERR_NOT_VLD",
 ]
 
 

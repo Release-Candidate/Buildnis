@@ -14,6 +14,7 @@ __all__ = [
     "BUILD_TOOL_CONFIG_NAME",
     "CFG_DIR_NAME",
     "CFG_VERSION",
+    "BUILD_CONF_PATH",
     "DEFAULT_CONFIG_FILE",
     "CONFIGURE_SCRIPTS_PATH",
     "WINDOWS_OS_STRING",
@@ -23,12 +24,24 @@ __all__ = [
     "I86_ARCH_STRING",
     "OSX_NAME_DICT",
     "config_values",
+    "build_config",
+    "check",
+    "config_dir_json",
+    "config",
+    "host",
+    "json_base_class",
+    "module",
+    "project_dependency",
+    "ConfigVersion",
+    "FilePath",
+    "OSName",
+    "Arch",
+    "CmdOutput",
 ]
 
 import collections
 from typing import NamedTuple
 
-from buildnis.modules import MODULE_DIR_PATH
 
 # Types to use for type hints
 
@@ -101,7 +114,7 @@ AMD64_ARCH_STRING = "x64"
 
 I86_ARCH_STRING = "x86"
 
-CONFIGURE_SCRIPTS_PATH = "/".join([MODULE_DIR_PATH, "./configure_scripts"])
+CONFIGURE_SCRIPTS_PATH = "./configure_scripts"
 
 BUILD_TOOL_CONFIG_NAME = "build_tool_config"
 
