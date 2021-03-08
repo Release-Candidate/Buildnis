@@ -264,18 +264,21 @@ def expandItem(item: str, parents: List[object]) -> object:
 def getPlaceholder(
     parents: List[object], parent_to_use_id: int, placeholder: str
 ) -> object:
-    """[summary]
+    """Returns the expanded placeholder. Searches for the attribute with name
+        `placeholder` or the value of the key `placeholder` in the parent.
 
     Args:
-        parents (List[object]): [description]
-        parent_to_use_id (int): [description]
-        placeholder (str): [description]
+        parents (List[object]): The list of parents to search the expansion in.
+        parent_to_use_id (int): The id of the parent in the list, to use for the
+                                replacement.
+        placeholder (str): The string to replace with an element of the same name
 
     Raises:
-        excp: [description]
+        Exception:  if the replacement of the placeholder from the parent element throws
+                    an exception.
 
     Returns:
-        object: [description]
+        object: The replacement for the placeholder.
     """
     try:
         parent = parents[parent_to_use_id]
@@ -324,53 +327,59 @@ def parseConfigElement(element: object, parents: List[object] = None) -> object:
     # print("parseConfigElement: {element}, parents: {parents}".format(
     #    element=element.__class__, parents=len(parents)))
     local_parents = parents.copy()
+
+    ret_val = element
+
     if isinstance(element, list):
-        return parseList(element, local_parents)
+        ret_val = parseList(element, local_parents)
 
-    if isinstance(element, FileCompare):
-        return element
+    elif isinstance(element, FileCompare):
+        ret_val = element
 
-    if isinstance(element, logging.Logger):
-        return element
+    elif isinstance(element, logging.Logger):
+        ret_val = element
 
-    if isinstance(element, str):
-        return expandItem(element, local_parents)
+    elif isinstance(element, str):
+        ret_val = expandItem(element, local_parents)
 
-    if hasattr(element, "__dict__"):
+    elif hasattr(element, "__dict__"):
         local_parents = parents.copy()
         local_parents.append(element)
         for key in element.__dict__:
             element.__dict__[key] = parseConfigElement(
                 element.__dict__[key], local_parents
             )
-        return element
+        ret_val = element
 
-    return element
+    return ret_val
 
 
 ################################################################################
 def parseList(element: List[object], local_parents: List[object]) -> List[object]:
-    """[summary]
+    """Parses the items of a list.
 
     Args:
-        element (List[object]): [description]
-        local_parents (List[object]): [description]
+        element (List[object]): The list to parse
+        local_parents (List[object]): The list of parents
 
     Returns:
-        List[object]: [description]
+        List[object]: The parsed and, if applicable, expanded, list of items.
     """
     tmp_list = []
     for subitem in element:
         if hasattr(subitem, "__dict__"):
             tmp_list.append(parseConfigElement(subitem, local_parents))
+
         elif isinstance(subitem, dict):
             local_parents.append(element)
             for key in subitem:
                 subitem[key] = parseConfigElement(subitem[key], local_parents)
             tmp_list.append(subitem)
+
         else:
             if isinstance(subitem, str):
                 tmp_list.append(expandItem(subitem, local_parents))
             else:
                 tmp_list.append(subitem)
+
     return tmp_list
