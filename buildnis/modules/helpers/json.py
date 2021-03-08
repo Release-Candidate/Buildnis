@@ -164,19 +164,18 @@ def readJSON(
         sys.exit(EXT_ERR_LD_FILE)
 
     try:
-        if conf_file_name != "":
-            if ret_val.file_name != conf_file_name:
-                _logger.critical(
-                    'project file "{path}" is not a valid project file!'.format(
-                        path=json_path
-                    )
+        if conf_file_name != "" and ret_val.file_name != conf_file_name:
+            _logger.critical(
+                'project file "{path}" is not a valid project file!'.format(
+                    path=json_path
                 )
-                _logger.critical(
-                    'the value of \'file_name\' should be "{should}" but is "{but_is}"'.format(
-                        should=conf_file_name, but_is=ret_val.file_name
-                    )
+            )
+            _logger.critical(
+                'the value of \'file_name\' should be "{should}" but is "{but_is}"'.format(
+                    should=conf_file_name, but_is=ret_val.file_name
                 )
-                sys.exit(EXT_ERR_NOT_VLD)
+            )
+            sys.exit(EXT_ERR_NOT_VLD)
 
         file_major, file_minor = ret_val.file_version.split(sep=".")
         if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:

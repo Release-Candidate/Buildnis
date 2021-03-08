@@ -396,13 +396,12 @@ def makeDirIfNotExists(directory: FilePath) -> None:
     try:
         dir_path_obj = pathlib.Path(directory)
 
-        if dir_path_obj.exists():
-            if not dir_path_obj.is_dir:
-                raise FileCompareException(
-                    'error creating directory, "{path}" exists but is not a directory!'.format(
-                        path=directory
-                    )
+        if dir_path_obj.exists() and not dir_path_obj.is_dir():
+            raise FileCompareException(
+                'error creating directory, "{path}" exists but is not a directory!'.format(
+                    path=directory
                 )
+            )
 
         dir_path_obj.mkdir(parents=True, exist_ok=True)
 
