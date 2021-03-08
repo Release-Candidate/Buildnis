@@ -65,7 +65,7 @@ class EnvArgs(NamedTuple):
 ################################################################################
 def runCommand(
     exe_args: ExeArgs,
-    env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False)
+    env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False),
 ) -> CmdOutput:
     """Executes the given command with the given arguments.
     The argument `exe_args.exe` is the executable's name or path, needed arguments can
@@ -138,7 +138,7 @@ def runCommand(
 def doesExecutableWork(
     exe_args: ExeArgs,
     check_regex: RunRegex,
-    env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False)
+    env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False),
 ) -> str:
     """Checks if the given command line works.
 
