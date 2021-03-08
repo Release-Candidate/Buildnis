@@ -61,7 +61,7 @@ class ConfigDirJson(JSONBaseClass):
                 self.cfg_path = os.path.abspath("/".join([working_dir, cfg_path]))
         else:
             try:
-                if checkIfIsFile(file_name) == False:
+                if checkIfIsFile(file_name) is False:
                     self.cfg_path = os.path.abspath(working_dir)
                 else:
                     self.readJSON(json_path=file_name)

@@ -203,7 +203,7 @@ class Host(JSONBaseClass):
         """
         try:
             try:
-                if checkIfExists("/etc/os-release") == True:
+                if checkIfExists("/etc/os-release") is True:
                     os_vers_maj = runCommand(
                         exe="bash",
                         args=[

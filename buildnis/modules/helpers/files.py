@@ -146,7 +146,7 @@ class FileCompare:
             tmp_path_obj = pathlib.Path(tmp_path)
 
             if not tmp_path_obj.is_file():
-                if not_exist_is_excp == True:
+                if not_exist_is_excp is True:
                     raise FileCompareException(
                         'file "{path}" does not exist or is not a file!'.format(
                             path=tmp_path
@@ -193,7 +193,7 @@ class FileCompare:
         """
         try:
             if not checkIfIsFile(self.path):
-                if not_exist_is_excp == True:
+                if not_exist_is_excp is True:
                     raise FileCompareException(
                         'file "{path}" does not exist or is not a file!'.format(
                             path=self.path
@@ -239,7 +239,7 @@ def areHashesSame(
     """
     try:
         if not checkIfIsFile(file1):
-            if not_exist_is_excp == True:
+            if not_exist_is_excp is True:
                 raise FileCompareException(
                     'file "{path}" does not exist or is not a file!'.format(path=file1)
                 )
@@ -247,7 +247,7 @@ def areHashesSame(
                 return False
 
         if not checkIfIsFile(file2):
-            if not_exist_is_excp == True:
+            if not_exist_is_excp is True:
                 raise FileCompareException(
                     'file "{path}" does not exist or is not a file!'.format(path=file2)
                 )

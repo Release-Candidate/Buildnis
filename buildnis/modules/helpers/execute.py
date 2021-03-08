@@ -59,7 +59,7 @@ def runCommand(
 
     # TODO really always call bash?
     if env_script != "":
-        if source_env_script == True:
+        if source_env_script is True:
             cmd_line_args.append("bash")
             cmd_line_args.append("-c")
             source_cmd = "source " + env_script + " " + " ".join(env_script_args)
