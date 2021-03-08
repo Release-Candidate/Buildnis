@@ -279,7 +279,7 @@ def expandItem(item: str, parents: List[object]) -> object:
     if result:
         # print("Found Placeholder: {place}".format(place=result.group(1)))
         placeholder = result.group(1)
-        parent_regex = re.compile("(\.\./)")
+        parent_regex = re.compile(r"(\.\./)")
 
         result = parent_regex.match(placeholder)
         while result != None:

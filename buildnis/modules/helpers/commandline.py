@@ -143,7 +143,7 @@ Examples:
         python buildnis.py {default_config}
 
     To load the project config file in the directory 'local_test':
-        python buildnis.py local_test\project_config.json
+        python buildnis.py local_test/project_config.json
 
     To configure the build system:
         python buildnis.py --configure
