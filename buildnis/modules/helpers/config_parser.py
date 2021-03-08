@@ -319,7 +319,7 @@ def expandItem(item: str, parents: List[object]) -> object:
 
 
 ###############################################################################
-def parseConfigElement(element: object, parents: List[object] = []) -> object:
+def parseConfigElement(element: object, parents: List[object] = None) -> object:
     """Parses the given config element and replaces placeholders.
     Placeholders are strings of the form `${PLACEHOLDER}`, with start with a
     dollar sign followed by an opening curly brace and end with a curly brace.
@@ -334,6 +334,8 @@ def parseConfigElement(element: object, parents: List[object] = []) -> object:
 
         object: The parsed and expanded object.
     """
+    if parents is None:
+        parents = []
     # print("parseConfigElement: {element}, parents: {parents}".format(
     #    element=element.__class__, parents=len(parents)))
     local_parents = parents.copy()
