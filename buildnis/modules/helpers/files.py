@@ -328,11 +328,11 @@ def checkIfIsFile(file: FilePath) -> bool:
 
 
 ################################################################################
-def checkIfIsDir(dir: FilePath) -> bool:
+def checkIfIsDir(directory: FilePath) -> bool:
     """Returns `True` if the given file exists and is a directory.
 
     Args:
-        dir (FilePath): Path to the directory to test
+        directory (FilePath): Path to the directory to test
 
     Raises:
         FileCompareException: if something went wrong
@@ -342,7 +342,7 @@ def checkIfIsDir(dir: FilePath) -> bool:
               `False` else
     """
     try:
-        tmp_path = os.path.abspath(dir)
+        tmp_path = os.path.abspath(directory)
 
         tmp_path_obj = pathlib.Path(tmp_path)
 
@@ -384,23 +384,23 @@ def checkIfIsLink(link: FilePath) -> bool:
 
 
 ################################################################################
-def makeDirIfNotExists(dir: FilePath) -> None:
-    """Creates the directory `dir` if it doesn't exist yet.
+def makeDirIfNotExists(directory: FilePath) -> None:
+    """Creates the directory `directory` if it doesn't exist yet.
 
     Args:
-        dir (FilePath): the directory to create
+        directory (FilePath): the directory to create
 
     Raises:
         FileCompareException: if something goes wrong
     """
     try:
-        dir_path_obj = pathlib.Path(dir)
+        dir_path_obj = pathlib.Path(directory)
 
         if dir_path_obj.exists():
             if not dir_path_obj.is_dir:
                 raise FileCompareException(
                     'error creating directory, "{path}" exists but is not a directory!'.format(
-                        path=dir
+                        path=directory
                     )
                 )
 
