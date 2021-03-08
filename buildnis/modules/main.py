@@ -61,9 +61,7 @@ def main():
     )
 
     # Always create host config
-    host_cfg, host_cfg_filename = setUpHostCfg(
-        config_values.g_list_of_generated_files, logger, project_cfg_dir
-    )
+    host_cfg, host_cfg_filename = setUpHostCfg(logger, project_cfg_dir)
 
     (
         host_cfg_filename_exists,  # skipcq: PYL-W0612
@@ -353,7 +351,6 @@ def doDistClean(
 
 ################################################################################
 def setUpHostCfg(
-    list_of_generated_files: List[FilePath],
     logger: logging.Logger,
     project_cfg_dir: FilePath,
 ) -> Tuple[Host, FilePath]:
