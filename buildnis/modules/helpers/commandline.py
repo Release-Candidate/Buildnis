@@ -313,7 +313,7 @@ Examples:
 def checkCmdLineArgs(
     cmd_line_parser: argparse.ArgumentParser, cmdline_args: object
 ) -> CommandlineArguments:
-    """[summary]
+    """Sets all needed attributes to a default value if they aren't present.
 
     Args:
         cmd_line_parser (argparse.ArgumentParser): the `argparse.ArgumentParser`
