@@ -149,38 +149,39 @@ class Host(JSONBaseClass):
                     except:
                         pass
 
-            cpu_name_cmd = runCommand(exe="wmic", args=["cpu", "get", "Name"])
-            for line in cpu_name_cmd.std_out.strip().split("\n"):
-                if "Name" in line:
-                    continue
-                if line != "":
-                    self.cpu = line
-
-            gpu_info_cmd = runCommand(
-                exe="wmic", args=["path", "win32_VideoController", "get", "name"]
-            )
-            self.gpu = []
-            for line in gpu_info_cmd.std_out.strip().split("\n"):
-                if "Name" in line:
-                    continue
-                if line != "":
-                    self.gpu.append(line.strip())
-
-            mem_info_cmd = runCommand(
-                exe="wmic", args=["memorychip", "get", "capacity"]
-            )
-            self.ram_total = 0
-            for line in mem_info_cmd.std_out.strip().split("\n"):
-                if "Capacity" in line:
-                    continue
-                if line != "":
-                    try:
-                        self.ram_total += int(line)
-                    except:
-                        pass
+            self.collectWinCpuGpuRam()
 
         except Exception as excp:
             self._logger.error('error "{error}" calling wmic'.format(error=excp))
+
+    ############################################################################
+    def collectWinCpuGpuRam(self):
+        """Collects the Windows CPU, GPU and RAM size information."""
+        cpu_name_cmd = runCommand(exe="wmic", args=["cpu", "get", "Name"])
+        for line in cpu_name_cmd.std_out.strip().split("\n"):
+            if "Name" in line:
+                continue
+            if line != "":
+                self.cpu = line
+        gpu_info_cmd = runCommand(
+            exe="wmic", args=["path", "win32_VideoController", "get", "name"]
+        )
+        self.gpu = []
+        for line in gpu_info_cmd.std_out.strip().split("\n"):
+            if "Name" in line:
+                continue
+            if line != "":
+                self.gpu.append(line.strip())
+        mem_info_cmd = runCommand(exe="wmic", args=["memorychip", "get", "capacity"])
+        self.ram_total = 0
+        for line in mem_info_cmd.std_out.strip().split("\n"):
+            if "Capacity" in line:
+                continue
+            if line != "":
+                try:
+                    self.ram_total += int(line)
+                except:
+                    pass
 
     #############################################################################
     def collectLinuxConfig(self) -> None:
@@ -224,61 +225,60 @@ class Host(JSONBaseClass):
             except:
                 pass
 
-            cpu_name_cmd = runCommand(
-                exe="bash",
-                args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"],
-            )
-            self.cpu = cpu_name_cmd.std_out.strip()
-
-            cpu_num_cores = runCommand(
-                exe="bash",
-                args=["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"],
-            )
-            self.num_cores = int(cpu_num_cores.std_out.strip())
-
-            cpu_num_log_cpus = runCommand(
-                exe="bash",
-                args=["-c", "grep siblings /proc/cpuinfo |uniq |cut -d':' -f2"],
-            )
-            self.num_logical_cores = int(cpu_num_log_cpus.std_out.strip())
-
-            cpu_l2_cache = runCommand(
-                exe="bash",
-                args=["-c", "getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'"],
-            )
-            self.level2_cache = int(cpu_l2_cache.std_out.strip())
-
-            cpu_l3_cache = runCommand(
-                exe="bash",
-                args=["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"],
-            )
-            self.level3_cache = int(cpu_l3_cache.std_out.strip())
-
-            ram_size = runCommand(
-                exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"]
-            )
-            self.ram_total = int(ram_size.std_out.strip())
-
-            self.gpu = []
-            gpu_info_cmd = runCommand(
-                exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"]
-            )
-            for line in gpu_info_cmd.std_out.strip().split("\n"):
-                if line != "":
-                    self.gpu.append(line.strip())
-
-            if self.gpu == []:
-                gpu_info_cmd = runCommand(
-                    exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"]
-                )
-                for line in gpu_info_cmd.std_out.strip().split("\n"):
-                    if line != "":
-                        self.gpu.append(line.strip())
+            self.collectLinuxCpuGpuRam()
 
         except Exception as excp:
             self._logger.error(
                 'error "{error}" getting Linux host information'.format(error=excp)
             )
+
+    ############################################################################
+    def collectLinuxCpuGpuRam(self):
+        """Collects information about this host's CPU, GPU, and so on on Linux."""
+
+        cpu_name_cmd = runCommand(
+            exe="bash",
+            args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"],
+        )
+        self.cpu = cpu_name_cmd.std_out.strip()
+        cpu_num_cores = runCommand(
+            exe="bash",
+            args=["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"],
+        )
+        self.num_cores = int(cpu_num_cores.std_out.strip())
+        cpu_num_log_cpus = runCommand(
+            exe="bash",
+            args=["-c", "grep siblings /proc/cpuinfo |uniq |cut -d':' -f2"],
+        )
+        self.num_logical_cores = int(cpu_num_log_cpus.std_out.strip())
+        cpu_l2_cache = runCommand(
+            exe="bash",
+            args=["-c", "getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'"],
+        )
+        self.level2_cache = int(cpu_l2_cache.std_out.strip())
+        cpu_l3_cache = runCommand(
+            exe="bash",
+            args=["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"],
+        )
+        self.level3_cache = int(cpu_l3_cache.std_out.strip())
+        ram_size = runCommand(
+            exe="bash", args=["-c", "free -b|grep 'Mem:'|awk '{print $2}'"]
+        )
+        self.ram_total = int(ram_size.std_out.strip())
+        self.gpu = []
+        gpu_info_cmd = runCommand(
+            exe="bash", args=["-c", "lspci|grep VGA|cut -f3 -d':'"]
+        )
+        for line in gpu_info_cmd.std_out.strip().split("\n"):
+            if line != "":
+                self.gpu.append(line.strip())
+        if self.gpu == []:
+            gpu_info_cmd = runCommand(
+                exe="bash", args=["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"]
+            )
+            for line in gpu_info_cmd.std_out.strip().split("\n"):
+                if line != "":
+                    self.gpu.append(line.strip())
 
     #############################################################################
     def collectOSXConfig(self) -> None:
