@@ -8,12 +8,37 @@
 
 from __future__ import annotations
 
-
 import platform
 
+from buildnis.modules.config.host_windows import (
+    getCPUInfo,
+    getCPUName,
+    getGPUInfo,
+    getMemInfo,
+)
+from buildnis.modules.config.host_osx import (
+    getCPUNameOSX,
+    getL2CacheOSX,
+    getL3CacheOSX,
+    getNumCoresOSX,
+    getNumLogCoresOSX,
+    getOSName,
+    getRAMSizeOSX,
+)
+from buildnis.modules.config.host_linux import (
+    getCPUNameLinux,
+    getGPUNamesLinux,
+    getGPUNamesSbinLinux,
+    getL2CacheLinux,
+    getL3CacheLinux,
+    getNumCoresLinux,
+    getNumLogCoresLinux,
+    getOSMajVers,
+    getOSVer,
+    getRAMSizeLinux,
+)
 from buildnis.modules.config.json_base_class import JSONBaseClass
 from buildnis.modules.helpers.files import checkIfExists
-from buildnis.modules.helpers.execute import ExeArgs, runCommand
 from buildnis.modules.config import (
     AMD64_ARCH_STRING,
     CFG_VERSION,
@@ -79,6 +104,7 @@ class Host(JSONBaseClass):
             self.cpu_arch,
             self.cpu,
         ) = platform.uname()
+
         if self.os == "Darwin":
             self.os = OSX_OS_STRING
         if self.cpu_arch in ("AMD64", "x86_64"):
@@ -123,16 +149,7 @@ class Host(JSONBaseClass):
         wmic path win32_VideoController get name
         """
         try:
-            cpu_info_cmd = runCommand(
-                exe_args=ExeArgs(
-                    "wmic",
-                    [
-                        "cpu",
-                        "get",
-                        "L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores",
-                    ],
-                ),
-            )
+            cpu_info_cmd = getCPUInfo()
             for line in cpu_info_cmd.std_out.strip().split("\n"):
                 if "L2CacheSize" in line:
                     continue
@@ -159,24 +176,22 @@ class Host(JSONBaseClass):
     ############################################################################
     def collectWinCpuGpuRam(self):
         """Collects the Windows CPU, GPU and RAM size information."""
-        cpu_name_cmd = runCommand(exe_args=ExeArgs("wmic", ["cpu", "get", "Name"]))
+        cpu_name_cmd = getCPUName()
         for line in cpu_name_cmd.std_out.strip().split("\n"):
             if "Name" in line:
                 continue
             if line != "":
                 self.cpu = line
-        gpu_info_cmd = runCommand(
-            exe_args=ExeArgs("wmic", ["path", "win32_VideoController", "get", "name"])
-        )
+
+        gpu_info_cmd = getGPUInfo()
         self.gpu = []
         for line in gpu_info_cmd.std_out.strip().split("\n"):
             if "Name" in line:
                 continue
             if line != "":
                 self.gpu.append(line.strip())
-        mem_info_cmd = runCommand(
-            exe_args=ExeArgs("wmic", ["memorychip", "get", "capacity"])
-        )
+
+        mem_info_cmd = getMemInfo()
         self.ram_total = 0
         for line in mem_info_cmd.std_out.strip().split("\n"):
             if "Capacity" in line:
@@ -209,26 +224,10 @@ class Host(JSONBaseClass):
         try:
             try:
                 if checkIfExists("/etc/os-release") is True:
-                    os_vers_maj = runCommand(
-                        exe_args=ExeArgs(
-                            "bash",
-                            [
-                                "-c",
-                                "grep NAME /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'",
-                            ],
-                        )
-                    )
+                    os_vers_maj = getOSMajVers()
                     self.os_vers_major = os_vers_maj.std_out.strip()
 
-                    os_vers = runCommand(
-                        exe_args=ExeArgs(
-                            "bash",
-                            [
-                                "-c",
-                                "grep VERSION /etc/os-release |head -1|cut -d'=' -f2|tr -d '\"'",
-                            ],
-                        )
-                    )
+                    os_vers = getOSVer()
                     self.os_vers = os_vers.std_out.strip()
             except:
                 pass
@@ -243,56 +242,32 @@ class Host(JSONBaseClass):
     ############################################################################
     def collectLinuxCpuGpuRam(self):
         """Collects information about this host's CPU, GPU, and so on on Linux."""
-        cpu_name_cmd = runCommand(
-            exe_args=ExeArgs(
-                "bash",
-                ["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"],
-            )
-        )
+        cpu_name_cmd = getCPUNameLinux()
         self.cpu = cpu_name_cmd.std_out.strip()
-        cpu_num_cores = runCommand(
-            exe_args=ExeArgs(
-                "bash",
-                ["-c", "grep 'cpu cores' /proc/cpuinfo |uniq|cut -d':' -f2"],
-            )
-        )
+
+        cpu_num_cores = getNumCoresLinux()
         self.num_cores = int(cpu_num_cores.std_out.strip())
-        cpu_num_log_cpus = runCommand(
-            exe_args=ExeArgs(
-                "bash",
-                ["-c", "grep siblings /proc/cpuinfo |uniq |cut -d':' -f2"],
-            )
-        )
+
+        cpu_num_log_cpus = getNumLogCoresLinux()
         self.num_logical_cores = int(cpu_num_log_cpus.std_out.strip())
-        cpu_l2_cache = runCommand(
-            exe_args=ExeArgs(
-                "bash",
-                ["-c", "getconf -a|grep LEVEL2_CACHE_SIZE|awk '{print $2}'"],
-            )
-        )
+
+        cpu_l2_cache = getL2CacheLinux()
         self.level2_cache = int(cpu_l2_cache.std_out.strip())
-        cpu_l3_cache = runCommand(
-            exe_args=ExeArgs(
-                "bash",
-                ["-c", "getconf -a|grep LEVEL3_CACHE_SIZE|awk '{print $2}'"],
-            )
-        )
+
+        cpu_l3_cache = getL3CacheLinux()
         self.level3_cache = int(cpu_l3_cache.std_out.strip())
-        ram_size = runCommand(
-            exe_args=ExeArgs("bash", ["-c", "free -b|grep 'Mem:'|awk '{print $2}'"])
-        )
+
+        ram_size = getRAMSizeLinux()
         self.ram_total = int(ram_size.std_out.strip())
         self.gpu = []
-        gpu_info_cmd = runCommand(
-            exe_args=ExeArgs("bash", ["-c", "lspci|grep VGA|cut -f3 -d':'"])
-        )
+
+        gpu_info_cmd = getGPUNamesLinux()
         for line in gpu_info_cmd.std_out.strip().split("\n"):
             if line != "":
                 self.gpu.append(line.strip())
+
         if self.gpu == []:
-            gpu_info_cmd = runCommand(
-                exe_args=ExeArgs("bash", ["-c", "/sbin/lspci|grep VGA|cut -f3 -d':'"])
-            )
+            gpu_info_cmd = getGPUNamesSbinLinux()
             for line in gpu_info_cmd.std_out.strip().split("\n"):
                 if line != "":
                     self.gpu.append(line.strip())
@@ -313,38 +288,28 @@ class Host(JSONBaseClass):
         TODO get GPU info: system_profiler SPDisplaysDataType
         """
         try:
-            os_name = runCommand(exe_args=ExeArgs("sw_vers", ["-productVersion"]))
+            os_name = getOSName()
             self.os_vers = os_name.std_out.strip()
 
             os_vers_2_digits_list = self.os_vers.rsplit(".")
             self.os_vers_major = OSX_NAME_DICT[".".join(os_vers_2_digits_list[:-1])]
 
-            cpu_name_cmd = runCommand(
-                exe_args=ExeArgs("sysctl", ["-n", "machdep.cpu.brand_string"])
-            )
+            cpu_name_cmd = getCPUNameOSX()
             self.cpu = cpu_name_cmd.std_out.strip()
 
-            cpu_num_cores = runCommand(
-                exe_args=ExeArgs("sysctl", ["-n", "hw.physicalcpu"])
-            )
+            cpu_num_cores = getNumCoresOSX()
             self.num_cores = int(cpu_num_cores.std_out)
 
-            cpu_num_log_cpus = runCommand(
-                exe_args=ExeArgs("sysctl", ["-n", "hw.logicalcpu"])
-            )
+            cpu_num_log_cpus = getNumLogCoresOSX()
             self.num_logical_cores = int(cpu_num_log_cpus.std_out)
 
-            cpu_l2_cache = runCommand(
-                exe_args=ExeArgs("sysctl", ["-n", "hw.l2cachesize"])
-            )
+            cpu_l2_cache = getL2CacheOSX()
             self.level2_cache = int(cpu_l2_cache.std_out)
 
-            cpu_l3_cache = runCommand(
-                exe_args=ExeArgs("sysctl", ["-n", "hw.l3cachesize"])
-            )
+            cpu_l3_cache = getL3CacheOSX()
             self.level3_cache = int(cpu_l3_cache.std_out)
 
-            ram_size = runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.memsize"]))
+            ram_size = getRAMSizeOSX()
             self.ram_total = int(ram_size.std_out)
 
             self.gpu = []
