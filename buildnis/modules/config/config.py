@@ -37,8 +37,10 @@ class Config(JSONBaseClass):
     config_path (FilePath): the path to the project's main JSON configuration.
     project_cfg_dir (FilePath): The directory part of `config_path`
     project_cfg (obj): the project's JSON configuration stored in a Python class.
-    module_cfgs (Dict[FilePath, Any]) the module JSON configurations (mentioned in project_cfg)
-    build_cfgs (Dict[FilePath, Any]) the build JSON configurations (mentioned in the module JSONs)
+    module_cfgs (Dict[FilePath, Any]) the module JSON configurations
+                                      (mentioned in project_cfg)
+    build_cfgs (Dict[FilePath, Any]) the build JSON configurations
+                                        (mentioned in the module JSONs)
     _logger (logging.Logger): the logger to use
 
     Methods:
@@ -214,14 +216,16 @@ class Config(JSONBaseClass):
                         target.build_tool = build_cfg
 
     ############################################################################
-    def writeJSON(self, json_path: FilePath="", to_ignore=["project_dep_cfg"]) -> None:
+    def writeJSON(
+        self, json_path: FilePath = "", to_ignore=["project_dep_cfg"]
+    ) -> None:
         """Writes the project's config to a JSON file.
 
         Args:
             json_path (FilePath, optional): The path to the JSON file to write to.
                                         Defaults to "", this uses the saved path.
-            to_ignore (list, optional): List of attributes to ignore, to not save to disk.
-                                        Defaults to ["project_dep_cfg"].
+            to_ignore (list, optional): List of attributes to ignore, to not save to
+                                        disk. Defaults to ["project_dep_cfg"].
         """
         if json_path == "":
             super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)

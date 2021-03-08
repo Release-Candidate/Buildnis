@@ -117,7 +117,8 @@ class Host(JSONBaseClass):
 
         Calls these commands and parses their outputs:
 
-        wmic cpu get L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,NumberOfCores,Name
+        wmic cpu get L2CacheSize,L3CacheSize,NumberOfLogicalProcessors,
+                                                                    NumberOfCores,Name
         wmic memorychip get capacity
         wmic path win32_VideoController get name
         """

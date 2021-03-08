@@ -130,7 +130,8 @@ def parseCommandLine() -> CommandlineArguments:
         arguments: the command line arguments passed to the program
 
     Returns:
-       an `CommandlineArguments` instance containing the command line arguments as attributes.
+       An `CommandlineArguments` instance containing the command line arguments as
+       attributes.
     """
     description = """Buildnis is a build system used to build software.
 
@@ -315,7 +316,8 @@ def checkCmdLineArgs(
     """[summary]
 
     Args:
-        cmd_line_parser (argparse.ArgumentParser): the `argparse.ArgumentParser` instance to use
+        cmd_line_parser (argparse.ArgumentParser): the `argparse.ArgumentParser`
+                                                    instance to use
         cmdline_args (object): the object returned by `cmd_line_parser.parse_args`
 
     Returns:

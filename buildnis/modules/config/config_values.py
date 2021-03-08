@@ -55,7 +55,8 @@ PROJECT_EMAIL: str = ""
 """
 
 PROJECT_CONFIG_DIR_PATH: str = ""
-"""The config path of the build project, the argument of `--generated-conf-dir` on the command line.
+"""The config path of the build project, the argument of `--generated-conf-dir`
+on the command line.
 """
 
 # Host configuration, most of these are saved in the host configuration object `Host`.

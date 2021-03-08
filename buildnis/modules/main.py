@@ -179,8 +179,8 @@ def setUpConfDir(
     """Sets up the configuration directory.
 
     Args:
-        commandline_args ([CommandlineArguments]): instance holding the command line parameters,
-                                    especially `commandline_args.project_config_file`.
+        commandline_args ([CommandlineArguments]): instance holding the command line
+                        parameters, especially `commandline_args.project_config_file`.
         logger ([type]): The `logger.Logger` instance to use.
         project_cfg_dir ([FilePath]): Path to the configuration directory.
 
@@ -217,7 +217,8 @@ def setUpPaths(
     """Helper: set up all pathnames of JSON files.
 
     Args:
-        project_cfg_dir (FilePath): The path to the directory the JSON files are generated in
+        project_cfg_dir (FilePath): The path to the directory the JSON files are
+                                    generated in
         host_cfg (FilePath): The path to the generated host configuration JSON file
         list_of_generated_files (List[FilePath]): List of generated JSON files
         host_cfg (host_config.Host): host configuration object instance
@@ -381,8 +382,8 @@ def setCmdLineArgsLogger() -> Tuple[CommandlineArguments, logging.Logger]:
     """Helper function: parses the command line, sets up the logger.
 
     Returns:
-        Tuple[CommandLineArguments, logging.Logger]: The commandline object instance and the
-        logger instance to use
+        Tuple[CommandLineArguments, logging.Logger]: The commandline object instance
+                                                    and the logger instance to use
     """
     commandline_args = parseCommandLine()
 

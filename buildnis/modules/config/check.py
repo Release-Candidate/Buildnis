@@ -41,12 +41,14 @@ class Check(JSONBaseClass):
     * `name_long`           The full name of the build tool
     * `version`             The version of the build tool, gathered from its output
     * `version_arg`         The argument to call the build tool with to get the version
-    * `version_regex`       The regex to parse the output of `version_arg` to get `version`
+    * `version_regex`       The regex to parse the output of `version_arg` to get
+                            `version`
     * `build_tool_exe`      The executable's file name
     * `install_path`        The path to the executable
     * `env_script`          The environment script to call before using the executable
     * `env_script_arg`      The argument to call the environment script with
-    * `is_checked`          Has the executable been run and the version output been parsed?
+    * `is_checked`          Has the executable been run and the version output been
+                            parsed?
 
     Attributes:
         os_name (OSName): the OS we are building for

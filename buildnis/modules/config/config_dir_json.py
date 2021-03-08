@@ -39,12 +39,14 @@ class ConfigDirJson(JSONBaseClass):
         or uses the given path from the command line argument `--generate-conf-dir`.
 
         Args:
-            file_name (FilePath): The file name of the configuration directory configuration, should
-                                    be something like `working_dir/CFG_DIR_NAME`
-            working_dir (FilePath): path of the working directory, the directory the project config is
-                                    located in (needed to find an existing configuration directory
-                                    configuration file)
-            cfg_path (FilePath, optional): The path to the configuration directory. Defaults to "".
+            file_name (FilePath): The file name of the configuration directory
+                                    configuration, should be something like
+                                    `working_dir/CFG_DIR_NAME`
+            working_dir (FilePath): path of the working directory, the directory the
+                                    project config is located in (needed to find an
+                                    existing configuration directory configuration file)
+            cfg_path (FilePath, optional): The path to the configuration directory.
+                                            Defaults to "".
         """
         super().__init__(
             config_file_name=CFG_DIR_NAME, config_name="configuration directory"
