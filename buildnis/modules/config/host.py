@@ -235,7 +235,6 @@ class Host(JSONBaseClass):
     ############################################################################
     def collectLinuxCpuGpuRam(self):
         """Collects information about this host's CPU, GPU, and so on on Linux."""
-
         cpu_name_cmd = runCommand(
             exe="bash",
             args=["-c", "grep 'model name' /proc/cpuinfo |head -1|cut -d':' -f2-"],
