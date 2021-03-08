@@ -113,6 +113,7 @@ placeholder_regex = re.compile(r"\$\{(.*)\}")
 is to be substituted for a value of another configuration item.
 """
 
+
 ############################################################################
 def replaceConstants(item: str) -> str:
     """Replaces all known constants defined in `config_values.py` in the given string.
