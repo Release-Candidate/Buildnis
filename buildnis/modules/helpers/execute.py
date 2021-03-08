@@ -21,9 +21,9 @@ class ExecuteException(Exception):
 ################################################################################
 def runCommand(
     exe: FilePath,
-    args: List[str] = [],
+    args: List[str] = None,
     env_script: FilePath = "",
-    env_script_args: List[str] = [],
+    env_script_args: List[str] = None,
     source_env_script: bool = False,
 ) -> CmdOutput:
     """Executes the given command with the given arguments.
@@ -51,6 +51,10 @@ def runCommand(
     Returns:
         CmdOutput: The output of the executed command as tuple (stdout, stderr)
     """
+    if args is None:
+        args = []
+    if env_script_args is None:
+        env_script_args = []
     cmd_line_args = []
 
     # TODO really always call bash?
@@ -90,9 +94,9 @@ def doesExecutableWork(
     exe: FilePath,
     check_regex: str,
     regex_group: int = 0,
-    args: List[str] = [],
+    args: List[str] = None,
     env_script: FilePath = "",
-    env_script_args: List[str] = [],
+    env_script_args: List[str] = None,
     source_env_script: bool = False,
 ) -> str:
     """Checks if the given command line works.
@@ -127,6 +131,10 @@ def doesExecutableWork(
         str: the matched string if the regex matches the output, the empty string
              '' otherwise.
     """
+    if args is None:
+        args = []
+    if env_script_args is None:
+        env_script_args = []
     ret_val = ""
 
     try:

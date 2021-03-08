@@ -91,7 +91,7 @@ class JSONBaseClass:
             sys.exit(EXT_ERR_LD_FILE)
 
     ############################################################################
-    def expandAllPlaceholders(self, parents: List[object] = []) -> None:
+    def expandAllPlaceholders(self, parents: List[object] = None) -> None:
         """Goes through all configurations and replaces placeholders in their
         elements. A Placeholder is a string like `${PLACEHOLDER}`, a dollar
         sign followed by a curly opening brace, the string to replace and the
@@ -102,6 +102,8 @@ class JSONBaseClass:
         Args:
             parents (List[object]): The hierarchical list of parent objects.
         """
+        if parents is None:
+            parents = []
         local_parents = parents.copy()
         local_parents.append(self)
         tmp_obj = parseConfigElement(element=self, parents=local_parents)
@@ -117,13 +119,15 @@ class JSONBaseClass:
                 )
 
     ############################################################################
-    def writeJSON(self, json_path: FilePath, to_ignore: List[str] = []) -> None:
+    def writeJSON(self, json_path: FilePath, to_ignore: List[str] = None) -> None:
         """Writes the class instance to the JSON file.
 
         Args:
             json_path (FilePath): The path to the file to write the JSON to
             to_ignore (List[str]): The list of attributes to ignore
         """
+        if to_ignore is None:
+            to_ignore = []
         self.json_path = json_path
         writeJSON(
             getJSONDict(self, to_ignore),
