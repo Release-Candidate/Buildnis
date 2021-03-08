@@ -86,7 +86,11 @@ def main():
         config_values.g_list_of_generated_files.append(host_cfg_filename)
 
         if not build_tools_filename_exists or commandline_args.do_configure is True:
-            check_buildtools = check.Check(os_name=host_cfg.os, arch=host_cfg.cpu_arch)
+            check_buildtools = check.Check(
+                os_name=host_cfg.os,
+                arch=host_cfg.cpu_arch,
+                user_path=commandline_args.conf_scripts_dir,
+            )
 
             check_buildtools.writeJSON(json_path=build_tools_filename)
             if not build_tools_filename_exists:

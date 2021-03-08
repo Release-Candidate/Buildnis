@@ -22,6 +22,7 @@ from buildnis.modules.config import (
     Arch,
     BUILD_TOOL_CONFIG_NAME,
     CONFIGURE_SCRIPTS_PATH,
+    FilePath,
     LINUX_OS_STRING,
     OSName,
     OSX_OS_STRING,
@@ -64,7 +65,7 @@ class Check(JSONBaseClass):
     """
 
     ###########################################################################
-    def __init__(self, os_name: OSName, arch: Arch) -> None:
+    def __init__(self, os_name: OSName, arch: Arch, user_path: FilePath) -> None:
         """Constructor of Check, runs all build tool script_paths in
         `configure_script_paths`.
 
@@ -75,6 +76,8 @@ class Check(JSONBaseClass):
         Args:
             os_name (OSName): the OS we are building for
             arch (Arch): the CPU architecture we are building for
+            user_path (FilePath): the path to additional build tool configuration
+                                scripts, passed as a command-line argument.
         """
         super().__init__(
             config_file_name=BUILD_TOOL_CONFIG_NAME, config_name="build tools"
@@ -82,10 +85,33 @@ class Check(JSONBaseClass):
 
         self.os = os_name
         self.arch = arch
+        self.build_tool_cfgs = []
 
+        sys_configure_path = "/".join([MODULE_DIR_PATH, CONFIGURE_SCRIPTS_PATH])
         working_dir = pathlib.Path(
-            os.path.normpath("/".join([CONFIGURE_SCRIPTS_PATH, os_name]))
+            os.path.normpath("/".join([sys_configure_path, os_name]))
         )
+
+        script_paths = [working_dir]
+
+        if user_path != "":
+            user_script_path = pathlib.Path(
+                os.path.abspath("/".join([user_path, os_name]))
+            )
+            script_paths.append(user_script_path)
+
+        for script_dir in script_paths:
+            self.runScriptsInDir(script_dir)
+
+        self.checkVersions()
+
+    ############################################################################
+    def runScriptsInDir(self, working_dir: pathlib.Path) -> None:
+        """Runs all build tool config scripts in the given path.
+
+        Args:
+            working_dir (pathlib.Path): The path in which to run the build tool scripts.
+        """
         if not working_dir.is_dir():
             self._logger.critical(
                 'error calling build tool scripts, "{path}" does not exist or is not a directory!'.format(
@@ -94,46 +120,48 @@ class Check(JSONBaseClass):
             )
             sys.exit(EXT_ERR_DIR)
 
-        self.build_tool_cfgs = []
         for script_path in working_dir.glob("*"):
             try:
-                if script_path.is_file():
-
-                    self._logger.warning(
-                        'Calling build tool config script "{path}"'.format(
-                            path=script_path
-                        )
-                    )
-                    try:
-                        script_out = runCommand(exe=script_path, args=[self.arch])
-
-                        build_tool_cfg = json.loads(
-                            script_out.std_out,
-                            object_hook=lambda dict: SimpleNamespace(**dict),
-                        )
-
-                    except Exception as excp:
-                        self._logger.error(
-                            'error "{error}" running build tool script "{path}"'.format(
-                                error=excp, path=script_path
-                            )
-                        )
-
-                    for item in build_tool_cfg.build_tools:
-                        if self.isBuildToolCfgOK(item):
-                            self.build_tool_cfgs.append(item)
-                        else:
-                            self._logger.error(
-                                'build tool config "{cfg}" doesn\'t have all needed attributes!'.format(
-                                    cfg=script_path
-                                )
-                            )
+                self.runScript(script_path)
             except Exception as excp:
                 self._logger.error(
-                    'build tool filename "{cfg}" not valid'.format(cfg=script_path)
+                    'error "{error}" build tool filename "{cfg}" not valid'.format(
+                        error=excp, cfg=script_path
+                    )
                 )
 
-        self.checkVersions()
+    ############################################################################
+    def runScript(self, script_path: pathlib.Path) -> None:
+        """Runs the script at the given path and saves it's output.
+
+        Args:
+            script_path (pathlib.Path): The path to the script to run.
+        """
+        if script_path.is_file():
+            self._logger.warning(
+                'Calling build tool config script "{path}"'.format(path=script_path)
+            )
+            try:
+                script_out = runCommand(exe=script_path, args=[self.arch])
+                build_tool_cfg = json.loads(
+                    script_out.std_out,
+                    object_hook=lambda dict: SimpleNamespace(**dict),
+                )
+            except Exception as excp:
+                self._logger.error(
+                    'error "{error}" running build tool script "{path}"'.format(
+                        error=excp, path=script_path
+                    )
+                )
+            for item in build_tool_cfg.build_tools:
+                if self.isBuildToolCfgOK(item):
+                    self.build_tool_cfgs.append(item)
+                else:
+                    self._logger.error(
+                        'build tool config "{cfg}" doesn\'t have all needed attributes!'.format(
+                            cfg=script_path
+                        )
+                    )
 
     ############################################################################
     def isBuildToolCfgOK(self, cfg: Any) -> bool:
