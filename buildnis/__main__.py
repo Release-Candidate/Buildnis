@@ -30,4 +30,3 @@ if __name__ == "__main__":
     from buildnis.modules import main
 
     main.main()
-
