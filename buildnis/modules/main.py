@@ -65,7 +65,7 @@ def main():
     )
 
     (
-        host_cfg_filename_exists,
+        host_cfg_filename_exists,           # skipcq: PYL-W0612
         host_cfg_filename,
         build_tools_filename_exists,
         build_tools_filename,
