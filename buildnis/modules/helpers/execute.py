@@ -17,8 +17,6 @@ from buildnis.modules.config import CmdOutput, FilePath
 class ExecuteException(Exception):
     """The Exception is thrown if the execution of the given commandline fails."""
 
-    pass
-
 
 ################################################################################
 def runCommand(

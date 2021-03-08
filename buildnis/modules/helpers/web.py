@@ -19,8 +19,6 @@ _logger = logging.getLogger(LOGGER_NAME)
 class WebException(Exception):
     """Exception that is raised from functions in this module."""
 
-    pass
-
 
 # TODO: make better
 ###############################################################################
