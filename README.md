@@ -3,6 +3,8 @@
 ![MIT license badge](https://img.shields.io/github/license/Release-Candidate/Buildnis)
 ![Python version badge](https://img.shields.io/pypi/pyversions/buildnis)
 [![PIP version badge](https://img.shields.io/pypi/v/buildnis)](https://pypi.org/project/buildnis/)
+[![Code Climate Maintainability badge](https://api.codeclimate.com/v1/badges/c5e672a62eeaba8e6fdf/maintainability)](https://codeclimate.com/github/Release-Candidate/Buildnis/maintainability)
+[![DeepSource Issue badge](https://deepsource.io/gh/Release-Candidate/Buildnis.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Release-Candidate/Buildnis/?ref=repository-badge)
 [![Travis CI Build Status](https://travis-ci.com/Release-Candidate/Buildnis.svg?branch=main)](https://travis-ci.com/Release-Candidate/Buildnis)
 [![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
