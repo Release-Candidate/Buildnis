@@ -11,11 +11,16 @@ from __future__ import annotations
 import os
 import pathlib
 import datetime
-from typing import Dict, List
+from typing import List
 from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
 from buildnis.modules.helpers.web import doDownload
 from buildnis.modules.config.json_base_class import JSONBaseClass
-from buildnis.modules.helpers.execute import doesExecutableWork, runCommand
+from buildnis.modules.helpers.execute import (
+    ExeArgs,
+    RunRegex,
+    doesExecutableWork,
+    runCommand,
+)
 from buildnis.modules.helpers.files import returnExistingFile
 
 
@@ -196,11 +201,11 @@ class ProjectDependency(JSONBaseClass):
         return False
 
     ############################################################################
-    def installDep(self, dep: Dict[str, str]) -> None:
+    def installDep(self, dep: object) -> None:
         """Download and/or install the given dependency.
 
         Args:
-            dep (Dict[str, str]): the dependency to install or download
+            dep (object): the dependency to install or download
         """
         if dep.download_url != "":
             try:
@@ -228,7 +233,9 @@ class ProjectDependency(JSONBaseClass):
                     )
                 )
 
-                output = runCommand(dep.install_cmd, args=dep.install_arguments)
+                output = runCommand(
+                    exe_args=ExeArgs(dep.install_cmd, dep.install_arguments)
+                )
                 self._logger.debug(output.std_out)
                 self._logger.debug(output.err_out)
 
@@ -265,9 +272,8 @@ class ProjectDependency(JSONBaseClass):
 
         try:
             matched_string = doesExecutableWork(
-                exe=dep.ok_if_executable,
-                check_regex=dep.executable_check_regex,
-                args=[dep.executable_argument],
+                exe_args=ExeArgs(dep.ok_if_executable, [dep.executable_argument]),
+                check_regex=RunRegex(dep.executable_check_regex, 0),
             )
 
             if matched_string != "":

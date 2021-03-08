@@ -8,7 +8,7 @@
 
 from __future__ import annotations
 import re
-from typing import List
+from typing import List, NamedTuple
 import subprocess
 
 from buildnis.modules.config import CmdOutput, FilePath
@@ -18,32 +18,69 @@ class ExecuteException(Exception):
     """The Exception is thrown if the execution of the given commandline fails."""
 
 
+class RunRegex(NamedTuple):
+    """Class to hold a regex tuple to parse a command output with.
+
+    Attributes:
+
+        regex (str): The actual regex to use for parsing the output of the command.
+        group (int): The match group of the regex to use for the result.
+    """
+
+    regex: str = ""
+    group: int = 0
+
+
+class ExeArgs(NamedTuple):
+    """Class to hold the arguments needed to run a command.
+
+    Attributes:
+
+        exe (FilePath): The path to the executable to call.
+        args (List[str]): The list of arguments to pass to the executable.
+    """
+
+    exe: FilePath = ""
+    args: List[str] = None
+
+
+class EnvArgs(NamedTuple):
+    """Class to hold the arguments needed for the environment script of a command to
+    run.
+
+    Attributes:
+
+        script (FilePath): The path to the environment script to run or source.
+        args (List[str]): The arguments to pass to the environment script.
+        do_source (bool):  If this is true, the environment script is sourced in the
+                        current command interpreter and not executed.
+    """
+
+    script: FilePath = "",
+    args: List[str] = None,
+    do_source: bool = False,
+
 ################################################################################
 def runCommand(
-    exe: FilePath,
-    args: List[str] = None,
-    env_script: FilePath = "",
-    env_script_args: List[str] = None,
-    source_env_script: bool = False,
+    exe_args: ExeArgs,
+    env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False)
 ) -> CmdOutput:
     """Executes the given command with the given arguments.
 
-    The argument `exe` is the executable's name or path, needed arguments can be
-    passed in the list `args`.
-    In `env_script` the command to set up an environment can be given, with
-    needed arguments to this environment script in the list `env_script_args`.
+    The argument `exe_args.exe` is the executable's name or path, needed arguments can
+    be passed in the list `exe_args.args`.
+    In `env_args` the command to set up an environment can be given, with
+    needed arguments to this environment script in the list `env_args.args`.
 
     Args:
-        exe (FilePath): The name of the executable or path to the executable
-                        to call
-        args (List[str], optional): The list of arguments to pass to the executable.
-                                    Defaults to [].
-        env_script (FilePath, optional): The environment script to set up the
-                    environment prior to calling the executable. Defaults to "".
-        env_script_args (List[str], optional): List of arguments to pass to the
-                environment script `env_script` Defaults to [].
-        source_env_script (bool): Call the environment script (`False`) or source
-                    the environment script (set this to `True`)
+        exe_args (ExeArgs): The name of the executable or path to the executable
+                        to call and the arguments to pass to the executable.
+        env_args (EnvArgs): The arguments needed for the environment script, if
+                            applicable. Holds the command to call the environment script
+                            in `env_args.script`, the arguments to call the environment
+                            script with in `env_args.args` and if the environment script
+                            has to be sourced instead of running it,
+                            `env_args.do_source` ir `True`.
 
     Raises:
         ExecuteException: if something goes wrong
@@ -51,31 +88,38 @@ def runCommand(
     Returns:
         CmdOutput: The output of the executed command as tuple (stdout, stderr)
     """
-    if args is None:
-        args = []
-    if env_script_args is None:
-        env_script_args = []
+
+    if exe_args.args is None:
+        exe_args_real = []
+    else:
+        exe_args_real = exe_args.args
+
+    if env_args.args is None:
+        env_args_real = []
+    else:
+        env_args_real = env_args.args
+
     cmd_line_args = []
 
     # TODO really always call bash?
-    if env_script != "":
-        if source_env_script is True:
+    if env_args.script != "":
+        if env_args.do_source is True:
             cmd_line_args.append("bash")
             cmd_line_args.append("-c")
-            source_cmd = "source " + env_script + " " + " ".join(env_script_args)
-            source_cmd = source_cmd + " && " + exe
-            source_cmd = source_cmd + " " + " ".join(args)
+            source_cmd = "source " + env_args.script + " " + " ".join(env_args_real)
+            source_cmd = source_cmd + " && " + exe_args.exe
+            source_cmd = source_cmd + " " + " ".join(exe_args_real)
             cmd_line_args.append(source_cmd)
         else:
-            cmd_line_args.append(env_script)
-            for env_arg in env_script_args:
+            cmd_line_args.append(env_args.script)
+            for env_arg in env_args_real:
                 cmd_line_args.append(env_arg)
             cmd_line_args.append("&&")
 
-    if env_script == "" or not source_env_script:
-        cmd_line_args.append(exe)
+    if env_args.script == "" or not env_args.do_source:
+        cmd_line_args.append(exe_args.exe)
 
-        for arg in args:
+        for arg in exe_args_real:
             if arg != "":
                 cmd_line_args.append(arg)
 
@@ -91,13 +135,9 @@ def runCommand(
 
 ################################################################################
 def doesExecutableWork(
-    exe: FilePath,
-    check_regex: str,
-    regex_group: int = 0,
-    args: List[str] = None,
-    env_script: FilePath = "",
-    env_script_args: List[str] = None,
-    source_env_script: bool = False,
+    exe_args: ExeArgs,
+    check_regex: RunRegex,
+    env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False)
 ) -> str:
     """Checks if the given command line works.
 
@@ -108,21 +148,16 @@ def doesExecutableWork(
     function returns the matched string.
 
     Args:
-        exe (FilePath): The name of the executable or path to the executable
-                        to call
-        check_regex (str): The regex to parse the output of the program with.
-                    Both `stdout` and `stderr` are parsed, `stderr` only if
-                    `stdout` doesn't match
-        regex_group (int): the index of the match group to check.
-                        Defaults to 0, the whole regex.
-        args (List[str], optional):  The list of arguments to pass to the executable.
-                                    Defaults to [].
-        env_script (FilePath, optional): The environment script to set up the
-                    environment prior to calling the executable. Defaults to "".
-        env_script_args (List[str], optional): List of arguments to pass to the
-                environment script `env_script` Defaults to [].
-        source_env_script (bool): Call the environment script (`False`) or source
-                    the environment script (set this to `True`)
+        exe_args (ExeArgs): The name of the executable or path to the executable
+                        to call and the arguments to pass to the executable.
+        env_args (EnvArgs): The arguments needed for the environment script, if
+                            applicable. Holds the command to call the environment script
+                            in `env_args.script`, the arguments to call the environment
+                            script with in `env_args.args` and if the environment script
+                            has to be sourced instead of running it,
+                            `env_args.do_source` ir `True`.
+        env_args: (EnvArgs): The arguments needed to setup the environment for the
+                            executable, if applicable. Defaults to ("", None, False).
 
     Raises:
         ExecuteException: if something goes wrong
@@ -131,29 +166,19 @@ def doesExecutableWork(
         str: the matched string if the regex matches the output, the empty string
              '' otherwise.
     """
-    if args is None:
-        args = []
-    if env_script_args is None:
-        env_script_args = []
     ret_val = ""
 
     try:
-        output = runCommand(
-            exe=exe,
-            args=args,
-            env_script=env_script,
-            env_script_args=env_script_args,
-            source_env_script=source_env_script,
-        )
+        output = runCommand(exe_args=exe_args, env_args=env_args)
 
-        run_regex = re.search(check_regex, output.std_out)
-        if run_regex is not None and run_regex.group(regex_group):
-            ret_val = run_regex.group(regex_group)
+        run_regex = re.search(check_regex.regex, output.std_out)
+        if run_regex is not None and run_regex.group(check_regex.group):
+            ret_val = run_regex.group(check_regex.group)
 
         else:
-            run_regex = re.search(check_regex, output.err_out)
-            if run_regex is not None and run_regex.group(regex_group):
-                ret_val = run_regex.group(regex_group).strip()
+            run_regex = re.search(check_regex.regex, output.err_out)
+            if run_regex is not None and run_regex.group(check_regex.group):
+                ret_val = run_regex.group(check_regex.group).strip()
 
     except Exception as excp:
         raise ExecuteException(excp)
