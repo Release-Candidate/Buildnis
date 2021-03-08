@@ -342,7 +342,7 @@ def checkCmdLineArgs(
 
     if (
         ret_val.do_configure is False
-        and ret_val.do_build == False
+        and ret_val.do_build is False
         and ret_val.do_install == False
     ):
         ret_val.do_check_what_to_do = True
