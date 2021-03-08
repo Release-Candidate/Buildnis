@@ -7,9 +7,10 @@
 ###############################################################################
 
 from __future__ import annotations
+
 import re
-from typing import List, NamedTuple
 import subprocess
+from typing import List, NamedTuple
 
 from buildnis.modules.config import CmdOutput, FilePath
 
@@ -56,9 +57,9 @@ class EnvArgs(NamedTuple):
                         current command interpreter and not executed.
     """
 
-    script: FilePath = "",
-    args: List[str] = None,
-    do_source: bool = False,
+    script: FilePath = ""
+    args: List[str] = None
+    do_source: bool = False
 
 ################################################################################
 def runCommand(
