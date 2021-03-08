@@ -118,7 +118,7 @@ is to be substituted for a value of another configuration item.
 
 
 ############################################################################
-def replaceConstants(item2: str) -> str:
+def replaceConstants(item: str) -> str:
     """Replaces all known constants defined in `config_values.py` in the given string.
 
     These are placeholders like `${PROJECT_ROOT}`, `${PROJECT_NAME}`, ...
@@ -130,129 +130,155 @@ def replaceConstants(item2: str) -> str:
         str: The substitution if a placeholder has been found, the unaltered
                 string else.
     """
-    ret_val = item2
+    ret_val = item
 
-    result = project_root_regex.search(ret_val)
+    ret_val = replaceProjectConstants(ret_val)
+
+    ret_val = replaceHostConstants(ret_val)
+
+    ret_val = replaceDateTimeConstants(ret_val)
+
+    return ret_val
+
+
+################################################################################
+def replaceDateTimeConstants(ret_val: str) -> str:
+    """Replaces date and time placeholders with the current date and/or time.
+
+    Args:
+        ret_val (str): The string to parse.
+
+    Returns:
+        str: The replaced date and or time if a match has been found, the original
+            string `ret_val` else.
+    """
+    result = current_date_regex.search(ret_val)
     if result:
-        ret_val = project_root_regex.sub(
-            config_values.PROJECT_ROOT.replace("\\", "\\\\"), ret_val
-        )
-
-    result = project_name_regex.search(ret_val)
+        now_date = datetime.now()
+        ret_val = current_date_regex.sub(now_date.strftime("%d.%m.%Y"), ret_val)
+    result = current_year_regex.search(ret_val)
     if result:
-        ret_val = project_name_regex.sub(
-            config_values.PROJECT_NAME.replace("\\", "\\\\"), ret_val
-        )
-
-    result = project_version_regex.search(ret_val)
+        now_date = datetime.now()
+        ret_val = current_year_regex.sub(now_date.strftime("%Y"), ret_val)
+    result = current_month_regex.search(ret_val)
     if result:
-        ret_val = project_version_regex.sub(
-            config_values.PROJECT_VERSION.replace("\\", "\\\\"), ret_val
-        )
-
-    result = project_author_regex.search(ret_val)
+        now_date = datetime.now()
+        ret_val = current_month_regex.sub(now_date.strftime("%m"), ret_val)
+    result = current_day_regex.search(ret_val)
     if result:
-        ret_val = project_author_regex.sub(
-            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), ret_val
-        )
-
-    result = project_company_regex.search(ret_val)
+        now_date = datetime.now()
+        ret_val = current_day_regex.sub(now_date.strftime("%d"), ret_val)
+    result = current_time_regex.search(ret_val)
     if result:
-        ret_val = project_company_regex.sub(
-            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), ret_val
-        )
+        now_time = datetime.now()
+        ret_val = current_time_regex.sub(now_time.strftime("%H:%M:%S"), ret_val)
+    return ret_val
 
-    result = project_copyright_info_regex.search(ret_val)
-    if result:
-        ret_val = project_copyright_info_regex.sub(
-            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), ret_val
-        )
 
-    result = project_web_url_regex.search(ret_val)
-    if result:
-        ret_val = project_web_url_regex.sub(
-            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), ret_val
-        )
+################################################################################
+def replaceHostConstants(ret_val: str) -> str:
+    """Replaces host placeholders with the corresponding values.
 
-    result = project_email_regex.search(ret_val)
-    if result:
-        ret_val = project_email_regex.sub(
-            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), ret_val
-        )
+    Args:
+        ret_val (str): The string to parse.
 
-    result = project_cfg_dir_regex.search(ret_val)
-    if result:
-        ret_val = project_cfg_dir_regex.sub(
-            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), ret_val
-        )
-
+    Returns:
+        str: The replaced values if a match has been found, the original
+            string `ret_val` else.
+    """
     result = host_os_regex.search(ret_val)
     if result:
         ret_val = host_os_regex.sub(
             config_values.HOST_OS.replace("\\", "\\\\"), ret_val
         )
-
     result = host_name_regex.search(ret_val)
     if result:
         ret_val = host_name_regex.sub(
             config_values.HOST_NAME.replace("\\", "\\\\"), ret_val
         )
-
     result = host_cpu_arch_regex.search(ret_val)
     if result:
         ret_val = host_cpu_arch_regex.sub(
             config_values.HOST_CPU_ARCH.replace("\\", "\\\\"), ret_val
         )
-
     result = host_num_cores_regex.search(ret_val)
     if result:
         ret_val = host_num_cores_regex.sub(
             config_values.HOST_NUM_CORES.replace("\\", "\\\\"), ret_val
         )
-
     result = host_num_log_cores_regex.search(ret_val)
     if result:
         ret_val = host_num_log_cores_regex.sub(
             config_values.HOST_NUM_LOG_CORES.replace("\\", "\\\\"), ret_val
         )
-
     result = os_name_osx_regex.search(ret_val)
     if result:
         ret_val = os_name_osx_regex.sub(OSX_OS_STRING, ret_val)
-
     result = os_name_linux_regex.search(ret_val)
     if result:
         ret_val = os_name_linux_regex.sub(LINUX_OS_STRING, ret_val)
-
     result = os_name_windows_regex.search(ret_val)
     if result:
         ret_val = os_name_windows_regex.sub(WINDOWS_OS_STRING, ret_val)
+    return ret_val
 
-    result = current_date_regex.search(ret_val)
+
+################################################################################
+def replaceProjectConstants(ret_val: str) -> str:
+    """Replaces all project constant placeholders.
+
+    Args:
+        ret_val (str): The string to parse for placeholders.
+
+    Returns:
+        str: If a project placeholder has been found, the replaced value, the original
+            string `ret_val` else.
+    """
+    result = project_root_regex.search(ret_val)
     if result:
-        now_date = datetime.now()
-        ret_val = current_date_regex.sub(now_date.strftime("%d.%m.%Y"), ret_val)
-
-    result = current_year_regex.search(ret_val)
+        ret_val = project_root_regex.sub(
+            config_values.PROJECT_ROOT.replace("\\", "\\\\"), ret_val
+        )
+    result = project_name_regex.search(ret_val)
     if result:
-        now_date = datetime.now()
-        ret_val = current_year_regex.sub(now_date.strftime("%Y"), ret_val)
-
-    result = current_month_regex.search(ret_val)
+        ret_val = project_name_regex.sub(
+            config_values.PROJECT_NAME.replace("\\", "\\\\"), ret_val
+        )
+    result = project_version_regex.search(ret_val)
     if result:
-        now_date = datetime.now()
-        ret_val = current_month_regex.sub(now_date.strftime("%m"), ret_val)
-
-    result = current_day_regex.search(ret_val)
+        ret_val = project_version_regex.sub(
+            config_values.PROJECT_VERSION.replace("\\", "\\\\"), ret_val
+        )
+    result = project_author_regex.search(ret_val)
     if result:
-        now_date = datetime.now()
-        ret_val = current_day_regex.sub(now_date.strftime("%d"), ret_val)
-
-    result = current_time_regex.search(ret_val)
+        ret_val = project_author_regex.sub(
+            config_values.PROJECT_AUTHOR.replace("\\", "\\\\"), ret_val
+        )
+    result = project_company_regex.search(ret_val)
     if result:
-        now_time = datetime.now()
-        ret_val = current_time_regex.sub(now_time.strftime("%H:%M:%S"), ret_val)
-
+        ret_val = project_company_regex.sub(
+            config_values.PROJECT_COMPANY.replace("\\", "\\\\"), ret_val
+        )
+    result = project_copyright_info_regex.search(ret_val)
+    if result:
+        ret_val = project_copyright_info_regex.sub(
+            config_values.PROJECT_COPYRIGHT_INFO.replace("\\", "\\\\"), ret_val
+        )
+    result = project_web_url_regex.search(ret_val)
+    if result:
+        ret_val = project_web_url_regex.sub(
+            config_values.PROJECT_WEB_URL.replace("\\", "\\\\"), ret_val
+        )
+    result = project_email_regex.search(ret_val)
+    if result:
+        ret_val = project_email_regex.sub(
+            config_values.PROJECT_EMAIL.replace("\\", "\\\\"), ret_val
+        )
+    result = project_cfg_dir_regex.search(ret_val)
+    if result:
+        ret_val = project_cfg_dir_regex.sub(
+            config_values.PROJECT_CONFIG_DIR_PATH.replace("\\", "\\\\"), ret_val
+        )
     return ret_val
 
 
@@ -288,27 +314,13 @@ def expandItem(item: str, parents: List[object]) -> object:
             parent_to_use_id -= 1
 
         try:
-            parent = parents[parent_to_use_id]
-
-            if isinstance(parent[placeholder], str):
-                substitute = parent[placeholder].replace("\\", "\\\\")
-            else:
-                substitute = parent[placeholder]
-            # print("Replace {ph} with: {elem}".format(ph=placeholder, elem=substitute))
+            substitute = getPlaceholder(
+                parents=parents,
+                parent_to_use_id=parent_to_use_id,
+                placeholder=placeholder,
+            )
         except:
-            try:
-                parent = parents[parent_to_use_id]
-                if isinstance(getattr(parent, placeholder), str):
-                    substitute = getattr(parent, placeholder).replace("\\", "\\\\")
-                else:
-                    substitute = getattr(parent, placeholder)
-                # print(
-                #     "Replace {ph} with: {elem}, class".format(
-                #         ph=placeholder, elem=substitute
-                #     )
-                # )
-            except:
-                return ret_val
+            return ret_val
 
         if isinstance(substitute, str):
             ret_val = placeholder_regex.sub(substitute, item)
@@ -316,6 +328,49 @@ def expandItem(item: str, parents: List[object]) -> object:
             ret_val = substitute
 
     return ret_val
+
+
+################################################################################
+def getPlaceholder(
+    parents: List[object], parent_to_use_id: int, placeholder: str
+) -> object:
+    """[summary]
+
+    Args:
+        parents (List[object]): [description]
+        parent_to_use_id (int): [description]
+        placeholder (str): [description]
+
+    Raises:
+        excp: [description]
+
+    Returns:
+        object: [description]
+    """
+    try:
+        parent = parents[parent_to_use_id]
+
+        if isinstance(parent[placeholder], str):
+            substitute = parent[placeholder].replace("\\", "\\\\")
+        else:
+            substitute = parent[placeholder]
+        # print("Replace {ph} with: {elem}".format(ph=placeholder, elem=substitute))
+    except:
+        try:
+            parent = parents[parent_to_use_id]
+            if isinstance(getattr(parent, placeholder), str):
+                substitute = getattr(parent, placeholder).replace("\\", "\\\\")
+            else:
+                substitute = getattr(parent, placeholder)
+                # print(
+                #     "Replace {ph} with: {elem}, class".format(
+                #         ph=placeholder, elem=substitute
+                #     )
+                # )
+        except Exception as excp:
+            raise excp
+
+    return substitute
 
 
 ###############################################################################
@@ -340,24 +395,7 @@ def parseConfigElement(element: object, parents: List[object] = None) -> object:
     #    element=element.__class__, parents=len(parents)))
     local_parents = parents.copy()
     if isinstance(element, list):
-        tmp_list = []
-        for subitem in element:
-
-            if hasattr(subitem, "__dict__"):
-                tmp_list.append(parseConfigElement(subitem, local_parents))
-
-            elif isinstance(subitem, dict):
-                local_parents.append(element)
-                for key in subitem:
-                    subitem[key] = parseConfigElement(subitem[key], local_parents)
-
-                tmp_list.append(subitem)
-            else:
-                if isinstance(subitem, str):
-                    tmp_list.append(expandItem(subitem, local_parents))
-                else:
-                    tmp_list.append(subitem)
-        return tmp_list
+        return parseList(element, local_parents)
 
     if isinstance(element, FileCompare):
         return element
@@ -376,4 +414,33 @@ def parseConfigElement(element: object, parents: List[object] = None) -> object:
                 element.__dict__[key], local_parents
             )
         return element
+
     return element
+
+
+################################################################################
+def parseList(element: List[object], local_parents: List[object]) -> List[object]:
+    """[summary]
+
+    Args:
+        element (List[object]): [description]
+        local_parents (List[object]): [description]
+
+    Returns:
+        List[object]: [description]
+    """
+    tmp_list = []
+    for subitem in element:
+        if hasattr(subitem, "__dict__"):
+            tmp_list.append(parseConfigElement(subitem, local_parents))
+        elif isinstance(subitem, dict):
+            local_parents.append(element)
+            for key in subitem:
+                subitem[key] = parseConfigElement(subitem[key], local_parents)
+            tmp_list.append(subitem)
+        else:
+            if isinstance(subitem, str):
+                tmp_list.append(expandItem(subitem, local_parents))
+            else:
+                tmp_list.append(subitem)
+    return tmp_list
