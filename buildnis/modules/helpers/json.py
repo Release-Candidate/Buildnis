@@ -38,7 +38,7 @@ def getJSONDict(src: object, to_ignore: List[str] = []) -> Dict:
     Returns:
         Dict: The dictionary suitable to pass to `json.dump(s)`.
     """
-    ret_val = dict()
+    ret_val = {}
 
     for item in src.__dict__:
         if isinstance(src.__dict__[item], list):
@@ -51,7 +51,7 @@ def getJSONDict(src: object, to_ignore: List[str] = []) -> Dict:
             ret_val[item] = sub_list
 
         elif isinstance(src.__dict__[item], FileCompare):
-            tmp_dict = dict()
+            tmp_dict = {}
             tmp_dict["path"] = src.__dict__[item].__dict__["path"]
             tmp_dict["size"] = src.__dict__[item].__dict__["size"]
             tmp_dict["hash"] = src.__dict__[item].__dict__["hash"]
