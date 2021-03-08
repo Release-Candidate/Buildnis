@@ -22,7 +22,7 @@ __all__ = [
     "makeDirIfNotExists",
     "runCommand",
     "doesExecutableWork",
-    "ExecuteException" "getJSONDict",
+    "ExecuteException", "getJSONDict",
     "writeJSON",
     "readJSON",
     "WebException",
