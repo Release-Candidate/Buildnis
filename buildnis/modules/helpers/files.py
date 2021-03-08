@@ -396,7 +396,7 @@ def makeDirIfNotExists(dir: FilePath) -> None:
     try:
         dir_path_obj = pathlib.Path(dir)
 
-        if dir_path_obj.exists:
+        if dir_path_obj.exists():
             if not dir_path_obj.is_dir:
                 raise FileCompareException(
                     'error creating directory, "{path}" exists but is not a directory!'.format(
