@@ -100,7 +100,7 @@ class Host(JSONBaseClass):
                 'error, "{os_name}" is a unknown OS!'.format(os_name=self.os)
             )
             self._logger.error(
-                'You can add support of this OS to the file "modules\config\host.py"'
+                'You can add support of this OS to the file "modules/config/host.py"'
             )
             self._logger.error("")
 
