@@ -8,6 +8,7 @@
 ###############################################################################
 
 from __future__ import annotations
+from buildnis.modules.helpers.commandline import CommandlineArguments
 from buildnis.modules.config import CFG_DIR_NAME
 from buildnis.modules import EXT_ERR_IMP_MOD
 
@@ -65,7 +66,7 @@ def main():
     )
 
     (
-        host_cfg_filename_exists,           # skipcq: PYL-W0612
+        host_cfg_filename_exists,  # skipcq: PYL-W0612
         host_cfg_filename,
         build_tools_filename_exists,
         build_tools_filename,
@@ -85,9 +86,7 @@ def main():
         config_values.g_list_of_generated_files.append(host_cfg_filename)
 
         if not build_tools_filename_exists or commandline_args.do_configure == True:
-            check_buildtools = check.Check(
-                os_name=host_cfg.os, arch=host_cfg.cpu_arch
-            )
+            check_buildtools = check.Check(os_name=host_cfg.os, arch=host_cfg.cpu_arch)
 
             check_buildtools.writeJSON(json_path=build_tools_filename)
             if not build_tools_filename_exists:
@@ -172,7 +171,23 @@ def main():
 
 
 ################################################################################
-def setUpConfDir(commandline_args, logger, project_cfg_dir):
+def setUpConfDir(
+    commandline_args: CommandlineArguments,
+    logger: logging.Logger,
+    project_cfg_dir: FilePath,
+) -> Tuple[FilePath, ConfigDirJson]:
+    """Sets up the configuration directory.
+
+    Args:
+        commandline_args ([CommandlineArguments]): instance holding the command line parameters,
+                                    especially `commandline_args.project_config_file`.
+        logger ([type]): The `logger.Logger` instance to use.
+        project_cfg_dir ([FilePath]): Path to the configuration directory.
+
+    Returns:
+        Tuple[FilePath, ConfigDirJson]: A Tuple containing the configuration directory
+                                    and the `ConfigDirJson` instance to use.
+    """
     working_dir = os.path.abspath(os.path.dirname(commandline_args.project_config_file))
     config_dir_filename = "/".join([working_dir, CFG_DIR_NAME])
     config_dir_filename = ".".join([config_dir_filename, "json"])
@@ -276,7 +291,7 @@ def setUpPaths(
 
 ################################################################################
 def doDistClean(
-    commandline_args: object,
+    commandline_args: CommandlineArguments,
     logger: logging.Logger,
     list_of_generated_files: List[FilePath],
     list_of_generated_dirs: List[FilePath],
@@ -362,11 +377,11 @@ def setUpHostCfg(
 
 
 ################################################################################
-def setCmdLineArgsLogger() -> Tuple[object, logging.Logger]:
+def setCmdLineArgsLogger() -> Tuple[CommandlineArguments, logging.Logger]:
     """Helper function: parses the command line, sets up the logger.
 
     Returns:
-        Tuple[object, logging.Logger]: The commandline object instance and the
+        Tuple[CommandLineArguments, logging.Logger]: The commandline object instance and the
         logger instance to use
     """
     commandline_args = parseCommandLine()
