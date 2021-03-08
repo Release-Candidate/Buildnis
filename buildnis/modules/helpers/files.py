@@ -118,10 +118,9 @@ class FileCompare:
             bool: `True`, if both instances have the same filesize and hash.
                   `False` else
         """
-        if self.size == other.size and self.hash == other.hash:
-            return True
-        else:
-            return False
+        ret_val = self.size == other.size and self.hash == other.hash
+
+        return ret_val
 
     ############################################################################
     def isSame(self, file: FilePath, not_exist_is_excp: bool = False) -> bool:
@@ -266,7 +265,10 @@ def areHashesSame(
         hash1 = hashFile(file1)
         hash2 = hashFile(file2)
 
-        return hash1 == hash2
+        if hash1 == hash2:
+            return True
+        else:
+            return False
     except Exception as excp:
         raise FileCompareException(excp)
 
