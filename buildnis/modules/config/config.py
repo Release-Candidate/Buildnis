@@ -217,7 +217,7 @@ class Config(JSONBaseClass):
 
     ############################################################################
     def writeJSON(
-        self, json_path: FilePath = "", to_ignore=["project_dep_cfg"]
+        self, json_path: FilePath = "", to_ignore=None
     ) -> None:
         """Writes the project's config to a JSON file.
 
@@ -227,6 +227,8 @@ class Config(JSONBaseClass):
             to_ignore (list, optional): List of attributes to ignore, to not save to
                                         disk. Defaults to ["project_dep_cfg"].
         """
+        if to_ignore is None:
+            to_ignore = ["project_dep_cfg"]
         if json_path == "":
             super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
         else:
