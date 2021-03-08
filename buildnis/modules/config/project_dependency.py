@@ -125,7 +125,7 @@ class ProjectDependency(JSONBaseClass):
             if not hasattr(dep, "install_arguments"):
                 dep.install_arguments = []
 
-            if dep.is_checked is False or force_check == True:
+            if dep.is_checked is False or force_check is True:
                 if not self.isDependencyFulfilled(dep):
                     self.installDep(dep)
                     dep.is_checked = self.isDependencyFulfilled(dep)
