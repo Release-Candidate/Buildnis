@@ -6,15 +6,17 @@
 # Date:     13.Feb.2021
 ###############################################################################
 
+from __future__ import annotations
+
+import os
+from typing import NamedTuple
+
 __all__ = ["config", "helpers", "VERSION", "main", "config_parser"]
 
 
 class BuildnisException(Exception):
     """Base class of all custom exceptions used in this program."""
 
-
-import os
-from typing import NamedTuple
 
 VersionString = str
 
