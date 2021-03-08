@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 from typing import NamedTuple
 
-__all__ = ["config", "helpers", "VERSION", "main", "config_parser"]
+__all__ = ["config", "helpers", "VERSION", "main"]
 
 
 class BuildnisException(Exception):
