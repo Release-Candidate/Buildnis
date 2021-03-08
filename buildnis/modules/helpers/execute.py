@@ -68,7 +68,6 @@ def runCommand(
     env_args: EnvArgs = EnvArgs(script="", args=None, do_source=False)
 ) -> CmdOutput:
     """Executes the given command with the given arguments.
-
     The argument `exe_args.exe` is the executable's name or path, needed arguments can
     be passed in the list `exe_args.args`.
     In `env_args` the command to set up an environment can be given, with
