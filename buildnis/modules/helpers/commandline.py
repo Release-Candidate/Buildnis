@@ -80,7 +80,7 @@ class CommandlineArguments:
             self.do_clean: bool = False
         try:
             self.do_distclean: bool = src.do_distclean
-            if self.do_distclean == True:
+            if self.do_distclean is True:
                 self.do_clean = True
         except AttributeError:
             self.do_distclean: bool = False
@@ -300,10 +300,10 @@ Examples:
         cmdline_args.log_level = logging.DEBUG
 
     # attention: cmdline_args.verbosity == 0 per default, that overwrites log_level!
-    if cmdline_args.is_quiet == True:
+    if cmdline_args.is_quiet is True:
         cmdline_args.log_level = logging.ERROR
 
-    if cmdline_args.debug == True:
+    if cmdline_args.debug is True:
         cmdline_args.log_level = logging.DEBUG
 
     return checkCmdLineArgs(cmd_line_parser, cmdline_args)
@@ -341,7 +341,7 @@ def checkCmdLineArgs(
         ret_val.conf_dir = ""
 
     if (
-        ret_val.do_configure == False
+        ret_val.do_configure is False
         and ret_val.do_build == False
         and ret_val.do_install == False
     ):

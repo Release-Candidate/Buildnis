@@ -85,7 +85,7 @@ def main():
         host_cfg.writeJSON(json_path=host_cfg_filename)
         config_values.g_list_of_generated_files.append(host_cfg_filename)
 
-        if not build_tools_filename_exists or commandline_args.do_configure == True:
+        if not build_tools_filename_exists or commandline_args.do_configure is True:
             check_buildtools = check.Check(os_name=host_cfg.os, arch=host_cfg.cpu_arch)
 
             check_buildtools.writeJSON(json_path=build_tools_filename)
@@ -101,7 +101,7 @@ def main():
                 )
             )
 
-        if project_config_filename_exists and commandline_args.do_configure == True:
+        if project_config_filename_exists and commandline_args.do_configure is True:
             try:
                 pathlib.Path(project_config_filename).unlink()
                 project_config_filename_exists = False
@@ -123,7 +123,7 @@ def main():
 
         cfg.expandAllPlaceholders()
 
-        if not project_dep_filename_exists or commandline_args.do_configure == True:
+        if not project_dep_filename_exists or commandline_args.do_configure is True:
             cfg.checkDependencies(force_check=True)
 
         else:
@@ -231,7 +231,7 @@ def setUpPaths(
     host_cfg_filename_exists = False
 
     try:
-        if checkIfIsFile(host_cfg_file) == True:
+        if checkIfIsFile(host_cfg_file) is True:
             list_of_generated_files.append(host_cfg_file)
             host_cfg_filename_exists = True
     except:
@@ -245,7 +245,7 @@ def setUpPaths(
     build_tools_filename = os.path.normpath(build_tools_filename)
 
     try:
-        if checkIfIsFile(build_tools_filename) == True:
+        if checkIfIsFile(build_tools_filename) is True:
             list_of_generated_files.append(build_tools_filename)
             build_tools_filename_exists = True
     except:
@@ -259,7 +259,7 @@ def setUpPaths(
     project_dep_filename = os.path.normpath(project_dep_filename)
 
     try:
-        if checkIfIsFile(project_dep_filename) == True:
+        if checkIfIsFile(project_dep_filename) is True:
             list_of_generated_files.append(project_dep_filename)
             project_dep_filename_exists = True
     except:
@@ -273,7 +273,7 @@ def setUpPaths(
     project_config_filename = os.path.normpath(project_config_filename)
 
     try:
-        if checkIfIsFile(project_config_filename) == True:
+        if checkIfIsFile(project_config_filename) is True:
             list_of_generated_files.append(project_config_filename)
             project_config_filename_exists = True
     except:
@@ -309,7 +309,7 @@ def doDistClean(
         list_of_generated_dirs (List[FilePath]): The list of directories to delete.
                             Attention: each directory must be empty!
     """
-    if commandline_args.do_distclean == True:
+    if commandline_args.do_distclean is True:
         try:
             for file_path in list_of_generated_files:
                 logger.warning(
