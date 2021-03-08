@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+from typing import List
 
 from buildnis.modules import EXT_ERR_DIR
 from buildnis.modules.config.module import ModuleCfg
@@ -255,15 +256,19 @@ class Config(JSONBaseClass):
         self.project_dependency_config_file = os.path.abspath(path)
 
     ###########################################################################
-    def expandAllPlaceholders(self) -> None:
+    def expandAllPlaceholders(self, parents: List[object] = None) -> None:
         """Goes through all configurations and replaces placeholders in their
         elements. A Placeholder is a string like `${PLACEHOLDER}`, a dollar
         sign followed by a curly opening brace, the string to replace and the
         closing curly brace.
+
+        Args:
+            parents (List[object], optional): The list of parent objects. 
+                                            Defaults to None.
         """
         if self.project_dep_cfg != None:
             self.project_dep_cfg.reReadIfChangedOnDisk()
-        super().expandAllPlaceholders()
+        super().expandAllPlaceholders(parents=parents)
 
     ###########################################################################
     def checkDependencies(self, force_check: bool = False) -> None:
