@@ -79,7 +79,7 @@ class Check(JSONBaseClass):
         )
 
         self.os = os_name
-        self.arch = arch        
+        self.arch = arch
 
         working_dir = pathlib.Path(
             os.path.normpath("/".join([CONFIGURE_SCRIPTS_PATH, os_name]))
@@ -216,10 +216,11 @@ class Check(JSONBaseClass):
                 )
 
             try:
-                if self.os == LINUX_OS_STRING or self.os == OSX_OS_STRING:
-                    source_env_script = True
-                else:
-                    source_env_script = False
+
+                source_env_script = (
+                    self.os == LINUX_OS_STRING or self.os == OSX_OS_STRING
+                )
+
                 tool.version = doesExecutableWork(
                     exe=exe_path,
                     check_regex=tool.version_regex,
