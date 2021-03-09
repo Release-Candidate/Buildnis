@@ -78,8 +78,16 @@ class BuildCfg(JSONBaseClass):
 
     ############################################################################
     def initStages(self) -> None:
-        """[summary]"""
-        pass
+        """Sets all needed attributes of a stage."""
+        must_have_attrs = {
+            "name": "",
+            "build_tool_name": "",
+            "results": [],
+        }
+        for item in self.stages:
+            for attr in must_have_attrs:
+                if not hasattr(item, attr):
+                    setattr(item, attr, must_have_attrs[attr])
 
     ############################################################################
     @classmethod
