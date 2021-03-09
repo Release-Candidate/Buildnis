@@ -44,35 +44,46 @@ def getJSONDict(src: object, to_ignore: List[str] = None) -> Dict:
     ret_val = {}
 
     for item in src.__dict__:
-        if isinstance(src.__dict__[item], list):
-            sub_list = []
-            for subitem in src.__dict__[item]:
-                if hasattr(subitem, "__dict__"):
-                    sub_list.append(getJSONDict(subitem))
-                else:
-                    sub_list.append(subitem)
-            ret_val[item] = sub_list
-
-        elif isinstance(src.__dict__[item], FileCompare):
-            tmp_dict = {}
-            tmp_dict["path"] = src.__dict__[item].__dict__["path"]
-            tmp_dict["size"] = src.__dict__[item].__dict__["size"]
-            tmp_dict["hash"] = src.__dict__[item].__dict__["hash"]
-            ret_val[item] = tmp_dict
-
-        elif isinstance(src.__dict__[item], Logger):
-            pass
-
-        elif item in to_ignore:
-            pass
-
-        elif hasattr(src.__dict__[item], "__dict__"):
-            ret_val[item] = getJSONDict(src.__dict__[item], to_ignore=to_ignore)
-
-        else:
-            ret_val[item] = src.__dict__[item]
+        parseItem(src, to_ignore, ret_val, item)
 
     return ret_val
+
+
+################################################################################
+def parseItem(
+    src: object, to_ignore: List[str], ret_val: Dict[str, object], item: object
+) -> None:
+    """Parses an item of `src`'s dictionary of attributes.
+
+    Args:
+        src (object): The object to serialize.
+        to_ignore (List[str]): The list of attributes to ignore and not serialize.
+        ret_val (Dict[str, object]): The dictionary to return, the serialized object
+                                    src.
+        item (object): [description] The current item to serialize.
+    """
+    if isinstance(src.__dict__[item], list):
+        sub_list = []
+        for subitem in src.__dict__[item]:
+            if hasattr(subitem, "__dict__"):
+                sub_list.append(getJSONDict(subitem))
+            else:
+                sub_list.append(subitem)
+        ret_val[item] = sub_list
+    elif isinstance(src.__dict__[item], FileCompare):
+        tmp_dict = {}
+        tmp_dict["path"] = src.__dict__[item].__dict__["path"]
+        tmp_dict["size"] = src.__dict__[item].__dict__["size"]
+        tmp_dict["hash"] = src.__dict__[item].__dict__["hash"]
+        ret_val[item] = tmp_dict
+    elif isinstance(src.__dict__[item], Logger):
+        pass
+    elif item in to_ignore:
+        pass
+    elif hasattr(src.__dict__[item], "__dict__"):
+        ret_val[item] = getJSONDict(src.__dict__[item], to_ignore=to_ignore)
+    else:
+        ret_val[item] = src.__dict__[item]
 
 
 ################################################################################
