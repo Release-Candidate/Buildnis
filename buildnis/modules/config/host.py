@@ -96,19 +96,7 @@ class Host(JSONBaseClass):
         self.file_name = HOST_FILE_NAME
         self.file_version = ".".join(CFG_VERSION)
 
-        (
-            self.os,
-            self.host_name,
-            self.os_vers_major,
-            self.os_vers,
-            self.cpu_arch,
-            self.cpu,
-        ) = platform.uname()
-
-        if self.os == "Darwin":
-            self.os = OSX_OS_STRING
-        if self.cpu_arch in ("AMD64", "x86_64"):
-            self.cpu_arch = AMD64_ARCH_STRING
+        self.getOSInfo()
 
         self.python_version = platform.python_version()
 
@@ -137,6 +125,22 @@ class Host(JSONBaseClass):
         config_values.HOST_NUM_CORES = self.num_cores
         config_values.HOST_NUM_LOG_CORES = self.num_logical_cores
 
+    ############################################################################
+    def getOSInfo(self) -> None:
+        """Gets Info about the OS, like Name, CPU architecture, and similar."""
+        (
+            self.os,
+            self.host_name,
+            self.os_vers_major,
+            self.os_vers,
+            self.cpu_arch,
+            self.cpu,
+        ) = platform.uname()
+        if self.os == "Darwin":
+            self.os = OSX_OS_STRING
+        if self.cpu_arch in ("AMD64", "x86_64"):
+            self.cpu_arch = AMD64_ARCH_STRING
+
     #############################################################################
     def collectWindowsConfig(self) -> None:
         """Collect information about the hardware we're running on on Windows.
@@ -149,24 +153,7 @@ class Host(JSONBaseClass):
         wmic path win32_VideoController get name
         """
         try:
-            cpu_info_cmd = getCPUInfo()
-            for line in cpu_info_cmd.std_out.strip().split("\n"):
-                if "L2CacheSize" in line:
-                    continue
-                if line != "":
-                    (
-                        level2_cache,
-                        level3_cache,
-                        num_cores,
-                        num_logical_cores,
-                    ) = line.split()
-                    try:
-                        self.level2_cache = int(level2_cache)
-                        self.level3_cache = int(level3_cache)
-                        self.num_cores = int(num_cores)
-                        self.num_logical_cores = int(num_logical_cores)
-                    except:
-                        pass
+            self.GetCPUInfo()
 
             self.collectWinCpuGpuRam()
 
@@ -174,23 +161,39 @@ class Host(JSONBaseClass):
             self._logger.error('error "{error}" calling wmic'.format(error=excp))
 
     ############################################################################
+    def GetCPUInfo(self) -> None:
+        """Gets the CPU info, like cache sizes, number of cores."""
+        cpu_info_cmd = getCPUInfo()
+        for line in cpu_info_cmd.std_out.strip().split("\n"):
+            if "L2CacheSize" in line:
+                continue
+            if line != "":
+                (
+                    level2_cache,
+                    level3_cache,
+                    num_cores,
+                    num_logical_cores,
+                ) = line.split()
+                try:
+                    self.level2_cache = int(level2_cache)
+                    self.level3_cache = int(level3_cache)
+                    self.num_cores = int(num_cores)
+                    self.num_logical_cores = int(num_logical_cores)
+                except:
+                    pass
+
+    ############################################################################
     def collectWinCpuGpuRam(self):
         """Collects the Windows CPU, GPU and RAM size information."""
-        cpu_name_cmd = getCPUName()
-        for line in cpu_name_cmd.std_out.strip().split("\n"):
-            if "Name" in line:
-                continue
-            if line != "":
-                self.cpu = line
+        self.getCPU()
 
-        gpu_info_cmd = getGPUInfo()
-        self.gpu = []
-        for line in gpu_info_cmd.std_out.strip().split("\n"):
-            if "Name" in line:
-                continue
-            if line != "":
-                self.gpu.append(line.strip())
+        self.getGPU()
 
+        self.getRAM()
+
+    ############################################################################
+    def getRAM(self) -> None:
+        """Sets the RAM size."""
         mem_info_cmd = getMemInfo()
         self.ram_total = 0
         for line in mem_info_cmd.std_out.strip().split("\n"):
@@ -201,6 +204,27 @@ class Host(JSONBaseClass):
                     self.ram_total += int(line)
                 except:
                     pass
+
+    ############################################################################
+    def getGPU(self) -> None:
+        """Sets the GPU name list."""
+        gpu_info_cmd = getGPUInfo()
+        self.gpu = []
+        for line in gpu_info_cmd.std_out.strip().split("\n"):
+            if "Name" in line:
+                continue
+            if line != "":
+                self.gpu.append(line.strip())
+
+    ############################################################################
+    def getCPU(self) -> None:
+        """Sets the CPU name."""
+        cpu_name_cmd = getCPUName()
+        for line in cpu_name_cmd.std_out.strip().split("\n"):
+            if "Name" in line:
+                continue
+            if line != "":
+                self.cpu = line
 
     #############################################################################
     def collectLinuxConfig(self) -> None:
@@ -261,11 +285,15 @@ class Host(JSONBaseClass):
         self.ram_total = int(ram_size.std_out.strip())
         self.gpu = []
 
+        self.getGPUNamesLinux()
+
+    ############################################################################
+    def getGPUNamesLinux(self) -> None:
+        """Gets the list of GPU names."""
         gpu_info_cmd = getGPUNamesLinux()
         for line in gpu_info_cmd.std_out.strip().split("\n"):
             if line != "":
                 self.gpu.append(line.strip())
-
         if self.gpu == []:
             gpu_info_cmd = getGPUNamesSbinLinux()
             for line in gpu_info_cmd.std_out.strip().split("\n"):
