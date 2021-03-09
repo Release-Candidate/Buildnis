@@ -8,10 +8,10 @@
 
 from __future__ import annotations
 
-
 import os
 import pathlib
 import hashlib
+import logging
 from typing import List
 
 from buildnis.modules.config import FilePath
@@ -217,3 +217,45 @@ def returnExistingFile(file_list: List[FilePath]) -> FilePath:
         raise excp
 
     return ret_val
+
+
+################################################################################
+def deleteDirs(logger: logging.Logger, list_of_dirs: List[FilePath]) -> None:
+    """Deletes all directories in the given list of directories.
+
+    Attention: directory has to be empty!
+
+    Raises:
+            FileCompareException: if something goes wrong
+
+    Args:
+        logger (logging.Logger): The logger instance to use for logging.
+        list_of_dirs (List[FilePath]): The list of directories to delete. As a list of
+                                        paths to the directories to delete.
+    """
+    try:
+        for dir_path in list_of_dirs:
+            logger.warning('deleting directory "{name}"'.format(name=dir_path))
+            pathlib.Path(dir_path).rmdir()
+    except Exception as excp:
+        raise FileCompareException(excp)
+
+
+################################################################################
+def deleteFiles(logger, list_of_files: List[FilePath]) -> None:
+    """Deletes all files in the given list of files to delete.
+
+    Raises:
+            FileCompareException: if something goes wrong
+
+    Args:
+        logger ([type]): The logger instance to use for logging.
+        list_of_files (List[FilePath]): The list of files to delete. As a list of file
+                                                    paths to the files to delete.
+    """
+    try:
+        for file_path in list_of_files:
+            logger.warning('deleting file "{name}"'.format(name=file_path))
+            pathlib.Path(file_path).unlink(missing_ok=True)
+    except Exception as excp:
+        raise FileCompareException(excp)

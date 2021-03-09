@@ -9,6 +9,8 @@
 
 from __future__ import annotations
 
+from buildnis.modules import EXT_ERR_IMP_MOD
+
 try:
     import sys
     import os
@@ -37,7 +39,7 @@ try:
     from buildnis.modules.config import BUILD_TOOL_CONFIG_NAME
     from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
     from buildnis.modules.config import CFG_DIR_NAME
-    from buildnis.modules import EXT_ERR_IMP_MOD
+    from buildnis.modules.helpers.files import deleteDirs, deleteFiles
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),
@@ -353,20 +355,12 @@ def deleteConfigs(
     """
     if commandline_args.do_distclean is True:
         try:
-            for file_path in list_of_generated_files:
-                logger.warning(
-                    'distclean: deleting file "{name}"'.format(name=file_path)
-                )
-                pathlib.Path(file_path).unlink(missing_ok=True)
-            for dir_path in list_of_generated_dirs:
-                logger.warning(
-                    'distclean: deleting directory "{name}"'.format(name=dir_path)
-                )
-                pathlib.Path(dir_path).rmdir()
+            deleteFiles(logger, list_of_generated_files)
+            deleteDirs(logger, list_of_generated_dirs)
         except Exception as excp:
             logger.error(
-                'error "{error}" trying to delete file "{name}"'.format(
-                    error=excp, name=file_path
+                'error "{error}" trying to delete a file ro directory'.format(
+                    error=excp
                 )
             )
 
