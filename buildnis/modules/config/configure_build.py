@@ -20,6 +20,7 @@ from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
 from buildnis.modules.config import FilePath, config_values
 from buildnis.modules.config.check import Check
 
+
 ################################################################################
 def configureBuild(
     commandline_args,
