@@ -165,9 +165,7 @@ class Host(JSONBaseClass):
         """Gets the CPU info, like cache sizes, number of cores."""
         cpu_info_cmd = getCPUInfo()
         for line in cpu_info_cmd.std_out.strip().split("\n"):
-            if "L2CacheSize" in line:
-                continue
-            if line != "":
+            if line != "" and not "L2CacheSize" in line:
                 (
                     level2_cache,
                     level3_cache,
@@ -197,9 +195,7 @@ class Host(JSONBaseClass):
         mem_info_cmd = getMemInfo()
         self.ram_total = 0
         for line in mem_info_cmd.std_out.strip().split("\n"):
-            if "Capacity" in line:
-                continue
-            if line != "":
+            if line != "" and not "Capacity" in line:
                 try:
                     self.ram_total += int(line)
                 except:
@@ -290,15 +286,27 @@ class Host(JSONBaseClass):
     ############################################################################
     def getGPUNamesLinux(self) -> None:
         """Gets the list of GPU names."""
+        self.getGPULspci()
+
+        # some distries (Suse) use /sbin/lspci
+        if self.gpu == []:
+            self.getGPUSbinLspci()
+
+    ############################################################################
+    def getGPUSbinLspci(self) -> None:
+        """Gets the GPU names using `lspci`."""
+        gpu_info_cmd = getGPUNamesSbinLinux()
+        for line in gpu_info_cmd.std_out.strip().split("\n"):
+            if line != "":
+                self.gpu.append(line.strip())
+
+    ############################################################################
+    def getGPULspci(self) -> None:
+        """Gets the GPU names using `/sbin/lspci`."""
         gpu_info_cmd = getGPUNamesLinux()
         for line in gpu_info_cmd.std_out.strip().split("\n"):
             if line != "":
                 self.gpu.append(line.strip())
-        if self.gpu == []:
-            gpu_info_cmd = getGPUNamesSbinLinux()
-            for line in gpu_info_cmd.std_out.strip().split("\n"):
-                if line != "":
-                    self.gpu.append(line.strip())
 
     #############################################################################
     def collectOSXConfig(self) -> None:
