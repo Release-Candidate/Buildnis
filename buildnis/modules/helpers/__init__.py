@@ -9,6 +9,7 @@
 __all__ = [
     "LOGGER_NAME",
     "commandline",
+    "commandline_arguments",
     "config_parser",
     "execute",
     "files",

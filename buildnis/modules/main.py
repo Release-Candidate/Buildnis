@@ -8,7 +8,7 @@
 ###############################################################################
 
 from __future__ import annotations
-from buildnis.modules.helpers.commandline import CommandlineArguments
+from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
 from buildnis.modules.config import CFG_DIR_NAME
 from buildnis.modules import EXT_ERR_IMP_MOD
 
