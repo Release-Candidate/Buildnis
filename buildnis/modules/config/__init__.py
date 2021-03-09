@@ -28,6 +28,7 @@ __all__ = [
     "check",
     "config_dir_json",
     "config",
+    "config_files",
     "host",
     "host_linux",
     "host_windows",

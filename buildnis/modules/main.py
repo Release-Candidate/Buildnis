@@ -40,6 +40,8 @@ try:
     from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
     from buildnis.modules.config import CFG_DIR_NAME
     from buildnis.modules.helpers.files import deleteDirs, deleteFiles
+    from buildnis.modules.config.config_files import ConfigFiles, ConfigTuple
+    from buildnis.modules.config.config import Config
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),
@@ -65,16 +67,7 @@ def main():
     # Always create host config
     host_cfg, host_cfg_filename = setUpHostCfg(logger, project_cfg_dir)
 
-    (
-        host_cfg_filename_exists,  # skipcq: PYL-W0612
-        host_cfg_filename,
-        build_tools_filename_exists,
-        build_tools_filename,
-        project_dep_filename_exists,
-        project_dep_filename,
-        project_config_filename_exists,
-        project_config_filename,
-    ) = setUpPaths(
+    json_config_files = setUpPaths(
         project_cfg_dir=project_cfg_dir,
         host_cfg_file=host_cfg_filename,
         list_of_generated_files=config_values.g_list_of_generated_files,
@@ -85,75 +78,60 @@ def main():
         host_cfg.writeJSON(json_path=host_cfg_filename)
         config_values.g_list_of_generated_files.append(host_cfg_filename)
 
-        if not build_tools_filename_exists or commandline_args.do_configure is True:
-            check_buildtools = check.Check(
-                os_name=host_cfg.os,
-                arch=host_cfg.cpu_arch,
-                user_path=commandline_args.conf_scripts_dir,
-            )
-
-            check_buildtools.writeJSON(json_path=build_tools_filename)
-            if not build_tools_filename_exists:
-                config_values.g_list_of_generated_files.append(build_tools_filename)
-
-            logger.debug('Build tool config: """{cfg}"""'.format(cfg=check_buildtools))
+        if (
+            not json_config_files.build_tools_cfg.exists
+            or commandline_args.do_configure is True
+        ):
+            writeBuildTools(commandline_args, logger, host_cfg, json_config_files)
 
         else:
             logger.warning(
                 'JSON file "{path}" already exists, not checking for build tool configurations'.format(
-                    path=build_tools_filename
+                    path=json_config_files.build_tools_cfg.path
                 )
             )
 
-        if project_config_filename_exists and commandline_args.do_configure is True:
-            try:
-                pathlib.Path(project_config_filename).unlink()
-                project_config_filename_exists = False
-            except Exception as excp:
-                logger.error(
-                    'error "{error}" deleting generated project config file to reconfigure project'.format(
-                        error=excp
-                    )
-                )
+        ifConfigureDeleteProjectJSON(commandline_args, logger, json_config_files)
 
         cfg = config.Config(
             project_config=commandline_args.project_config_file,
-            json_path=project_config_filename,
+            json_path=json_config_files.project_cfg.path,
         )
 
         cfg.project_dep_cfg = project_dependency.ProjectDependency(
-            cfg.project_dependency_config, json_path=project_dep_filename
+            cfg.project_dependency_config,
+            json_path=json_config_files.project_dep_cfg.path,
         )
 
         cfg.expandAllPlaceholders()
 
-        if not project_dep_filename_exists or commandline_args.do_configure is True:
+        if (
+            not json_config_files.project_dep_cfg.exists
+            or commandline_args.do_configure is True
+        ):
             cfg.checkDependencies(force_check=True)
 
         else:
             logger.warning(
                 'JSON file "{path}" already exists, not checking project dependencies'.format(
-                    path=project_dep_filename
+                    path=json_config_files.project_dep_cfg.path
                 )
             )
             cfg.checkDependencies(force_check=False)
 
         cfg.project_dep_cfg.writeJSON()
 
-        if not project_dep_filename_exists:
-            config_values.g_list_of_generated_files.append(project_dep_filename)
+        if not json_config_files.project_dep_cfg.exists:
+            config_values.g_list_of_generated_files.append(
+                json_config_files.project_dep_cfg.path
+            )
 
         logger.debug('Project config: """{cfg}"""'.format(cfg=cfg))
         logger.debug(
             'Project dependency config: """{cfg}"""'.format(cfg=cfg.project_dep_cfg)
         )
 
-        cfg.setBuildToolCfgPath(build_tools_filename)
-        cfg.setHostConfigPath(host_cfg_filename)
-
-        cfg.writeJSON()
-        if not project_config_filename_exists:
-            config_values.g_list_of_generated_files.append(project_config_filename)
+        writeProjectJSON(host_cfg_filename, json_config_files, cfg)
 
         config_dir_config.writeJSON()
 
@@ -173,6 +151,84 @@ def main():
     )
 
     sys.exit(EXT_OK)
+
+
+################################################################################
+def writeProjectJSON(
+    host_cfg_filename: FilePath, json_config_files: ConfigFiles, cfg: Config
+) -> None:
+    """Writes the project configuration JSON to disk.
+
+    Args:
+        host_cfg_filename (FilePath): Path to the host configuration.
+        json_config_files (ConfigFiles): The object holding the path to the project
+                                        configuration JSON to write.
+        cfg (Config): The project configuration instance to write to disk.
+    """
+    cfg.setBuildToolCfgPath(json_config_files.build_tools_cfg.path)
+    cfg.setHostConfigPath(host_cfg_filename)
+    cfg.writeJSON()
+    if not json_config_files.project_cfg.exists:
+        config_values.g_list_of_generated_files.append(json_config_files.project_cfg)
+
+
+################################################################################
+def ifConfigureDeleteProjectJSON(
+    commandline_args: CommandlineArguments,
+    logger: logging.Logger,
+    json_config_files: ConfigFiles,
+) -> None:
+    """Deletes the project configuration JSON if it exists and `--configure` has been
+    called.
+
+    Args:
+        commandline_args (CommandlineArguments): The object holding the command line
+                                                arguments
+        logger (logging.Logger): THe logger to use.
+        json_config_files (ConfigFiles): The path to the project configuration JSON and
+                                            whether it exists.
+    """
+    if json_config_files.project_cfg.exists and commandline_args.do_configure is True:
+
+        try:
+            pathlib.Path(json_config_files.project_cfg).unlink()
+            json_config_files.project_cfg.exists = False
+        except Exception as excp:
+            logger.error(
+                'error "{error}" deleting generated project config file to reconfigure project'.format(
+                    error=excp
+                )
+            )
+
+
+################################################################################
+def writeBuildTools(
+    commandline_args: CommandlineArguments,
+    logger: logging.Logger,
+    host_cfg: Host,
+    json_config_files: ConfigFiles,
+) -> None:
+    """Writes the build tools configuration to disk.
+
+    Args:
+        commandline_args (CommandlineArguments): The object holding all command line
+                                                    arguments.
+        logger (logging.Logger): The logger to use.
+        host_cfg (Host): The host configuration instance.
+        json_config_files (ConfigFiles): Holds the Path to the build tools JSON
+                                    configuration path, the path to write to.
+    """
+    check_buildtools = check.Check(
+        os_name=host_cfg.os,
+        arch=host_cfg.cpu_arch,
+        user_path=commandline_args.conf_scripts_dir,
+    )
+    check_buildtools.writeJSON(json_path=json_config_files.build_tools_cfg.path)
+    if not json_config_files.build_tools_cfg.exists:
+        config_values.g_list_of_generated_files.append(
+            json_config_files.build_tools_cfg.path
+        )
+    logger.debug('Build tool config: """{cfg}"""'.format(cfg=check_buildtools))
 
 
 ################################################################################
@@ -218,7 +274,7 @@ def setUpPaths(
     host_cfg_file: FilePath,
     list_of_generated_files: List[FilePath],
     host_cfg: Host,
-) -> Tuple[bool, FilePath, bool, FilePath, bool, FilePath, bool, FilePath]:
+) -> ConfigFiles:
     """Helper: set up all pathnames of JSON files.
 
     Args:
@@ -229,11 +285,10 @@ def setUpPaths(
         host_cfg (host_config.Host): host configuration object instance
 
     Returns:
-        Tuple[bool, FilePath, bool, FilePath, bool, FilePath]: the paths to the JSON
-            files and a bool that is `True` if the file already has been created.
+        ConfigFiles: the paths to the JSON files and a bool that is `True` if the file
+                     already has been created.
     """
     host_cfg_filename_exists = False
-
     try:
         if checkIfIsFile(host_cfg_file) is True:
             list_of_generated_files.append(host_cfg_file)
@@ -241,36 +296,32 @@ def setUpPaths(
     except:
         pass
 
-    build_tools_filename_exists, build_tools_filename = setUpConfigFile(
+    build_tools = setUpConfigFile(
         project_cfg_dir=project_cfg_dir,
         list_of_generated_files=list_of_generated_files,
         host_cfg=host_cfg,
         config_name=BUILD_TOOL_CONFIG_NAME,
     )
 
-    project_dep_filename_exists, project_dep_filename = setUpConfigFile(
+    project_dep = setUpConfigFile(
         project_cfg_dir=project_cfg_dir,
         list_of_generated_files=list_of_generated_files,
         host_cfg=host_cfg,
         config_name=PROJECT_DEP_FILE_NAME,
     )
 
-    project_config_filename_exists, project_config_filename = setUpConfigFile(
+    project_config = setUpConfigFile(
         project_cfg_dir=project_cfg_dir,
         list_of_generated_files=list_of_generated_files,
         host_cfg=host_cfg,
         config_name=PROJECT_FILE_NAME,
     )
 
-    return (
-        host_cfg_filename_exists,
-        host_cfg_file,
-        build_tools_filename_exists,
-        build_tools_filename,
-        project_dep_filename_exists,
-        project_dep_filename,
-        project_config_filename_exists,
-        project_config_filename,
+    return ConfigFiles(
+        host_cfg=ConfigTuple(path=host_cfg_file, exists=host_cfg_filename_exists),
+        build_tools_cfg=build_tools,
+        project_dep_cfg=project_dep,
+        project_cfg=project_config,
     )
 
 
@@ -280,7 +331,7 @@ def setUpConfigFile(
     list_of_generated_files: List[FilePath],
     host_cfg: Host,
     config_name: str,
-) -> Tuple(bool, FilePath):
+) -> ConfigTuple:
     """
 
     Args:
@@ -292,7 +343,7 @@ def setUpConfigFile(
         config_name (str): The name of the config file to return the path of.
 
     Returns:
-        Tuple(bool, FilePath): The path to the configuration JSON file and `True`, if
+        ConfigTuple: The path to the configuration JSON file and `True`, if
                                 this file already exists, `False` if it will be
                                 generated.
     """
@@ -307,7 +358,7 @@ def setUpConfigFile(
             config_filename_exists = True
     except:
         pass
-    return (config_filename_exists, config_filename)
+    return ConfigTuple(path=config_filename, exists=config_filename_exists)
 
 
 ################################################################################

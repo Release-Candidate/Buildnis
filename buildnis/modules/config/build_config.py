@@ -56,17 +56,30 @@ class BuildCfg(JSONBaseClass):
 
             self.readJSON(json_path=read_config_path)
 
-            must_have_attrs = {
-                "name": "",
-                "build_type": "",
-                "build_subtype": "",
-                "build_tool_type": "",
-                "os": [],
-                "stages": [],
-            }
-            for attr in must_have_attrs:
-                if not hasattr(self, attr):
-                    setattr(self, attr, must_have_attrs[attr])
+            self.initAttribs()
+
+    ############################################################################
+    def initAttribs(self) -> None:
+        """Initializes the attributes that the build configuration object must have."""
+        must_have_attrs = {
+            "name": "",
+            "build_type": "",
+            "build_subtype": "",
+            "build_tool_type": "",
+            "os": [],
+            "stages": [],
+        }
+        for attr in must_have_attrs:
+            if not hasattr(self, attr):
+                setattr(self, attr, must_have_attrs[attr])
+
+        if self.stages != []:
+            self.initStages()
+
+    ############################################################################
+    def initStages(self) -> None:
+        """[summary]"""
+        pass
 
     ############################################################################
     @classmethod
