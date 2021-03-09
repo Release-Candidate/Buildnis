@@ -14,9 +14,7 @@ from buildnis.modules import EXT_ERR_IMP_MOD
 try:
     import sys
     import os
-    import pprint
     import logging
-    import pathlib
     from typing import List, Tuple
 except ImportError as exp:
     print('ERROR: error "{error}" importing modules'.format(error=exp), file=sys.stderr)
@@ -27,8 +25,6 @@ try:
     from buildnis.modules.config import config_values
     from buildnis.modules.helpers.files import checkIfIsFile
     from buildnis.modules.config import PROJECT_FILE_NAME
-    from buildnis.modules.helpers.logging import getProgramLogger
-    from buildnis.modules.helpers.commandline import parseCommandLine
     from buildnis.modules.config.host import Host
     from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
     from buildnis.modules import EXT_OK
@@ -36,9 +32,10 @@ try:
     from buildnis.modules.config import BUILD_TOOL_CONFIG_NAME
     from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
     from buildnis.modules.config import CFG_DIR_NAME
-    from buildnis.modules.helpers.files import deleteDirs, deleteFiles
     from buildnis.modules.config.config_files import ConfigFiles, ConfigTuple
     from buildnis.modules.config.configure_build import configureBuild
+    from buildnis.modules.helpers.commandline_arguments import setCmdLineArgsLogger
+    from buildnis.modules.helpers.commandline_arguments import doDistClean
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),
@@ -230,86 +227,6 @@ def setUpConfigFile(
 
 
 ################################################################################
-def doDistClean(
-    commandline_args: CommandlineArguments,
-    logger: logging.Logger,
-    list_of_generated_files: List[FilePath],
-    list_of_generated_dirs: List[FilePath],
-) -> None:
-    """Helper: if argument `distclean` is set, delete all generated files.
-
-    WARNING: Shuts down the logging mechanism, no more logging after this function!
-
-    Args:
-        commandline_args (object): Command line argument object instance
-        logger (logging.Logger): The logger to use and stop
-        list_of_generated_files (List[FilePath]): The list of files to delete
-        list_of_generated_dirs (List[FilePath]): The list of directories to delete.
-                            Attention: each directory must be empty!
-    """
-    deleteConfigs(
-        commandline_args, logger, list_of_generated_files, list_of_generated_dirs
-    )
-
-    logging.shutdown()
-
-    deleteLogfiles(commandline_args)
-
-
-################################################################################
-def deleteConfigs(
-    commandline_args: CommandlineArguments,
-    logger: logging.Logger,
-    list_of_generated_files: List[FilePath],
-    list_of_generated_dirs: List[FilePath],
-):
-    """Deletes all configuration files and directories.
-
-    Args:
-        commandline_args (object): Command line argument object instance
-        logger (logging.Logger): The logger to use and stop
-        list_of_generated_files (List[FilePath]): The list of files to delete
-        list_of_generated_dirs (List[FilePath]): The list of directories to delete.
-                            Attention: each directory must be empty!
-    """
-    if commandline_args.do_distclean is True:
-        try:
-            deleteFiles(logger, list_of_generated_files)
-            deleteDirs(logger, list_of_generated_dirs)
-        except Exception as excp:
-            logger.error(
-                'error "{error}" trying to delete a file ro directory'.format(
-                    error=excp
-                )
-            )
-
-
-################################################################################
-def deleteLogfiles(commandline_args: CommandlineArguments) -> None:
-    """Deletes the log file, if one has been configured from the command-line.
-
-    Args:
-        commandline_args (CommandlineArguments): Instance holding the command-line
-                                arguments, to check, if a log file has been used.
-    """
-    try:
-        if commandline_args.log_file != "" and commandline_args.log_file is not None:
-            print(
-                'distclean: trying to delete logfile "{name}"'.format(
-                    name=commandline_args.log_file
-                )
-            )
-            pathlib.Path(commandline_args.log_file).unlink(missing_ok=True)
-    except Exception as excp:
-        print(
-            'ERROR: distclean: error "{error}" trying to delete log file "{name}"'.format(
-                error=excp, name=commandline_args.log_file
-            ),
-            file=sys.sys.stderr,
-        )
-
-
-################################################################################
 def setUpHostCfg(
     logger: logging.Logger,
     project_cfg_dir: FilePath,
@@ -337,36 +254,6 @@ def setUpHostCfg(
     logger.debug('Host config: """{cfg}"""'.format(cfg=host_cfg))
 
     return host_cfg, host_cfg_filename
-
-
-################################################################################
-def setCmdLineArgsLogger() -> Tuple[CommandlineArguments, logging.Logger]:
-    """Helper function: parses the command line, sets up the logger.
-
-    Returns:
-        Tuple[CommandLineArguments, logging.Logger]: The commandline object instance
-                                                    and the logger instance to use
-    """
-    commandline_args = parseCommandLine()
-
-    logger = getProgramLogger(commandline_args.log_level, commandline_args.log_file)
-
-    pretty_args = pprint.pformat(commandline_args.__dict__, indent=4, sort_dicts=False)
-    logger.debug('Commandline arguments: "{args}"'.format(args=pretty_args))
-
-    logger.info(
-        'Setting log level to "{lvl}"'.format(
-            lvl=logging.getLevelName(commandline_args.log_level)
-        )
-    )
-
-    logger.warning(
-        'Using project config "{config}"'.format(
-            config=commandline_args.project_config_file
-        )
-    )
-
-    return commandline_args, logger
 
 
 ################################################################################
