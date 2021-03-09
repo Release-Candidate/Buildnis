@@ -13,7 +13,7 @@ import os
 import pathlib
 
 from buildnis.modules.config import FilePath
-from buildnis.modules.helpers.files import checkIfIsFile, hashFile
+from buildnis.modules.helpers.files import FileCompareException, checkIfIsFile, hashFile
 
 
 class FileCompare:
