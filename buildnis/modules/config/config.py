@@ -298,6 +298,11 @@ class Config(JSONBaseClass):
         """
         for build_cfg in self.build_cfgs:
             for stage in build_cfg.stages:
+                if hasattr(stage, "build_tool"):
+                    self._logger.debug(
+                        "Build config stage already has a build tool, not doing anything"
+                    )
+                    continue
                 search_name = stage.build_tool_name
 
                 self._logger.info(
@@ -306,8 +311,5 @@ class Config(JSONBaseClass):
                     )
                 )
                 build_tool = build_tool_cfg.searchBuildTool(name=search_name)
-                self._logger.debug(
-                    'Found build tool "{name}": {struct}'.format(
-                        name=search_name, struct=build_tool
-                    )
-                )
+                if build_tool is not None:
+                    stage.build_tool = build_tool
