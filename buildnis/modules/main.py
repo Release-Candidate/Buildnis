@@ -34,8 +34,9 @@ try:
     from buildnis.modules.config import CFG_DIR_NAME
     from buildnis.modules.config.config_files import ConfigFiles, ConfigTuple
     from buildnis.modules.config.configure_build import configureBuild
-    from buildnis.modules.helpers.commandline_arguments import setCmdLineArgsLogger
+    from buildnis.modules.helpers.commandline_arguments import setupLogger
     from buildnis.modules.helpers.commandline_arguments import doDistClean
+    from buildnis.modules.helpers.commandline import parseCommandLine
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),
@@ -50,7 +51,9 @@ def main():
 
     Parses commandline arguments and runs the program.
     """
-    commandline_args, logger = setCmdLineArgsLogger()
+    commandline_args = parseCommandLine()
+
+    logger = setupLogger(commandline_args)
 
     project_cfg_dir = commandline_args.conf_dir
 

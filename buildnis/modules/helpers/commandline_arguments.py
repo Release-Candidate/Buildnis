@@ -12,10 +12,9 @@ import sys
 import pprint
 import logging
 import pathlib
-from typing import List, Tuple
+from typing import List
 
 from buildnis.modules.config import DEFAULT_CONFIG_FILE, FilePath
-from buildnis.modules.helpers.commandline import parseCommandLine
 from buildnis.modules.helpers.logging import getProgramLogger
 from buildnis.modules.helpers.files import deleteDirs, deleteFiles
 
@@ -162,15 +161,16 @@ class CommandlineArguments:
 
 
 ################################################################################
-def setCmdLineArgsLogger() -> Tuple[CommandlineArguments, logging.Logger]:
-    """Helper function: parses the command line, sets up the logger.
+def setupLogger(commandline_args: CommandlineArguments) -> logging.Logger:
+    """Sets up the logger.
+
+    Args:
+        commandline_args (CommandlineArguments): The object holding the command line
+                                                arguments.
 
     Returns:
-        Tuple[CommandLineArguments, logging.Logger]: The commandline object instance
-                                                    and the logger instance to use
+        logging.Logger: The commandline object instance to use.
     """
-    commandline_args = parseCommandLine()
-
     logger = getProgramLogger(commandline_args.log_level, commandline_args.log_file)
 
     pretty_args = pprint.pformat(commandline_args.__dict__, indent=4, sort_dicts=False)
@@ -188,7 +188,7 @@ def setCmdLineArgsLogger() -> Tuple[CommandlineArguments, logging.Logger]:
         )
     )
 
-    return commandline_args, logger
+    return logger
 
 
 ################################################################################
