@@ -102,15 +102,7 @@ class Config(JSONBaseClass):
             if not hasattr(self, attr):
                 setattr(self, attr, "")
 
-        config_values.PROJECT_CONFIG_DIR_PATH = self.project_cfg_dir
-        config_values.PROJECT_NAME = self.name
-        config_values.PROJECT_VERSION = self.version
-        config_values.PROJECT_AUTHOR = self.author
-        config_values.PROJECT_COMPANY = self.company
-        config_values.PROJECT_COPYRIGHT_INFO = self.copyright_info
-        config_values.PROJECT_WEB_URL = self.web_url
-        config_values.PROJECT_EMAIL = self.email
-        config_values.PROJECT_ROOT = os.path.abspath(os.path.dirname(self.config_path))
+        self.setProjectConstants()
 
         # only if not reading from already written configs.
         if read_config_path == self.config_path:
@@ -122,27 +114,41 @@ class Config(JSONBaseClass):
 
             self.parseBuildCfgs()
         else:
-            tmp_modules = []
-            for module in self.module_cfgs:
-                tmp_module = ModuleCfg.fromReadJSON(module)
-                tmp_modules.append(tmp_module)
-
-            self.module_cfgs = tmp_modules
-
-            tmp_build_cfgs = []
-            for build_cfg in self.build_cfgs:
-                tmp_bcfg = BuildCfg.fromReadJSON(build_cfg)
-                tmp_build_cfgs.append(tmp_bcfg)
-
-            self.build_cfgs = tmp_build_cfgs
-
-            self.reReadIfChangedOnDisk()
-            for module in self.module_cfgs:
-                module.reReadIfChangedOnDisk()
-            for build_cfg in self.build_cfgs:
-                build_cfg.reReadIfChangedOnDisk()
+            self.readConfigsJSON()
 
         self.connectModulesBuildTools()
+
+    ############################################################################
+    def setProjectConstants(self) -> None:
+        """Sets the global project constants to be replaced by placeholders."""
+        config_values.PROJECT_CONFIG_DIR_PATH = self.project_cfg_dir
+        config_values.PROJECT_NAME = self.name
+        config_values.PROJECT_VERSION = self.version
+        config_values.PROJECT_AUTHOR = self.author
+        config_values.PROJECT_COMPANY = self.company
+        config_values.PROJECT_COPYRIGHT_INFO = self.copyright_info
+        config_values.PROJECT_WEB_URL = self.web_url
+        config_values.PROJECT_EMAIL = self.email
+        config_values.PROJECT_ROOT = os.path.abspath(os.path.dirname(self.config_path))
+
+    ############################################################################
+    def readConfigsJSON(self) -> None:
+        """Readds all module and build configurations from their JSON files."""
+        tmp_modules = []
+        for module in self.module_cfgs:
+            tmp_module = ModuleCfg.fromReadJSON(module)
+            tmp_modules.append(tmp_module)
+        self.module_cfgs = tmp_modules
+        tmp_build_cfgs = []
+        for build_cfg in self.build_cfgs:
+            tmp_bcfg = BuildCfg.fromReadJSON(build_cfg)
+            tmp_build_cfgs.append(tmp_bcfg)
+        self.build_cfgs = tmp_build_cfgs
+        self.reReadIfChangedOnDisk()
+        for module in self.module_cfgs:
+            module.reReadIfChangedOnDisk()
+        for build_cfg in self.build_cfgs:
+            build_cfg.reReadIfChangedOnDisk()
 
     ###########################################################################
     def parseModuleCfgs(self) -> None:
@@ -205,16 +211,25 @@ class Config(JSONBaseClass):
         """
         for module in self.module_cfgs:
             for target in module.targets:
-                build_type = target.build_type
-                build_subtype = target.build_subtype
-                build_tool_type = target.build_tool_type
-                for build_cfg in self.build_cfgs:
-                    if (
-                        build_cfg.build_type == build_type
-                        and build_cfg.build_subtype == build_subtype
-                        and build_cfg.build_tool_type == build_tool_type
-                    ):
-                        target.build_tool = build_cfg
+                self.connectInTarget(target)
+
+    ############################################################################
+    def connectInTarget(self, target: object) -> None:
+        """Connects the build configuration with the given target.
+
+        Args:
+            target (object): The target to search the build config for and connect it.
+        """
+        build_type = target.build_type
+        build_subtype = target.build_subtype
+        build_tool_type = target.build_tool_type
+        for build_cfg in self.build_cfgs:
+            if (
+                build_cfg.build_type == build_type
+                and build_cfg.build_subtype == build_subtype
+                and build_cfg.build_tool_type == build_tool_type
+            ):
+                target.build_tool = build_cfg
 
     ############################################################################
     def writeJSON(self, json_path: FilePath = "", to_ignore=None) -> None:
@@ -298,18 +313,25 @@ class Config(JSONBaseClass):
         """
         for build_cfg in self.build_cfgs:
             for stage in build_cfg.stages:
-                if hasattr(stage, "build_tool"):
-                    self._logger.debug(
-                        "Build config stage already has a build tool, not doing anything"
-                    )
-                    continue
-                search_name = stage.build_tool_name
+                self.searchInStage(build_tool_cfg, stage)
 
-                self._logger.info(
-                    'build config: searching for buildtool "{name}"'.format(
-                        name=search_name
-                    )
-                )
-                build_tool = build_tool_cfg.searchBuildTool(name=search_name)
-                if build_tool is not None:
-                    stage.build_tool = build_tool
+    ############################################################################
+    def searchInStage(self, build_tool_cfg: Check, stage: object) -> None:
+        """Searches for a build tool configured in a stage of a build configuration.
+
+        Args:
+            build_tool_cfg (Check): The build tool configuration to search in.
+            stage (object): The stage containing the build tool name to search for.
+        """
+        if hasattr(stage, "build_tool"):
+            self._logger.debug(
+                "Build config stage already has a build tool, not doing anything"
+            )
+            return
+        search_name = stage.build_tool_name
+        self._logger.info(
+            'build config: searching for buildtool "{name}"'.format(name=search_name)
+        )
+        build_tool = build_tool_cfg.searchBuildTool(name=search_name)
+        if build_tool is not None:
+            stage.build_tool = build_tool
