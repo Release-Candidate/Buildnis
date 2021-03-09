@@ -136,8 +136,10 @@ class Host(JSONBaseClass):
             self.cpu_arch,
             self.cpu,
         ) = platform.uname()
+
         if self.os == "Darwin":
             self.os = OSX_OS_STRING
+
         if self.cpu_arch in ("AMD64", "x86_64"):
             self.cpu_arch = AMD64_ARCH_STRING
 
@@ -165,7 +167,7 @@ class Host(JSONBaseClass):
         """Gets the CPU info, like cache sizes, number of cores."""
         cpu_info_cmd = getCPUInfo()
         for line in cpu_info_cmd.std_out.strip().split("\n"):
-            if line != "" and not "L2CacheSize" in line:
+            if line != "" and "L2CacheSize" not in line:
                 (
                     level2_cache,
                     level3_cache,
@@ -195,7 +197,7 @@ class Host(JSONBaseClass):
         mem_info_cmd = getMemInfo()
         self.ram_total = 0
         for line in mem_info_cmd.std_out.strip().split("\n"):
-            if line != "" and not "Capacity" in line:
+            if line != "" and "Capacity" not in line:
                 try:
                     self.ram_total += int(line)
                 except:
@@ -207,9 +209,7 @@ class Host(JSONBaseClass):
         gpu_info_cmd = getGPUInfo()
         self.gpu = []
         for line in gpu_info_cmd.std_out.strip().split("\n"):
-            if "Name" in line:
-                continue
-            if line != "":
+            if line != "" and "Name" not in line:
                 self.gpu.append(line.strip())
 
     ############################################################################
@@ -217,9 +217,7 @@ class Host(JSONBaseClass):
         """Sets the CPU name."""
         cpu_name_cmd = getCPUName()
         for line in cpu_name_cmd.std_out.strip().split("\n"):
-            if "Name" in line:
-                continue
-            if line != "":
+            if line != "" and "Name" not in line:
                 self.cpu = line
 
     #############################################################################
