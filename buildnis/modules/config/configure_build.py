@@ -48,13 +48,23 @@ def configureBuild(
         not json_config_files.build_tools_cfg.exists
         or commandline_args.do_configure is True
     ):
-        writeBuildTools(commandline_args, logger, host_cfg, json_config_files)
+        build_tool_cfg = writeBuildTools(
+            commandline_args, logger, host_cfg, json_config_files
+        )
     else:
         logger.warning(
             'JSON file "{path}" already exists, not checking for build tool configurations'.format(
                 path=json_config_files.build_tools_cfg.path
             )
         )
+        build_tool_cfg = Check(
+            os_name=host_cfg.os,
+            arch=host_cfg.cpu_arch,
+            user_path=commandline_args.conf_scripts_dir,
+            do_check=False,
+        )
+        build_tool_cfg.readJSON(json_path=json_config_files.build_tools_cfg.path)
+
     ifConfigureDeleteProjectJSON(commandline_args, logger, json_config_files)
     cfg = setupProjectCfg(commandline_args, json_config_files)
     if (
@@ -74,6 +84,8 @@ def configureBuild(
         config_values.g_list_of_generated_files.append(
             json_config_files.project_dep_cfg.path
         )
+
+    cfg.searchBuildTools(build_tool_cfg)
     logger.debug('Project config: """{cfg}"""'.format(cfg=cfg))
     logger.debug(
         'Project dependency config: """{cfg}"""'.format(cfg=cfg.project_dep_cfg)
@@ -176,7 +188,7 @@ def writeBuildTools(
     logger: logging.Logger,
     host_cfg: Host,
     json_config_files: ConfigFiles,
-) -> None:
+) -> Check:
     """Writes the build tools configuration to disk.
 
     Args:
@@ -186,6 +198,9 @@ def writeBuildTools(
         host_cfg (Host): The host configuration instance.
         json_config_files (ConfigFiles): Holds the Path to the build tools JSON
                                     configuration path, the path to write to.
+
+    Returns:
+        Check: The build tools configuration object to use.
     """
     check_buildtools = Check(
         os_name=host_cfg.os,
@@ -198,3 +213,5 @@ def writeBuildTools(
             json_config_files.build_tools_cfg.path
         )
     logger.debug('Build tool config: """{cfg}"""'.format(cfg=check_buildtools))
+
+    return check_buildtools

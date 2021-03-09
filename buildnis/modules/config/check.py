@@ -71,7 +71,9 @@ class Check(JSONBaseClass):
     """
 
     ###########################################################################
-    def __init__(self, os_name: OSName, arch: Arch, user_path: FilePath) -> None:
+    def __init__(
+        self, os_name: OSName, arch: Arch, user_path: FilePath, do_check: bool = True
+    ) -> None:
         """Constructor of Check, runs all build tool script_paths in
         `configure_script_paths`.
 
@@ -80,10 +82,12 @@ class Check(JSONBaseClass):
         script_path.
 
         Args:
-            os_name (OSName): the OS we are building for
-            arch (Arch): the CPU architecture we are building for
-            user_path (FilePath): the path to additional build tool configuration
+            os_name (OSName): The OS we are building for
+            arch (Arch): The CPU architecture we are building for
+            user_path (FilePath): The path to additional build tool configuration
                                 scripts, passed as a command-line argument.
+            do_check (bool): Whether to run all scripts in `configure_script_paths` or
+                            not.
         """
         super().__init__(
             config_file_name=BUILD_TOOL_CONFIG_NAME, config_name="build tools"
@@ -93,23 +97,24 @@ class Check(JSONBaseClass):
         self.arch = arch
         self.build_tool_cfgs = []
 
-        sys_configure_path = "/".join([MODULE_DIR_PATH, CONFIGURE_SCRIPTS_PATH])
-        working_dir = pathlib.Path(
-            os.path.normpath("/".join([sys_configure_path, os_name]))
-        )
-
-        script_paths = [working_dir]
-
-        if user_path != "":
-            user_script_path = pathlib.Path(
-                os.path.abspath("/".join([user_path, os_name]))
+        if do_check:
+            sys_configure_path = "/".join([MODULE_DIR_PATH, CONFIGURE_SCRIPTS_PATH])
+            working_dir = pathlib.Path(
+                os.path.normpath("/".join([sys_configure_path, os_name]))
             )
-            script_paths.append(user_script_path)
 
-        for script_dir in script_paths:
-            self.runScriptsInDir(script_dir)
+            script_paths = [working_dir]
 
-        self.checkVersions()
+            if user_path != "":
+                user_script_path = pathlib.Path(
+                    os.path.abspath("/".join([user_path, os_name]))
+                )
+                script_paths.append(user_script_path)
+
+            for script_dir in script_paths:
+                self.runScriptsInDir(script_dir)
+
+            self.checkVersions()
 
     ############################################################################
     def runScriptsInDir(self, working_dir: pathlib.Path) -> None:
@@ -276,3 +281,28 @@ class Check(JSONBaseClass):
                         regex=tool.version_regex,
                     )
                 )
+
+    ############################################################################
+    def searchBuildTool(self, name: str) -> object:
+        """Searches for a build tool with the given name.
+
+        Args:
+            name (str): The name of the build tool to search for.
+
+        Returns:
+            object: The build tool object with the given name on success, `None` if not
+                    found or another error occurred.
+        """
+        try:
+            if name != "":
+                for tool in self.build_tool_cfgs:
+                    if tool.name == name and tool.is_checked is True:
+                        return tool
+        except Exception as excp:
+            self._logger.error(
+                'error "{error}" searching for build tool "{name}"'.format(
+                    error=excp, name=name
+                )
+            )
+
+        return None

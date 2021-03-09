@@ -17,6 +17,7 @@ from buildnis.modules.config.module import ModuleCfg
 from buildnis.modules.helpers.files import returnExistingFile
 from buildnis.modules.config.build_config import BuildCfg
 from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.config.check import Check
 from buildnis.modules.config import (
     BUILD_CONF_PATH,
     FilePath,
@@ -286,3 +287,27 @@ class Config(JSONBaseClass):
         """
         if self.project_dep_cfg is not None:
             self.project_dep_cfg.checkDependencies(force_check)
+
+    ############################################################################
+    def searchBuildTools(self, build_tool_cfg: Check) -> None:
+        """Searches for a build tool in all found build tools.
+        Connects it with a build configuration.
+
+        Args:
+            build_tool_cfg (Check): The build tools config to search for build tools.
+        """
+        for build_cfg in self.build_cfgs:
+            for stage in build_cfg.stages:
+                search_name = stage.build_tool_name
+
+                self._logger.info(
+                    'build config: searching for buildtool "{name}"'.format(
+                        name=search_name
+                    )
+                )
+                build_tool = build_tool_cfg.searchBuildTool(name=search_name)
+                self._logger.debug(
+                    'Found build tool "{name}": {struct}'.format(
+                        name=search_name, struct=build_tool
+                    )
+                )
