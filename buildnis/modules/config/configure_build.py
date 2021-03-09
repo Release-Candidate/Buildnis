@@ -8,7 +8,6 @@
 
 from __future__ import annotations
 
-
 import logging
 import pathlib
 
@@ -19,26 +18,30 @@ from buildnis.modules.config.config_files import ConfigFiles
 from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
 from buildnis.modules.config import FilePath, config_values
 from buildnis.modules.config.check import Check
+from buildnis.modules.config.config_dir_json import ConfigDirJson
 
 
 ################################################################################
 def configureBuild(
-    commandline_args,
-    logger,
-    config_dir_config,
-    host_cfg,
-    host_cfg_filename,
-    json_config_files,
+    commandline_args: CommandlineArguments,
+    logger: logging.Logger,
+    config_dir_config: ConfigDirJson,
+    host_cfg: Host,
+    host_cfg_filename: FilePath,
+    json_config_files: ConfigFiles,
 ) -> None:
-    """[summary]
+    """Configures the build.
 
     Args:
-        commandline_args ([type]): [description]
-        logger ([type]): [description]
-        config_dir_config ([type]): [description]
-        host_cfg ([type]): [description]
-        host_cfg_filename ([type]): [description]
-        json_config_files ([type]): [description]
+        commandline_args (CommandlineArguments): The object holding the command line
+                                                arguments.
+        logger (logging.Logger): The logger instance to use.
+        config_dir_config (ConfigDirJson): The object holding the path to the directory,
+                                            all generated JSON files are written to.
+        host_cfg (Host): The host configuration instance.
+        host_cfg_filename (FilePath): Path to the host configuration JSON file to write.
+        json_config_files (ConfigFiles): Holds paths to all JSON configuration files to
+                                        write.
     """
     writeHostCfg(host_cfg, host_cfg_filename)
     if (
@@ -83,7 +86,8 @@ def configureBuild(
 def setupProjectCfg(
     commandline_args: CommandlineArguments, json_config_files: ConfigFiles
 ) -> Config:
-    """[summary]
+    """Sets up the project configuration, including the project dependency
+    configuration.
 
     Args:
         commandline_args (CommandlineArguments): The object holding all command line
