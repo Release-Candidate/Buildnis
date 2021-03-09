@@ -75,8 +75,7 @@ def main():
     )
 
     if not commandline_args.do_clean:
-        host_cfg.writeJSON(json_path=host_cfg_filename)
-        config_values.g_list_of_generated_files.append(host_cfg_filename)
+        writeHostCfg(host_cfg, host_cfg_filename)
 
         if (
             not json_config_files.build_tools_cfg.exists
@@ -93,17 +92,7 @@ def main():
 
         ifConfigureDeleteProjectJSON(commandline_args, logger, json_config_files)
 
-        cfg = config.Config(
-            project_config=commandline_args.project_config_file,
-            json_path=json_config_files.project_cfg.path,
-        )
-
-        cfg.project_dep_cfg = project_dependency.ProjectDependency(
-            cfg.project_dependency_config,
-            json_path=json_config_files.project_dep_cfg.path,
-        )
-
-        cfg.expandAllPlaceholders()
+        cfg = setupProjectCfg(commandline_args, json_config_files)
 
         if (
             not json_config_files.project_dep_cfg.exists
@@ -151,6 +140,45 @@ def main():
     )
 
     sys.exit(EXT_OK)
+
+
+################################################################################
+def setupProjectCfg(
+    commandline_args: CommandlineArguments, json_config_files: ConfigFiles
+) -> Config:
+    """[summary]
+
+    Args:
+        commandline_args (CommandlineArguments): The object holding all command line
+                                                    arguments.
+        json_config_files (ConfigFiles): Holds the path to the project configuration
+                                        JSON file's path.
+
+    Returns:
+        Config: The project config containing all values
+    """
+    cfg = config.Config(
+        project_config=commandline_args.project_config_file,
+        json_path=json_config_files.project_cfg.path,
+    )
+    cfg.project_dep_cfg = project_dependency.ProjectDependency(
+        cfg.project_dependency_config,
+        json_path=json_config_files.project_dep_cfg.path,
+    )
+    cfg.expandAllPlaceholders()
+    return cfg
+
+
+################################################################################
+def writeHostCfg(host_cfg: Host, host_cfg_filename: FilePath) -> None:
+    """Write the host configuration JSON file.
+
+    Args:
+        host_cfg (Host): The host configuration to save.
+        host_cfg_filename (FilePath): The path of the JSON file to write to.
+    """
+    host_cfg.writeJSON(json_path=host_cfg_filename)
+    config_values.g_list_of_generated_files.append(host_cfg_filename)
 
 
 ################################################################################
