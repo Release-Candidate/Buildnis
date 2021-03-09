@@ -18,7 +18,7 @@ from logging import Logger
 from typing import Dict, List
 from types import SimpleNamespace
 
-from buildnis.modules.helpers.files import FileCompare
+from buildnis.modules.helpers.file_compare import FileCompare
 from buildnis.modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD, EXT_ERR_WR_FILE
 from buildnis.modules.helpers import LOGGER_NAME
 from buildnis.modules.config import CFG_VERSION, FilePath

@@ -12,6 +12,7 @@ __all__ = [
     "config_parser",
     "execute",
     "files",
+    "file_compare",
     "json",
     "logging",
     "web",

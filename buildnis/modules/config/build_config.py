@@ -11,7 +11,8 @@ from __future__ import annotations
 from typing import List
 
 from buildnis.modules.config import BUILD_FILE_NAME, FilePath
-from buildnis.modules.helpers.files import FileCompare, returnExistingFile
+from buildnis.modules.helpers.files import returnExistingFile
+from buildnis.modules.helpers.file_compare import FileCompare
 from buildnis.modules.config.json_base_class import JSONBaseClass
 
 

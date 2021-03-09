@@ -17,7 +17,7 @@ from buildnis.modules.helpers.placeholder_regex import (
     placeholder_regex,
     replaceConstants,
 )
-from buildnis.modules.helpers.files import FileCompare
+from buildnis.modules.helpers.file_compare import FileCompare
 
 
 ############################################################################
