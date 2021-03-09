@@ -8,9 +8,6 @@
 ###############################################################################
 
 from __future__ import annotations
-from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
-from buildnis.modules.config import CFG_DIR_NAME
-from buildnis.modules import EXT_ERR_IMP_MOD
 
 try:
     import sys
@@ -38,6 +35,9 @@ try:
     from buildnis.modules import EXT_OK
     from buildnis.modules.config import HOST_FILE_NAME
     from buildnis.modules.config import BUILD_TOOL_CONFIG_NAME
+    from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
+    from buildnis.modules.config import CFG_DIR_NAME
+    from buildnis.modules import EXT_ERR_IMP_MOD
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),
@@ -239,47 +239,26 @@ def setUpPaths(
     except:
         pass
 
-    build_tools_filename_exists = False
+    build_tools_filename_exists, build_tools_filename = setUpConfigFile(
+        project_cfg_dir=project_cfg_dir,
+        list_of_generated_files=list_of_generated_files,
+        host_cfg=host_cfg,
+        config_name=BUILD_TOOL_CONFIG_NAME,
+    )
 
-    build_tools_filename = "/".join([project_cfg_dir, host_cfg.host_name])
-    build_tools_filename = "_".join([build_tools_filename, BUILD_TOOL_CONFIG_NAME])
-    build_tools_filename = ".".join([build_tools_filename, "json"])
-    build_tools_filename = os.path.normpath(build_tools_filename)
+    project_dep_filename_exists, project_dep_filename = setUpConfigFile(
+        project_cfg_dir=project_cfg_dir,
+        list_of_generated_files=list_of_generated_files,
+        host_cfg=host_cfg,
+        config_name=PROJECT_DEP_FILE_NAME,
+    )
 
-    try:
-        if checkIfIsFile(build_tools_filename) is True:
-            list_of_generated_files.append(build_tools_filename)
-            build_tools_filename_exists = True
-    except:
-        pass
-
-    project_dep_filename_exists = False
-
-    project_dep_filename = "/".join([project_cfg_dir, host_cfg.host_name])
-    project_dep_filename = "_".join([project_dep_filename, PROJECT_DEP_FILE_NAME])
-    project_dep_filename = ".".join([project_dep_filename, "json"])
-    project_dep_filename = os.path.normpath(project_dep_filename)
-
-    try:
-        if checkIfIsFile(project_dep_filename) is True:
-            list_of_generated_files.append(project_dep_filename)
-            project_dep_filename_exists = True
-    except:
-        pass
-
-    project_config_filename_exists = False
-
-    project_config_filename = "/".join([project_cfg_dir, host_cfg.host_name])
-    project_config_filename = "_".join([project_config_filename, PROJECT_FILE_NAME])
-    project_config_filename = ".".join([project_config_filename, "json"])
-    project_config_filename = os.path.normpath(project_config_filename)
-
-    try:
-        if checkIfIsFile(project_config_filename) is True:
-            list_of_generated_files.append(project_config_filename)
-            project_config_filename_exists = True
-    except:
-        pass
+    project_config_filename_exists, project_config_filename = setUpConfigFile(
+        project_cfg_dir=project_cfg_dir,
+        list_of_generated_files=list_of_generated_files,
+        host_cfg=host_cfg,
+        config_name=PROJECT_FILE_NAME,
+    )
 
     return (
         host_cfg_filename_exists,
@@ -294,6 +273,42 @@ def setUpPaths(
 
 
 ################################################################################
+def setUpConfigFile(
+    project_cfg_dir: FilePath,
+    list_of_generated_files: List[FilePath],
+    host_cfg: Host,
+    config_name: str,
+) -> Tuple(bool, FilePath):
+    """
+
+    Args:
+        project_cfg_dir (FilePath): The path to the directory the JSON files are
+                                    generated in
+        host_cfg (FilePath): The path to the generated host configuration JSON file
+        list_of_generated_files (List[FilePath]): List of generated JSON files
+        host_cfg (Host): host configuration object instance
+        config_name (str): The name of the config file to return the path of.
+
+    Returns:
+        Tuple(bool, FilePath): The path to the configuration JSON file and `True`, if
+                                this file already exists, `False` if it will be
+                                generated.
+    """
+    config_filename_exists = False
+    config_filename = "/".join([project_cfg_dir, host_cfg.host_name])
+    config_filename = "_".join([config_filename, config_name])
+    config_filename = ".".join([config_filename, "json"])
+    config_filename = os.path.normpath(config_filename)
+    try:
+        if checkIfIsFile(config_filename) is True:
+            list_of_generated_files.append(config_filename)
+            config_filename_exists = True
+    except:
+        pass
+    return (config_filename_exists, config_filename)
+
+
+################################################################################
 def doDistClean(
     commandline_args: CommandlineArguments,
     logger: logging.Logger,
@@ -303,6 +318,31 @@ def doDistClean(
     """Helper: if argument `distclean` is set, delete all generated files.
 
     WARNING: Shuts down the logging mechanism, no more logging after this function!
+
+    Args:
+        commandline_args (object): Command line argument object instance
+        logger (logging.Logger): The logger to use and stop
+        list_of_generated_files (List[FilePath]): The list of files to delete
+        list_of_generated_dirs (List[FilePath]): The list of directories to delete.
+                            Attention: each directory must be empty!
+    """
+    deleteConfigs(
+        commandline_args, logger, list_of_generated_files, list_of_generated_dirs
+    )
+
+    logging.shutdown()
+
+    deleteLogfiles(commandline_args)
+
+
+################################################################################
+def deleteConfigs(
+    commandline_args: CommandlineArguments,
+    logger: logging.Logger,
+    list_of_generated_files: List[FilePath],
+    list_of_generated_dirs: List[FilePath],
+):
+    """Deletes all configuration files and directories.
 
     Args:
         commandline_args (object): Command line argument object instance
@@ -330,8 +370,15 @@ def doDistClean(
                 )
             )
 
-    logging.shutdown()
 
+################################################################################
+def deleteLogfiles(commandline_args: CommandlineArguments) -> None:
+    """Deletes the log file, if one has been configured from the command-line.
+
+    Args:
+        commandline_args (CommandlineArguments): Instance holding the command-line
+                                arguments, to check, if a log file has been used.
+    """
     try:
         if commandline_args.log_file != "" and commandline_args.log_file is not None:
             print(
