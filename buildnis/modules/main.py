@@ -9,10 +9,10 @@
 
 from __future__ import annotations
 
+import sys
 from buildnis.modules import EXT_ERR_IMP_MOD
 
 try:
-    import sys
     import os
     import logging
     from typing import List, Tuple
@@ -105,7 +105,7 @@ def setUpConfDir(
     logger: logging.Logger,
     project_cfg_dir: FilePath,
 ) -> Tuple[FilePath, ConfigDirJson]:
-    """Sets up the configuration directory.
+    """Set up the configuration directory.
 
     Args:
         commandline_args ([CommandlineArguments]): instance holding the command line
@@ -113,9 +113,10 @@ def setUpConfDir(
         logger ([type]): The `logger.Logger` instance to use.
         project_cfg_dir ([FilePath]): Path to the configuration directory.
 
-    Returns:
+    Returns
         Tuple[FilePath, ConfigDirJson]: A Tuple containing the configuration directory
                                     and the `ConfigDirJson` instance to use.
+
     """
     working_dir = os.path.abspath(os.path.dirname(commandline_args.project_config_file))
     config_dir_filename = "/".join([working_dir, CFG_DIR_NAME])
@@ -161,7 +162,7 @@ def setUpPaths(
         if checkIfIsFile(host_cfg_file) is True:
             list_of_generated_files.append(host_cfg_file)
             host_cfg_filename_exists = True
-    except:
+    except Exception:
         pass
 
     build_tools = setUpConfigFile(
@@ -200,7 +201,7 @@ def setUpConfigFile(
     host_cfg: Host,
     config_name: str,
 ) -> ConfigTuple:
-    """
+    """Set up each the path to each of the configuration files.
 
     Args:
         project_cfg_dir (FilePath): The path to the directory the JSON files are
@@ -224,7 +225,7 @@ def setUpConfigFile(
         if checkIfIsFile(config_filename) is True:
             list_of_generated_files.append(config_filename)
             config_filename_exists = True
-    except:
+    except Exception:
         pass
     return ConfigTuple(path=config_filename, exists=config_filename_exists)
 

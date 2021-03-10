@@ -44,13 +44,19 @@ __all__ = [
     "CmdOutput",
 ]
 
-import collections
 from typing import NamedTuple
 
 
 # Types to use for type hints
 
-ConfigVersion = collections.namedtuple("Version", ["major", "minor"])
+
+class ConfigVersion(NamedTuple):
+    """The version of a JSON configuration file."""
+
+    major: str = ""
+    minor: str = ""
+
+
 CFG_VERSION = ConfigVersion(major="1", minor="0")
 
 FilePath = str

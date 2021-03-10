@@ -34,7 +34,6 @@ class Config(JSONBaseClass):
     all build tool JSON configurations.
 
     Attributes:
-
     config_path (FilePath): the path to the project's main JSON configuration.
     project_cfg_dir (FilePath): The directory part of `config_path`
     project_cfg (obj): the project's JSON configuration stored in a Python class.
@@ -45,7 +44,6 @@ class Config(JSONBaseClass):
     _logger (logging.Logger): the logger to use
 
     Methods:
-
     parseModuleCfgs: Parses the module JSON configurations setup in the project
                     JSON
     parseBuildCfgs: Parses the build JSON configurations setup in the module
@@ -62,7 +60,7 @@ class Config(JSONBaseClass):
 
         Parses the project's JSON configuration and stores it to project_cfg.
 
-        Parameters:
+        Arguments:
             project_config (FilePath): the path to the project's JSON configuration
                                         file to read.
             json_path (FilePath): The path to the JSON file to write the result.
@@ -242,7 +240,7 @@ class Config(JSONBaseClass):
                                         disk. Defaults to ["project_dep_cfg"].
         """
         if to_ignore is None:
-            to_ignore = ["project_dep_cfg"]
+            to_ignore = ["project_dep_cfg", "build_cfgs"]
         if json_path == "":
             super().writeJSON(json_path=self.json_path, to_ignore=to_ignore)
         else:

@@ -25,7 +25,6 @@ class CommandlineArguments:
     Its attributes are the possible command line arguments of the program.
 
     Attributes:
-
         project_config_file (FilePath): the path to the project config file to
                                         use
         conf_dir (FilePath): the path to the directory to write generated

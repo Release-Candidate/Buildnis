@@ -25,7 +25,6 @@ class FileCompare:
         * compares the Blake2 hashes of both files
 
     Attributes:
-
         path (FilePath): path to the file as string
         path_obj (pathlib.Path): the `Path` object of the file
         size (int): the size of the file in bytes (symlinks don't have a
@@ -33,7 +32,6 @@ class FileCompare:
         hash (str): the BLAKE2 hash of the file's contend as a hex string.
 
     Methods:
-
         isSame (bool): returns true if `self` 'is' the same as the given file.
         generateHash (str): generates the hash of the file, saves it in
                          `hash` and returns it

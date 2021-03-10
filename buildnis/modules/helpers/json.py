@@ -178,32 +178,9 @@ def readJSON(
         sys.exit(EXT_ERR_LD_FILE)
 
     try:
-        if conf_file_name not in ("", ret_val.file_name):
-            _logger.critical(
-                'project file "{path}" is not a valid project file!'.format(
-                    path=json_path
-                )
-            )
-            _logger.critical(
-                'the value of \'file_name\' should be "{should}" but is "{but_is}"'.format(
-                    should=conf_file_name, but_is=ret_val.file_name
-                )
-            )
-            sys.exit(EXT_ERR_NOT_VLD)
+        checkConfigName(json_path, conf_file_name, ret_val)
 
-        file_major, file_minor = ret_val.file_version.split(sep=".")
-        if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
-            _logger.critical(
-                'project file "{path}" is not a valid project file!'.format(
-                    path=json_path
-                )
-            )
-            _logger.critical(
-                'project file version (the value of \'file_version\') is too old. is "{old}" should be "{new}"'.format(
-                    old=ret_val.file_version, new=".".join(CFG_VERSION)
-                )
-            )
-            sys.exit(EXT_ERR_NOT_VLD)
+        checkConfigVersion(json_path, ret_val)
 
     except Exception as excp:
         _logger.critical(
@@ -235,3 +212,45 @@ def readJSON(
         )
 
     return ret_val
+
+
+################################################################################
+def checkConfigVersion(json_path: FilePath, ret_val: object) -> None:
+    """Check the version of the JSON configuration file.
+
+    Args:
+        json_path (FilePath): The path to the JSON file.
+        ret_val (object): The deserialized JSON configuration.
+    """
+    file_major, file_minor = ret_val.file_version.split(sep=".")
+    if file_major < CFG_VERSION.major or file_minor < CFG_VERSION.minor:
+        _logger.critical(
+            'project file "{path}" is not a valid project file!'.format(path=json_path)
+        )
+        _logger.critical(
+            'project file version (the value of \'file_version\') is too old. is "{old}" should be "{new}"'.format(
+                old=ret_val.file_version, new=".".join(CFG_VERSION)
+            )
+        )
+        sys.exit(EXT_ERR_NOT_VLD)
+
+
+################################################################################
+def checkConfigName(json_path: FilePath, conf_file_name: str, ret_val: object) -> None:
+    """Check the name of the JSON configuration file.
+
+    Args:
+        json_path (FilePath): The path of the JSOn file to check.
+        conf_file_name (str): The configuration name of the JSON file.
+        ret_val (object): The deserialized JSON file.
+    """
+    if conf_file_name not in ("", ret_val.file_name):
+        _logger.critical(
+            'project file "{path}" is not a valid project file!'.format(path=json_path)
+        )
+        _logger.critical(
+            'the value of \'file_name\' should be "{should}" but is "{but_is}"'.format(
+                should=conf_file_name, but_is=ret_val.file_name
+            )
+        )
+        sys.exit(EXT_ERR_NOT_VLD)

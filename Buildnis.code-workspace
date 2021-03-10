@@ -11,6 +11,13 @@
 			"./test_project/fortran_static_library",
 			"./test_project/fortran_dynamic_library"
 		],
-		"python.pythonPath": "C:\\Program Files\\Python39\\python.exe"
+		"python.languageServer": "Pylance",
+		"python.analysis.diagnosticMode": "workspace",
+		"python.autoComplete.addBrackets": true,
+		"python.formatting.provider": "black",
+		"python.linting.banditEnabled": true,
+		"python.linting.pylamaEnabled": true,
+		"python.terminal.activateEnvInCurrentTerminal": true,
+		"python.testing.pytestEnabled": true
 	}
 }

@@ -153,7 +153,9 @@ class Check(JSONBaseClass):
                 'Calling build tool config script "{path}"'.format(path=script_path)
             )
             try:
-                script_out = runCommand(exe_args=ExeArgs(script_path, [self.arch]))
+                script_out = runCommand(
+                    exe_args=ExeArgs(script_path.__str__(), [self.arch])
+                )
                 build_tool_cfg = json.loads(
                     script_out.std_out,
                     object_hook=lambda dict: SimpleNamespace(**dict),

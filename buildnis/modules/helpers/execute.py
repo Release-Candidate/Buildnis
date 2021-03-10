@@ -23,7 +23,6 @@ class RunRegex(NamedTuple):
     """Class to hold a regex tuple to parse a command output with.
 
     Attributes:
-
         regex (str): The actual regex to use for parsing the output of the command.
         group (int): The match group of the regex to use for the result.
     """
@@ -36,7 +35,6 @@ class ExeArgs(NamedTuple):
     """Class to hold the arguments needed to run a command.
 
     Attributes:
-
         exe (FilePath): The path to the executable to call.
         args (List[str]): The list of arguments to pass to the executable.
     """
@@ -50,7 +48,6 @@ class EnvArgs(NamedTuple):
     run.
 
     Attributes:
-
         script (FilePath): The path to the environment script to run or source.
         args (List[str]): The arguments to pass to the environment script.
         do_source (bool):  If this is true, the environment script is sourced in the
@@ -102,20 +99,7 @@ def runCommand(
 
     cmd_line_args = []
 
-    # TODO really always call bash?
-    if env_args.script != "":
-        if env_args.do_source is True:
-            cmd_line_args.append("bash")
-            cmd_line_args.append("-c")
-            source_cmd = "source " + env_args.script + " " + " ".join(env_args_real)
-            source_cmd = source_cmd + " && " + exe_args.exe
-            source_cmd = source_cmd + " " + " ".join(exe_args_real)
-            cmd_line_args.append(source_cmd)
-        else:
-            cmd_line_args.append(env_args.script)
-            for env_arg in env_args_real:
-                cmd_line_args.append(env_arg)
-            cmd_line_args.append("&&")
+    setEnv(exe_args, env_args, exe_args_real, env_args_real, cmd_line_args)
 
     if env_args.script == "" or not env_args.do_source:
         cmd_line_args.append(exe_args.exe)
@@ -132,6 +116,41 @@ def runCommand(
         raise ExecuteException(excp)
 
     return CmdOutput(std_out=process_result.stdout, err_out=process_result.stderr)
+
+
+################################################################################
+def setEnv(
+    exe_args: ExeArgs,
+    env_args: EnvArgs,
+    exe_args_real: List[str],
+    env_args_real: List[str],
+    cmd_line_args: List[str],
+) -> None:
+    """Set up the command line arguments for the environment script.
+
+    Args:
+        exe_args (ExeArgs): The object holding the needed arguments for the executable
+                            itself.
+        env_args (EnvArgs): The object holding the needed arguments to set the
+                        environment for the executable.
+        exe_args_real (List[str]): The real list of executable arguments to use.
+        env_args_real (List[str]): The real list of environment arguments to use.
+        cmd_line_args (List[str]): The list of arguments to pass to the command
+                            interpreter.
+    """
+    if env_args.script != "":
+        if env_args.do_source is True:
+            cmd_line_args.append("bash")
+            cmd_line_args.append("-c")
+            source_cmd = "source " + env_args.script + " " + " ".join(env_args_real)
+            source_cmd = source_cmd + " && " + exe_args.exe
+            source_cmd = source_cmd + " " + " ".join(exe_args_real)
+            cmd_line_args.append(source_cmd)
+        else:
+            cmd_line_args.append(env_args.script)
+            for env_arg in env_args_real:
+                cmd_line_args.append(env_arg)
+            cmd_line_args.append("&&")
 
 
 ################################################################################

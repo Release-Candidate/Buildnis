@@ -56,7 +56,7 @@ class Host(JSONBaseClass):
 
     Stores hostname, OS, OS version, CPU architecture, RAM, CPU name, ...
 
-    Attributes:
+    Attributes
         host_name (str):      This host's name
         os (str):             The OS this is running on (like "Windows", "Linux")
         os_vers_major (str):  Major version of the OS (like "10" for Windows 10)
@@ -74,7 +74,7 @@ class Host(JSONBaseClass):
         python_version (str): The version of this host's Python interpreter
         json_path(str):       The path to the written JSON host config file
 
-    Methods:
+    Methods
         collectWindowsConfig: adds information, that has to be collected in a
                             Windows specific way
         collectLinuxConfig: adds information, that has to be collected in a
@@ -179,8 +179,10 @@ class Host(JSONBaseClass):
                     self.level3_cache = int(level3_cache)
                     self.num_cores = int(num_cores)
                     self.num_logical_cores = int(num_logical_cores)
-                except:
-                    pass
+                except Exception as excp:
+                    self._logger.error(
+                        'error "{error}" getting CPU info'.format(error=excp)
+                    )
 
     ############################################################################
     def collectWinCpuGpuRam(self):
@@ -200,8 +202,10 @@ class Host(JSONBaseClass):
             if line != "" and "Capacity" not in line:
                 try:
                     self.ram_total += int(line)
-                except:
-                    pass
+                except Exception as excp:
+                    self._logger.error(
+                        'error "{error}" getting RAM size'.format(error=excp)
+                    )
 
     ############################################################################
     def getGPU(self) -> None:
@@ -247,8 +251,10 @@ class Host(JSONBaseClass):
 
                     os_vers = getOSVer()
                     self.os_vers = os_vers.std_out.strip()
-            except:
-                pass
+            except Exception as excp:
+                self._logger.error(
+                    'error "{error}" trying to read /etc/os-release'.format(error=excp)
+                )
 
             self.collectLinuxCpuGpuRam()
 

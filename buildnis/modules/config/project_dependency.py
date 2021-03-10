@@ -34,7 +34,6 @@ class ProjectDependency(JSONBaseClass):
     file.
 
     Attributes:
-
         config_path (FilePath): Path to the project dependency JSON file
         dependencies (List[object]):  The list of dependencies
 
@@ -60,7 +59,6 @@ class ProjectDependency(JSONBaseClass):
                             installed
 
     Methods:
-
         checkDependencies: Checks all dependencies in the list of dependencies
                             `dependencies`, if the dependency is installed.
         isDependencyFulfilled: Returns `True`if the dependency has been

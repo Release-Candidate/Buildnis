@@ -150,7 +150,9 @@ def writeProjectJSON(
     cfg.setHostConfigPath(host_cfg_filename)
     cfg.writeJSON()
     if not json_config_files.project_cfg.exists:
-        config_values.g_list_of_generated_files.append(json_config_files.project_cfg)
+        config_values.g_list_of_generated_files.append(
+            json_config_files.project_cfg.path
+        )
 
 
 ################################################################################
@@ -172,7 +174,7 @@ def ifConfigureDeleteProjectJSON(
     if json_config_files.project_cfg.exists and commandline_args.do_configure is True:
 
         try:
-            pathlib.Path(json_config_files.project_cfg).unlink()
+            pathlib.Path(json_config_files.project_cfg.path).unlink()
             json_config_files.project_cfg.exists = False
         except Exception as excp:
             logger.error(

@@ -57,7 +57,7 @@ def expandItem(item: str, parents: List[object]) -> object:
                 parent_to_use_id=parent_to_use_id,
                 placeholder=placeholder,
             )
-        except:
+        except Exception:
             return ret_val
 
         if isinstance(substitute, str):
@@ -96,7 +96,7 @@ def getPlaceholder(
         else:
             substitute = parent[placeholder]
         # print("Replace {ph} with: {elem}".format(ph=placeholder, elem=substitute))
-    except:
+    except Exception:
         try:
             parent = parents[parent_to_use_id]
             if isinstance(getattr(parent, placeholder), str):
@@ -127,7 +127,6 @@ def parseConfigElement(element: object, parents: List[object] = None) -> object:
         parent as a list, starting with the parent as first element. Defaults to None.
 
     Returns:
-
         object: The parsed and expanded object.
     """
     if parents is None:

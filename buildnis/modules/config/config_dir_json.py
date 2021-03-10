@@ -21,12 +21,10 @@ class ConfigDirJson(JSONBaseClass):
     configuration files are written to.
 
     Attributes:
-
         file_name (FilePath):  The path to the JSON configuration file
         cfg_path (FilePath): The directory to save generated configurations to
 
     Methods:
-
         writeJSON: Writes the configuration directory configuration to a JSON
                     file with path `file_name`.
     """
