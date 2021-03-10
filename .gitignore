@@ -141,6 +141,7 @@ cfg_dir_config.json
 
 # ignore Visual Studio projects
 .vs/
+.vscode/
 Release/
 x64/
 *.vcxproj*
