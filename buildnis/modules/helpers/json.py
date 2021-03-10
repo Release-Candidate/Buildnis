@@ -60,22 +60,12 @@ def parseItem(
         to_ignore (List[str]): The list of attributes to ignore and not serialize.
         ret_val (Dict[str, object]): The dictionary to return, the serialized object
                                     src.
-        item (object): [description] The current item to serialize.
+        item (object): The current item to serialize.
     """
     if isinstance(src.__dict__[item], list):
-        sub_list = []
-        for subitem in src.__dict__[item]:
-            if hasattr(subitem, "__dict__"):
-                sub_list.append(getJSONDict(subitem))
-            else:
-                sub_list.append(subitem)
-        ret_val[item] = sub_list
+        parseList(src, ret_val, item)
     elif isinstance(src.__dict__[item], FileCompare):
-        tmp_dict = {}
-        tmp_dict["path"] = src.__dict__[item].__dict__["path"]
-        tmp_dict["size"] = src.__dict__[item].__dict__["size"]
-        tmp_dict["hash"] = src.__dict__[item].__dict__["hash"]
-        ret_val[item] = tmp_dict
+        setFileCompare(src, ret_val, item)
     elif isinstance(src.__dict__[item], Logger):
         pass
     elif item in to_ignore:
@@ -84,6 +74,42 @@ def parseItem(
         ret_val[item] = getJSONDict(src.__dict__[item], to_ignore=to_ignore)
     else:
         ret_val[item] = src.__dict__[item]
+
+
+################################################################################
+def parseList(src, ret_val, item) -> None:
+    """Parse the elements of a list.
+
+    Args:
+        src (object): The object to serialize.
+        ret_val (Dict[str, object]): The dictionary to return, the serialized object
+                                    src.
+        item (object): The current item to serialize.
+    """
+    sub_list = []
+    for subitem in src.__dict__[item]:
+        if hasattr(subitem, "__dict__"):
+            sub_list.append(getJSONDict(subitem))
+        else:
+            sub_list.append(subitem)
+    ret_val[item] = sub_list
+
+
+################################################################################
+def setFileCompare(src: object, ret_val: Dict[str, object], item: object) -> None:
+    """Set the attributes of the `FileCompare` instance in the JSON dictionary.
+
+    Args:
+        src (object): The object to serialize.
+        ret_val (Dict[str, object]): The dictionary to return, the serialized object
+                                    src.
+        item (object): The current item to serialize.
+    """
+    tmp_dict = {}
+    tmp_dict["path"] = src.__dict__[item].__dict__["path"]
+    tmp_dict["size"] = src.__dict__[item].__dict__["size"]
+    tmp_dict["hash"] = src.__dict__[item].__dict__["hash"]
+    ret_val[item] = tmp_dict
 
 
 ################################################################################
@@ -191,18 +217,7 @@ def readJSON(
         sys.exit(EXT_ERR_NOT_VLD)
 
     try:
-        if not hasattr(ret_val, "orig_file"):
-            ret_val.orig_file = FileCompare(json_path)
-        else:
-            if ret_val.orig_file.path == json_path:
-                ret_val.orig_file = FileCompare(json_path)
-            else:
-                # to get a FileCompare instance, not SimpleNamespace
-                tmp_orig = FileCompare(ret_val.orig_file.path)
-                tmp_orig.path = ret_val.orig_file.path
-                tmp_orig.hash = ret_val.orig_file.hash
-                tmp_orig.size = ret_val.orig_file.size
-                ret_val.orig_file = tmp_orig
+        setOrigFile(json_path, ret_val)
 
     except Exception as excp:
         _logger.critical(
@@ -212,6 +227,28 @@ def readJSON(
         )
 
     return ret_val
+
+
+################################################################################
+def setOrigFile(json_path: FilePath, ret_val: object) -> None:
+    """Set the `FileCompare` instance `orig_file` to the original JSON configuration.
+
+    Args:
+        json_path (FilePath): The path to the JSON configuration file.
+        ret_val (object): The deserialized JSON file.
+    """
+    if not hasattr(ret_val, "orig_file"):
+        ret_val.orig_file = FileCompare(json_path)
+    else:
+        if ret_val.orig_file.path == json_path:
+            ret_val.orig_file = FileCompare(json_path)
+        else:
+            # to get a FileCompare instance, not SimpleNamespace
+            tmp_orig = FileCompare(ret_val.orig_file.path)
+            tmp_orig.path = ret_val.orig_file.path
+            tmp_orig.hash = ret_val.orig_file.hash
+            tmp_orig.size = ret_val.orig_file.size
+            ret_val.orig_file = tmp_orig
 
 
 ################################################################################
