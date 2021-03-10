@@ -8,31 +8,21 @@
 
 :: generates a Python PIP package in the current working directory and uploads
 :: it to Pypi.
+:: Uses pipenv, you can install that by `python -m pip install pipenv` and
+:: installing the needed packages from the Buildnis root dir `Buildnis` - where
+:: the `Pipfile` is located.
+:: `pipenv install --dev` installs all needed dependencies to develop.
 
 @echo off
 
-rmdir /S /Q build 
+rmdir /S /Q build
 rmdir /S /Q dist
-rmdir /S  /Q example_pkg_Release_Candidate_Username.egg-info
-rmdir /S  /Q buildnis.egg-info
+rmdir /S /Q example_pkg_Release_Candidate_Username.egg-info
+rmdir /S /Q buildnis.egg-info
 
-python -m build
-
-
-:: twine upload --repository testpypi dist/* --config-file %APPDATA%\pip\pip.ini
-
-twine upload --repository pypi dist/* --config-file %APPDATA%\pip\pip.ini
-
-GOTO :EOF
+pipenv run python -m build
 
 
-:: trim spaces off the strings
-:TRIM
-SetLocal EnableDelayedExpansion
-Call :TRIMHELPER %%%1%%
-EndLocal & set %1=%helper_tmp%
-GOTO :EOF
+:: pipenv run twine upload --repository testpypi dist/* --config-file %APPDATA%\pip\pip.ini
 
-:TRIMHELPER
-set helper_tmp=%*
-GOTO :EOF
+pipenv run twine upload --repository pypi dist/* --config-file %APPDATA%\pip\pip.ini

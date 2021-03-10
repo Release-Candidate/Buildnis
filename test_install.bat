@@ -6,23 +6,13 @@
 :: Date:     07.Mar.2021
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+:: Installs or upgrades the buildnis package using pip.
+:: Uses pipenv, you can install that by `python -m pip install pipenv` and
+:: installing the needed packages from the Buildnis root dir `Buildnis` - where
+:: the `Pipfile` is located.
+:: `pipenv install --dev` installs all needed dependencies to develop.
+
 @echo off
 
-call env_to_test\Scripts\activate.bat
-
-:: python -m pip install --upgrade -i https://test.pypi.org/simple/ example-pkg-Release-Candidate-example_pkg_Release_Candidate_Username
-python -m pip install --upgrade buildnis
-
-GOTO :EOF
-
-
-:: trim spaces off the strings
-:TRIM
-SetLocal EnableDelayedExpansion
-Call :TRIMHELPER %%%1%%
-EndLocal & set %1=%helper_tmp%
-GOTO :EOF
-
-:TRIMHELPER
-set helper_tmp=%*
-GOTO :EOF
+:: pipenv run pip install --upgrade -i https://test.pypi.org/simple/ example-pkg-Release-Candidate-example_pkg_Release_Candidate_Username
+pipenv run pip install --upgrade buildnis
