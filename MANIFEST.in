@@ -6,5 +6,7 @@ include CHANGELOG.md
 graft buildnis/modules
 graft buildnis/config
 graft buildnis/configure_scripts
+graft buildnis/doc/html
+graft buildnis/doc/doctrees
 
 global-exclude *.py[cod]
