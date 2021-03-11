@@ -62,14 +62,15 @@ def parseItem(
                                     src.
         item (object): The current item to serialize.
     """
+    if item in to_ignore:
+        return
+    if isinstance(src.__dict__[item], Logger):
+        return
+
     if isinstance(src.__dict__[item], list):
         parseList(src, ret_val, item)
     elif isinstance(src.__dict__[item], FileCompare):
         setFileCompare(src, ret_val, item)
-    elif isinstance(src.__dict__[item], Logger):
-        pass
-    elif item in to_ignore:
-        pass
     elif hasattr(src.__dict__[item], "__dict__"):
         ret_val[item] = getJSONDict(src.__dict__[item], to_ignore=to_ignore)
     else:
