@@ -1,37 +1,43 @@
-.. Buildnis documentation master file, created by
-   sphinx-quickstart on Thu Mar 11 14:13:27 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Buildnis's documentation!
+Welcome to Buildnis' documentation!
 ====================================
 
-.. automodule:: buildnis.modules.builds
-   :members:
-   :undoc-members:
-   :special-members: __init__
-
-.. automodule:: buildnis.modules.config
-   :members:
-   :undoc-members:
-   :special-members: __init__
-
-.. automodule:: buildnis.modules.helpers
-   :members:
-   :undoc-members:
-   :special-members: __init__
-
-
+Hi!
 
 .. toctree::
+   :hidden:
+   :caption: Links
+
+   GitHub Project Page <https://github.com/Release-Candidate/Buildnis>
+   PyPI (pip) Package <https://pypi.org/project/buildnis/>
+   Documentation at Read the Docs <https://buildnis.readthedocs.io/>
+
+.. toctree::
+   :hidden:
    :maxdepth: 5
-   :caption: Contents:
+   :caption: Installation and Usage
 
+   usage
+   license
 
+.. toctree::
+   :hidden:
+   :maxdepth: 5
+   :caption: Customizing
 
-Indices and tables
-==================
+   extending
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+   :hidden:
+   :maxdepth: 5
+   :caption: Developing Buildnis
+
+   dev_index
+
+.. toctree::
+   :hidden:
+   :maxdepth: 5
+   :caption: Indices
+
+   genindex
+   py-modindex
+

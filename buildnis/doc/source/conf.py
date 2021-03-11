@@ -35,6 +35,7 @@ release = "0.2.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
     "sphinx_rtd_theme",
 ]
 
@@ -46,6 +47,13 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# Date format used to replace the tag |today|
+today = ""
+today_fmt = "%d.%m.%Y"
+
+# Trim spaces before footnote references that are necessary for the reST parser
+# to recognize the footnote, but do not look too nice in the output.
+trim_footnote_reference_space = True
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -59,6 +67,14 @@ html_show_sourcelink = False
 html_copy_source = False
 
 html_logo = "banner.png"
+
+html_last_updated_fmt = "%d.%m.%Y"
+
+# Show copyright footer
+html_show_copyright = False
+
+# Show 'build with Sphinx' footer
+html_show_sphinx = False
 
 html_theme_options = {
     "analytics_anonymize_ip": True,
@@ -75,6 +91,10 @@ html_theme_options = {
     "includehidden": True,
     "titles_only": False,
 }
+
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = False
 
 # Pygments source code style to use
 # abap, algol, algol_nu, arduino, autumn, borland, bw, colourful,

@@ -11,7 +11,6 @@ modules.config.build\_config module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.check module
 ---------------------------
@@ -20,7 +19,6 @@ modules.config.check module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.config module
 ----------------------------
@@ -29,7 +27,6 @@ modules.config.config module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.config\_dir\_json module
 ---------------------------------------
@@ -38,7 +35,6 @@ modules.config.config\_dir\_json module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.config\_files module
 -----------------------------------
@@ -47,7 +43,6 @@ modules.config.config\_files module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.config\_values module
 ------------------------------------
@@ -56,7 +51,6 @@ modules.config.config\_values module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.configure\_build module
 --------------------------------------
@@ -65,7 +59,6 @@ modules.config.configure\_build module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.host module
 --------------------------
@@ -74,7 +67,6 @@ modules.config.host module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.host\_linux module
 ---------------------------------
@@ -83,7 +75,6 @@ modules.config.host\_linux module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.host\_osx module
 -------------------------------
@@ -92,7 +83,6 @@ modules.config.host\_osx module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.host\_windows module
 -----------------------------------
@@ -101,7 +91,6 @@ modules.config.host\_windows module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.json\_base\_class module
 ---------------------------------------
@@ -110,7 +99,6 @@ modules.config.json\_base\_class module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.module module
 ----------------------------
@@ -119,7 +107,6 @@ modules.config.module module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.config.project\_dependency module
 -----------------------------------------
@@ -128,7 +115,6 @@ modules.config.project\_dependency module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 Module contents
 ---------------
@@ -137,4 +123,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__

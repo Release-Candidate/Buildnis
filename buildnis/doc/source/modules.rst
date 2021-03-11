@@ -1,6 +1,2 @@
-Buildnis
+buildnis
 ========
-
-.. toctree::
-   :maxdepth: 4
-

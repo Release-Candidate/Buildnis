@@ -11,7 +11,6 @@ modules.helpers.commandline module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.commandline\_arguments module
 ---------------------------------------------
@@ -20,7 +19,6 @@ modules.helpers.commandline\_arguments module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.config\_parser module
 -------------------------------------
@@ -29,7 +27,6 @@ modules.helpers.config\_parser module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.execute module
 ------------------------------
@@ -38,7 +35,6 @@ modules.helpers.execute module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.file\_compare module
 ------------------------------------
@@ -47,7 +43,6 @@ modules.helpers.file\_compare module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.files module
 ----------------------------
@@ -56,7 +51,6 @@ modules.helpers.files module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.json module
 ---------------------------
@@ -65,7 +59,6 @@ modules.helpers.json module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.logging module
 ------------------------------
@@ -74,7 +67,6 @@ modules.helpers.logging module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.placeholder\_regex module
 -----------------------------------------
@@ -83,7 +75,6 @@ modules.helpers.placeholder\_regex module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 modules.helpers.web module
 --------------------------
@@ -92,7 +83,6 @@ modules.helpers.web module
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__
 
 Module contents
 ---------------
@@ -101,4 +91,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :special-members: __init__

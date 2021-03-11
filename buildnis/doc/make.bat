@@ -25,6 +25,9 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
+rmdir /S /Q html
+rmdir /S /Q doctrees
+
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
