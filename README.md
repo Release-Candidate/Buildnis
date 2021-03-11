@@ -21,6 +21,7 @@ Distributed, platform independent build system that can handle C++20 and Fortran
       - [Using a Virtual Environment](#using-a-virtual-environment)
       - [Installation of Buildnis](#installation-of-buildnis)
     - [Usage](#usage)
+  - [Bug Reports and Feature Requests](#bug-reports-and-feature-requests)
   - [Contributing to the Project](#contributing-to-the-project)
   - [Project Websites](#project-websites)
   - [Changelog](#changelog)
@@ -166,6 +167,10 @@ Phases of the build:
 See website https://github.com/Release-Candidate/Buildnis for a detailed description.
 
 ```
+
+## Bug Reports and Feature Requests
+
+Please use the [GitHub issue page](https://github.com/Release-Candidate/Buildnis/issues/new/choose) to file bug reports or feature requests.
 
 ## Contributing to the Project
 
