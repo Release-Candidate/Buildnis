@@ -160,8 +160,7 @@ x64/
 
 
 # ignore sphinx generated files
-**/doc/sphinx/
-
-
 test_project/doc/xml/
 env_to_test/
+buildnis/doc/html/
+buildnis/doc/doctrees/
