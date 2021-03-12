@@ -79,7 +79,7 @@ html_show_sphinx = False
 html_theme_options = {
     "analytics_anonymize_ip": True,
     "logo_only": True,
-    "display_version": True,
+    "display_version": False,
     "prev_next_buttons_location": "both",
     "style_external_links": False,
     "vcs_pageview_mode": "",

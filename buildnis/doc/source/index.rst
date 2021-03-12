@@ -6,6 +6,14 @@ Fortran modules and is flexible enough to build any language and handle (almost 
 any build step imaginable. It is written in Python and needs a Python interpreter, at 
 least version 3.9.
 
+The main goal is to have a build system with only the minimum needed configuration and specially
+user interaction to build software on all supported OSes (Linux, Mac OS X and Windows - alphabetically).
+The list of currently automatically supported compilers and build tools can be found at the chapter :ref:`supported_configs`.
+How to customize Buildnis for your needs can be found at :ref:`customizing_buildnis`,
+how to extend it, that means adding other OSes or CPU architectures or stuff that need changes in the Python code of
+Buildnis itself, can be found in the chapter :ref:`extending_buildnis`.
+
+
 .. toctree::
    :hidden:
    :caption: Links
@@ -23,7 +31,9 @@ To get you started, short how-tos to get Buildnis up and running:
    :caption: Installation and Usage
 
    usage
+   commandline
    configuration
+   stages
    license
 
 .. toctree::
@@ -31,6 +41,8 @@ To get you started, short how-tos to get Buildnis up and running:
    :maxdepth: 5
    :caption: Customizing
 
+   supported_configs
+   customizing
    extending
 
 .. toctree::

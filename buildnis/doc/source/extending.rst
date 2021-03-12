@@ -1,6 +1,6 @@
-Customizing Buildnis
-====================
+.. _extending_buildnis:
 
-Hi!
+Extending Buildnis
+==================
 
 

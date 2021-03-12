@@ -12,7 +12,7 @@ Installation
 Using a Virtual Environment
 ...........................
 
-I _highly_ recommend that you use a virtual environment like `Virtualenv <https://virtualenv.pypa.io/en/latest/>`_
+I *highly* recommend that you use a virtual environment like `Virtualenv <https://virtualenv.pypa.io/en/latest/>`_
 or `Pipenv <https://pypi.org/project/pipenv/>`_ to check out Buildnis.
 
 Virtualenv Setup
@@ -37,7 +37,7 @@ So, call or source the script:
 
 Windows:
 
-.. code-block:: cmd
+.. code-block:: shell
 
     PATH_TO_YOUR_VENV\Scripts\activate.bat
 
@@ -56,6 +56,24 @@ detailed documentation of Virtualenv you find at the `Virtualenv User Guide <htt
 Pipenv Setup
 ,,,,,,,,,,,,
 
+First install the package ``pipenv`` using ``pip``:
+
+.. code-block:: shell
+
+    python -m pip install pipenv
+
+Now to activate the virtualenv (``pipenv`` uses ``virtualenv``), call ``pipenv`` with the
+argument ``shell``
+
+.. code-block:: shell
+
+    pipenv shell
+
+To leave the environment, call ``exit``:
+
+.. code-block:: shell
+
+    exit
 
 Installation of Buildnis
 ........................
@@ -64,6 +82,8 @@ You can install Buildnis using pip (also in a virtualenv, see `Virtualenv Setup`
 
 Installation using Pip
 ,,,,,,,,,,,,,,,,,,,,,,
+
+The buildnis package `package at PyPI <https://pypi.org/project/buildnis/>`_ can be installed using pip:
 
 .. code-block:: shell
 
@@ -78,6 +98,8 @@ To upgrade your installed version use
 Installation using Pipenv
 ,,,,,,,,,,,,,,,,,,,,,,,,,
 
+Using a virtual Python environment with ``pipenv``:
+
 .. code-block:: shell
 
     pipenv install buildnis
@@ -88,12 +110,29 @@ To upgrade your installed version use
 
     pipenv install --upgrade buildnis
 
+No Package Installation
+.......................
+
+You can also use Buildnis without installing a package, by just copying the directory containing
+the Python source to into your project - that way you can also distribute Buildnis as part of
+your project.
+
+To do that, copy the directory ``buildnis`` from `Github <https://github.com/Release-Candidate/Buildnis/tree/main/buildnis>`_
+and call the package from the parent directory of ``buildnis``:
+
+.. code-block:: shell
+
+    python -m buildnis
+
+If you don't need it or don't want to redistribute it, you can delete the documentation
+directory ``buildnis/doc``, it isn't needed to run the program.
+
 Usage
 -----
 
 The best way to test Buildnis is to check out the test project from Github:
 `Test Project on Github <https://github.com/Release-Candidate/Buildnis/tree/main/test_project>`_
-and run Buildnis there:
+and run Buildnis from this directory:
 
 .. code-block:: shell
 
