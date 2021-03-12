@@ -131,13 +131,14 @@ class Config(JSONBaseClass):
 
     ############################################################################
     def readConfigsJSON(self) -> None:
-        """Readds all module and build configurations from their JSON files."""
+        """Reads all module and build configurations from their JSON files."""
         tmp_modules = []
         for module in self.module_cfgs:
             tmp_module = ModuleCfg.fromReadJSON(module)
             tmp_modules.append(tmp_module)
         self.module_cfgs = tmp_modules
         tmp_build_cfgs = []
+        # TODO read build_cfg`s from their real locations
         for build_cfg in self.build_cfgs:
             tmp_bcfg = BuildCfg.fromReadJSON(build_cfg)
             tmp_build_cfgs.append(tmp_bcfg)
