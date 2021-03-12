@@ -66,7 +66,7 @@ html_show_sourcelink = False
 
 html_copy_source = False
 
-html_logo = "banner.png"
+html_logo = "buildnis.png"
 
 html_last_updated_fmt = "%d.%m.%Y"
 
