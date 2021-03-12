@@ -57,7 +57,7 @@ PATH_TO_YOUR_VENV\Scripts\activate.bat
  on Unixes you source the activation script using
 
 ```shell
-source PATH_TO_YOUR_VENV\bin\activate
+source PATH_TO_YOUR_VENV/bin/activate
 ```
 
  If you now install the packages, they're installed in this virtual environment and can't break your 'real' Python installation.
@@ -172,6 +172,8 @@ See website https://github.com/Release-Candidate/Buildnis for a detailed descrip
 
 Please use the [GitHub issue page](https://github.com/Release-Candidate/Buildnis/issues/new/choose) to file bug reports or feature requests.
 
+There you also find the issue tracker: [GitHub issues](https://github.com/Release-Candidate/Buildnis/issues)
+
 ## Contributing to the Project
 
 See file [CONTRIBUTING.md](https://github.com/Release-Candidate/Buildnis/blob/main/CONTRIBUTING.md) for details.
@@ -185,6 +187,10 @@ Documentation at [Read the Docs](https://buildnis.readthedocs.io/en/latest/)
 The PyPI (pip) package at [PyPI package](https://pypi.org/project/buildnis/)
 
 Continuos integration testing at [Travis CI](https://travis-ci.com/github/Release-Candidate/Buildnis)
+
+Report a bug or feature request at [GitHub report issue](https://github.com/Release-Candidate/Buildnis/issues/new/choose)
+
+Bug and other requests tracker at [GitHub issue tracker](https://github.com/Release-Candidate/Buildnis/issues)
 
 ## Changelog
 
