@@ -39,7 +39,7 @@ install from that shell:
 .. note::
 
     With long arguments you only need to input that part of the argument, that makes it unique.
-    E.g. instead of ``--dist-clean`` you could also write ``--di``
+    E.g. instead of ``--distclean`` you could also write ``--di``
 
 Show Help Text
 --------------
@@ -91,21 +91,53 @@ Example, to build the project with the main configuration file in the directory 
 Build Stages
 ------------
 
-# ``--configure``
+* ``--configure``
+* ``--build``
+* ``--install``
+* ``--clean``
+* ``--distclean``
 
---configure           Configure the project.
-  --build [TARGET ...]  Build the project. If a list of targets is given, these targets are build. The default is to build the default target.
-  --install [TARGET ...]
-                        Install the given targets. If no target is given, installs the project's default target.
-  --clean               Clean the project. Deletes all files and directories generated during the build.
-  --distclean           Start from scratch, delete generated configuration. Deletes all files and directories generated during the build and the configuration.
+Example, to configure the project with the main configuration file in the directory ``test_project``:
+
+.. code-block:: shell
+
+    python -m buildnis --configure ./test_project/project_config.json
+
+Example, to build the default targets of the with the main configuration file in the directory ``test_project``:
+
+.. code-block:: shell
+
+    python -m buildnis --build ./test_project/project_config.json
+
+Example, to build the targets ``documentation`` and ``fortran_static`` of the project
+with the main configuration file in the directory ``test_project``.
+
+.. warning::
+
+    You need to be careful
+    to let the command line parser know the end of the target list. Either use a double dash ``--``
+    or add the targets after the project config file.
+
+.. code-block:: shell
+
+    python -m buildnis --build documentation fortran_static -- ./test_project/project_config.json
+    python -m buildnis ./test_project/project_config.json --build documentation fortran_static
+
+.. note::
+
+    You can use normal slashes ``/`` for paths on Windows too, no need for windows-like
+    backslashes (``\``) as path arguments to Python.
+
+Output and Script Paths
+-----------------------
+
+* ``--generated-conf-dir DIR_PATH``
+* ``--conf-script-dir DIR_PATH``
 
 Logging Options
 ---------------
 
---log-file LOG_FILE   If this is set, the program writes verbose messages to LOG_FILE, does not change output to the console. Default is none.
-  -q, --quiet           Run quiet, only output error messages.
-  -v, --verbose         Increase verbosity of the program, get more messages. Can be used more than once, like "-vv"
-  --debug               Set logging level to the highest available, the same as "-vv"
-
-
+* ``-q`` or ``--quiet``
+* ``-v`` or ``--verbose``
+* ``--debug`` or ``-vv`` or ``--verbose --verbose``
+* ``--log-file LOG_FILE``
