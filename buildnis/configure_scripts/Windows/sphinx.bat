@@ -26,7 +26,7 @@ for /f "delims=" %%l in ('sphinx-build  --version') do (
 
 if /i "%SPHINX_VERSION%"=="" (
     set ENV_SCRIPT=pipenv
-    set ENV_ARG=shell
+    set ENV_ARG=run
 )
 
 
