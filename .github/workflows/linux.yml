@@ -46,7 +46,7 @@ jobs:
         run: |
            cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
-      - name: Cache pipenv
+      - name: Cache pipenv 2
         id: cache-pipenv
         uses: actions/cache@v2
         with:
