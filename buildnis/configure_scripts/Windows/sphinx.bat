@@ -42,7 +42,7 @@ echo         "version_arg": "--version",
 echo         "version_regex": "^\\S+ (.*)",
 echo         "build_tool_exe": "sphinx-build",
 echo         "install_path": "",
-echo         "env_script": "%ENV_SCRIPT%"
+echo         "env_script": "%ENV_SCRIPT%",
 echo         "env_script_arg": "%ENV_ARG%"
 echo     }
 echo ]
