@@ -46,6 +46,15 @@ jobs:
         run: |
            cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
+      - name: Cache pipenv
+        id: cache-pipenv
+        uses: actions/cache@v2
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+
       - name: Run Buildnis
         run: |
           cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv
