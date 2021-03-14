@@ -53,11 +53,11 @@ jobs:
 
       - name: Run Buildnis
         run: |
-          pipenv run python -m buildnis ./test_project/project_config.json -vv
+          pipenv shell /C python -m buildnis ./test_project/project_config.json -vv
 
       - name: Clean Buildnis
         run: |
-          pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
+          pipenv shell /C python -m buildnis ./test_project/project_config.json -vv --clean
 
       # - name: Re-Run Buildnis
       #   run: |
