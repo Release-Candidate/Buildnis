@@ -47,7 +47,7 @@ jobs:
            cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
       - name: Cache pipenv 2
-        id: cache-pipenv
+        id: cache-pipenv2
         uses: actions/cache@v2
         with:
           path: ~/.local/share/virtualenvs
@@ -58,6 +58,10 @@ jobs:
       - name: Run Buildnis
         run: |
           cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv
+
+      - name: Clean Buildnis
+        run: |
+          cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
 
       - name: Re-Run Buildnis
         run: |
