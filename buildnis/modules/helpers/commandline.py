@@ -8,10 +8,10 @@
 
 from __future__ import annotations
 
-import sys
-import logging
 import argparse
+import logging
 import pathlib
+import sys
 
 from buildnis.modules import EXT_ERR_LD_FILE, VERSION
 from buildnis.modules.config import DEFAULT_CONFIG_FILE

@@ -10,20 +10,15 @@ from __future__ import annotations
 
 import platform
 
-from buildnis.modules.config.host_windows import (
-    getCPUInfo,
-    getCPUName,
-    getGPUInfo,
-    getMemInfo,
-)
-from buildnis.modules.config.host_osx import (
-    getCPUNameOSX,
-    getL2CacheOSX,
-    getL3CacheOSX,
-    getNumCoresOSX,
-    getNumLogCoresOSX,
-    getOSName,
-    getRAMSizeOSX,
+from buildnis.modules.config import (
+    AMD64_ARCH_STRING,
+    CFG_VERSION,
+    HOST_FILE_NAME,
+    LINUX_OS_STRING,
+    OSX_NAME_DICT,
+    OSX_OS_STRING,
+    WINDOWS_OS_STRING,
+    config_values,
 )
 from buildnis.modules.config.host_linux import (
     getCPUNameLinux,
@@ -37,18 +32,23 @@ from buildnis.modules.config.host_linux import (
     getOSVer,
     getRAMSizeLinux,
 )
+from buildnis.modules.config.host_osx import (
+    getCPUNameOSX,
+    getL2CacheOSX,
+    getL3CacheOSX,
+    getNumCoresOSX,
+    getNumLogCoresOSX,
+    getOSName,
+    getRAMSizeOSX,
+)
+from buildnis.modules.config.host_windows import (
+    getCPUInfo,
+    getCPUName,
+    getGPUInfo,
+    getMemInfo,
+)
 from buildnis.modules.config.json_base_class import JSONBaseClass
 from buildnis.modules.helpers.files import checkIfExists
-from buildnis.modules.config import (
-    AMD64_ARCH_STRING,
-    CFG_VERSION,
-    HOST_FILE_NAME,
-    LINUX_OS_STRING,
-    OSX_NAME_DICT,
-    OSX_OS_STRING,
-    WINDOWS_OS_STRING,
-    config_values,
-)
 
 
 class Host(JSONBaseClass):

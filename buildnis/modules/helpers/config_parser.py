@@ -8,16 +8,15 @@
 
 from __future__ import annotations
 
-import re
 import logging
-
+import re
 from typing import List
 
+from buildnis.modules.helpers.file_compare import FileCompare
 from buildnis.modules.helpers.placeholder_regex import (
     placeholder_regex,
     replaceConstants,
 )
-from buildnis.modules.helpers.file_compare import FileCompare
 
 
 ############################################################################

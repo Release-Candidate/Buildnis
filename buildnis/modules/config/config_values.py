@@ -12,7 +12,6 @@ from typing import List
 
 from buildnis.modules.config import FilePath
 
-
 # List of files and directories to delete if this has been called with
 # `--distclean`.
 g_list_of_generated_files: List[FilePath] = []

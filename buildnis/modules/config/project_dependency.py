@@ -8,12 +8,12 @@
 
 from __future__ import annotations
 
+import datetime
 import os
 import pathlib
-import datetime
 from typing import List
-from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
-from buildnis.modules.helpers.web import doDownload
+
+from buildnis.modules.config import PROJECT_DEP_FILE_NAME, FilePath
 from buildnis.modules.config.json_base_class import JSONBaseClass
 from buildnis.modules.helpers.execute import (
     ExeArgs,
@@ -22,6 +22,7 @@ from buildnis.modules.helpers.execute import (
     runCommand,
 )
 from buildnis.modules.helpers.files import returnExistingFile
+from buildnis.modules.helpers.web import doDownload
 
 
 class ProjectDependency(JSONBaseClass):

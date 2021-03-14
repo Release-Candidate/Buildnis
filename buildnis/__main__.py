@@ -12,8 +12,8 @@
 
 from __future__ import print_function
 
-import sys
 import platform
+import sys
 
 if sys.version_info.major < 3 or sys.version_info.minor < 8:
     print(

@@ -8,8 +8,8 @@
 
 from __future__ import annotations
 
-import re
 import datetime
+import re
 
 from buildnis.modules.config import (
     LINUX_OS_STRING,

@@ -13,18 +13,18 @@ import pathlib
 from typing import List
 
 from buildnis.modules import EXT_ERR_DIR
-from buildnis.modules.config.module import ModuleCfg
-from buildnis.modules.helpers.files import returnExistingFile
-from buildnis.modules.config.build_config import BuildCfg
-from buildnis.modules.config.json_base_class import JSONBaseClass
-from buildnis.modules.config.check import Check
 from buildnis.modules.config import (
     BUILD_CONF_PATH,
-    FilePath,
     PROJECT_FILE_NAME,
+    FilePath,
     config_values,
     project_dependency,
 )
+from buildnis.modules.config.build_config import BuildCfg
+from buildnis.modules.config.check import Check
+from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.config.module import ModuleCfg
+from buildnis.modules.helpers.files import returnExistingFile
 
 
 class Config(JSONBaseClass):

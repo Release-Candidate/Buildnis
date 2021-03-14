@@ -8,14 +8,23 @@
 
 from __future__ import annotations
 
-import os
-import sys
 import json
+import os
 import pathlib
-from typing import Any
+import sys
 from types import SimpleNamespace
+from typing import Any
 
 from buildnis.modules import EXT_ERR_DIR, MODULE_DIR_PATH
+from buildnis.modules.config import (
+    BUILD_TOOL_CONFIG_NAME,
+    CONFIGURE_SCRIPTS_PATH,
+    LINUX_OS_STRING,
+    OSX_OS_STRING,
+    Arch,
+    FilePath,
+    OSName,
+)
 from buildnis.modules.config.json_base_class import JSONBaseClass
 from buildnis.modules.helpers.execute import (
     EnvArgs,
@@ -23,15 +32,6 @@ from buildnis.modules.helpers.execute import (
     RunRegex,
     doesExecutableWork,
     runCommand,
-)
-from buildnis.modules.config import (
-    Arch,
-    BUILD_TOOL_CONFIG_NAME,
-    CONFIGURE_SCRIPTS_PATH,
-    FilePath,
-    LINUX_OS_STRING,
-    OSName,
-    OSX_OS_STRING,
 )
 
 

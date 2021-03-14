@@ -7,10 +7,12 @@
 ###############################################################################
 
 from __future__ import annotations
+
 import logging
 import pathlib
 import shutil
 import urllib.request
+
 from buildnis.modules.helpers import LOGGER_NAME
 
 _logger = logging.getLogger(LOGGER_NAME)

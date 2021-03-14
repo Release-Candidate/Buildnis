@@ -10,33 +10,39 @@
 from __future__ import annotations
 
 import sys
+
 from buildnis.modules import EXT_ERR_IMP_MOD
 
 try:
-    import os
     import logging
+    import os
     from typing import List, Tuple
 except ImportError as exp:
     print('ERROR: error "{error}" importing modules'.format(error=exp), file=sys.stderr)
     sys.exit(EXT_ERR_IMP_MOD)
 
 try:
-    from buildnis.modules.config.config_dir_json import ConfigDirJson
-    from buildnis.modules.config import config_values
-    from buildnis.modules.helpers.files import checkIfIsFile
-    from buildnis.modules.config import PROJECT_FILE_NAME
-    from buildnis.modules.config.host import Host
-    from buildnis.modules.config import FilePath, PROJECT_DEP_FILE_NAME
     from buildnis.modules import EXT_OK
-    from buildnis.modules.config import HOST_FILE_NAME
-    from buildnis.modules.config import BUILD_TOOL_CONFIG_NAME
-    from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
-    from buildnis.modules.config import CFG_DIR_NAME
+    from buildnis.modules.config import (
+        BUILD_TOOL_CONFIG_NAME,
+        CFG_DIR_NAME,
+        HOST_FILE_NAME,
+        PROJECT_DEP_FILE_NAME,
+        PROJECT_FILE_NAME,
+        FilePath,
+        config_values,
+    )
+    from buildnis.modules.config.config_dir_json import ConfigDirJson
     from buildnis.modules.config.config_files import ConfigFiles, ConfigTuple
     from buildnis.modules.config.configure_build import configureBuild
-    from buildnis.modules.helpers.commandline_arguments import setupLogger
-    from buildnis.modules.helpers.commandline_arguments import doDistClean
+    from buildnis.modules.config.host import Host
     from buildnis.modules.helpers.commandline import parseCommandLine
+    from buildnis.modules.helpers.commandline_arguments import (
+        CommandlineArguments,
+        doDistClean,
+        setupLogger,
+    )
+    from buildnis.modules.helpers.files import checkIfIsFile
 except ImportError as exp:
     print(
         'ERROR: error "{error}" importing own modules'.format(error=exp),

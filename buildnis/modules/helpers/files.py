@@ -8,14 +8,14 @@
 
 from __future__ import annotations
 
-import os
-import pathlib
 import hashlib
 import logging
+import os
+import pathlib
 from typing import List
 
-from buildnis.modules.config import FilePath
 from buildnis.modules import BuildnisException
+from buildnis.modules.config import FilePath
 
 
 class FileCompareException(BuildnisException):

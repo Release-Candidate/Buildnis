@@ -8,20 +8,20 @@
 
 from __future__ import annotations
 
-import os
+import datetime
 import io
-import sys
 import json
 import logging
-import datetime
+import os
+import sys
 from logging import Logger
-from typing import Dict, List
 from types import SimpleNamespace
+from typing import Dict, List
 
-from buildnis.modules.helpers.file_compare import FileCompare
 from buildnis.modules import EXT_ERR_LD_FILE, EXT_ERR_NOT_VLD, EXT_ERR_WR_FILE
-from buildnis.modules.helpers import LOGGER_NAME
 from buildnis.modules.config import CFG_VERSION, FilePath
+from buildnis.modules.helpers import LOGGER_NAME
+from buildnis.modules.helpers.file_compare import FileCompare
 
 _logger = logging.getLogger(LOGGER_NAME)
 

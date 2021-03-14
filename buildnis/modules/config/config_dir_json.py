@@ -11,9 +11,9 @@ from __future__ import annotations
 import os
 from typing import List
 
-from buildnis.modules.helpers.files import checkIfIsFile, makeDirIfNotExists
 from buildnis.modules.config import CFG_DIR_NAME, FilePath
 from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.helpers.files import checkIfIsFile, makeDirIfNotExists
 
 
 class ConfigDirJson(JSONBaseClass):

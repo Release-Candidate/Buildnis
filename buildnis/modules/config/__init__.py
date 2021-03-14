@@ -46,7 +46,6 @@ __all__ = [
 
 from typing import NamedTuple
 
-
 # Types to use for type hints
 
 

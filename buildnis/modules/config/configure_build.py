@@ -11,14 +11,14 @@ from __future__ import annotations
 import logging
 import pathlib
 
-from buildnis.modules.config.host import Host
-from buildnis.modules.config.project_dependency import ProjectDependency
-from buildnis.modules.config.config import Config
-from buildnis.modules.config.config_files import ConfigFiles
-from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
 from buildnis.modules.config import FilePath, config_values
 from buildnis.modules.config.check import Check
+from buildnis.modules.config.config import Config
 from buildnis.modules.config.config_dir_json import ConfigDirJson
+from buildnis.modules.config.config_files import ConfigFiles
+from buildnis.modules.config.host import Host
+from buildnis.modules.config.project_dependency import ProjectDependency
+from buildnis.modules.helpers.commandline_arguments import CommandlineArguments
 
 
 ################################################################################

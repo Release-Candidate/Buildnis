@@ -7,9 +7,10 @@
 ###############################################################################
 
 import logging
+import sys
+
 from buildnis.modules.config import FilePath
 from buildnis.modules.helpers import LOGGER_NAME
-import sys
 
 
 ################################################################################

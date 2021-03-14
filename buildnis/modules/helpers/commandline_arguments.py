@@ -8,15 +8,15 @@
 
 from __future__ import annotations
 
-import sys
-import pprint
 import logging
 import pathlib
+import pprint
+import sys
 from typing import List
 
 from buildnis.modules.config import DEFAULT_CONFIG_FILE, FilePath
-from buildnis.modules.helpers.logging import getProgramLogger
 from buildnis.modules.helpers.files import deleteDirs, deleteFiles
+from buildnis.modules.helpers.logging import getProgramLogger
 
 
 class CommandlineArguments:
