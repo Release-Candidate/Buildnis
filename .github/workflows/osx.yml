@@ -1,4 +1,4 @@
-name: Ubuntu 20.04
+name: Mac OS X latest
 
 # Controls when the action will run.
 on:
@@ -15,7 +15,7 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: macos-latest
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -27,7 +27,7 @@ jobs:
       - name: Cache pip
         uses: actions/cache@v2
         with:
-          path: ~/.cache/pip
+          path: ~/Library/Caches/pip
           key: ${{ runner.os }}-pip-pipenv
           restore-keys: |
             ${{ runner.os }}-pip-pipenv
