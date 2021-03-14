@@ -28,16 +28,18 @@ jobs:
         run: python -m pip install --upgrade pipenv
 
       - name: Install dependencies using pipenv
-        run: cd $GITHUB_WORKSPACE && python -m pipenv install --dev
+        run: |
+           cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
 
-  build:
-    runs-on: ubuntu-20.04
-    needs: setup
+  # build:
+  #   runs-on: ubuntu-20.04
+  #   needs: setup
 
-    steps:
+  #   steps:
       # Runs a single command using the runners shell
       - name: Run Buildnis
-        run: ls -l 1>&2
+        run: |
+          cd $GITHUB_WORKSPACE && python -m buildnis ./test_project/project_config.json -vv
 
 
