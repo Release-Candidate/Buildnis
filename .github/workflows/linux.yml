@@ -14,7 +14,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  setup:
+  build:
     runs-on: ubuntu-20.04
 
     steps:
@@ -31,15 +31,8 @@ jobs:
         run: |
            cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
-
-  # build:
-  #   runs-on: ubuntu-20.04
-  #   needs: setup
-
-  #   steps:
-      # Runs a single command using the runners shell
       - name: Run Buildnis
         run: |
-          cd $GITHUB_WORKSPACE && python -m buildnis ./test_project/project_config.json -vv
+          cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv
 
 
