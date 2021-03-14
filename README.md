@@ -6,6 +6,8 @@
 [![Code Climate Maintainability badge](https://api.codeclimate.com/v1/badges/c5e672a62eeaba8e6fdf/maintainability)](https://codeclimate.com/github/Release-Candidate/Buildnis/maintainability)
 [![DeepSource Issue badge](https://deepsource.io/gh/Release-Candidate/Buildnis.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Release-Candidate/Buildnis/?ref=repository-badge)
 [![Linux action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml)
+[![OS X action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml)
+[![Windows action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml)
 [![Travis CI Build Status](https://travis-ci.com/Release-Candidate/Buildnis.svg?branch=main)](https://travis-ci.com/Release-Candidate/Buildnis)
 [![Codecov badge](https://codecov.io/gh/Release-Candidate/Buildnis/branch/main/graph/badge.svg?token=E26YQKPZ0E)](https://codecov.io/gh/Release-Candidate/Buildnis)
 [![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
