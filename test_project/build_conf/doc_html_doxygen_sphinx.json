@@ -17,7 +17,7 @@
             "build_tool_name": "Doxygen",
             "build_tool_out_dir": "${../../../build_directory}/xml",
             "call_build_tool": "once",
-            "always_run_build": false,            
+            "always_run_build": false,
             "dependencies": [
                 "${../../../dependencies}",
                 "${../../../build_directory}/Doxyfile"
@@ -36,7 +36,10 @@
         {
             "name": "Sphinx HTML",
             "description": "Generates HTML documentation out of Doxygen XML files",
+            "build_tool_name": "Sphinx",
             "always_run_build": true,
+            "call_build_tool": "once",
+            "build_tool_out_dir": "${../../../build_directory}/html",
             "results": [
                 {
                     "type": "single_file",
@@ -44,7 +47,7 @@
                     "path_or_regexp": "${../../../../build_directory}/html/index.html"
                 }
             ],
-            "build_tool_working_dir": "${../../../build_directory}",         
+            "build_tool_working_dir": "${../../../build_directory}",
             "build_tool_arguments": [
                 "-b html",
                 "-Dbreathe_projects.${PROJECT_NAME}=${../../../build_directory}/xml",
