@@ -20,7 +20,7 @@ def getOSName() -> CmdOutput:
         CmdOutput: The output of the command, as a `CmdOutput` instance containing
                     `stdout` and `stderr` as attributes.
     """
-    return runCommand(exe_args=ExeArgs("system_profiler", ["SPDisplaysDataType"]))
+    return runCommand(exe_args=ExeArgs("sw_vers", ["-productVersion"]))
 
 
 ################################################################################
@@ -97,4 +97,4 @@ def getGPUOSX() -> CmdOutput:
          CmdOutput: The output of the command, as a `CmdOutput` instance containing
                     `stdout` and `stderr` as attributes.
     """
-    return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.memsize"]))
+    return runCommand(exe_args=ExeArgs("system_profiler", ["SPDisplaysDataType"]))
