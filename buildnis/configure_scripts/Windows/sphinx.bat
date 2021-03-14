@@ -14,6 +14,8 @@ SetLocal EnableDelayedExpansion
 :: check if Sphinx is in the PATH
 
 set SPHINX_VERSION=
+set ENV_SCRIPT=
+set ENV_ARG=
 
 for /f "delims=" %%l in ('sphinx-build  --version') do (
     if /i "!SPHINX_VERSION!"=="" (
@@ -22,9 +24,15 @@ for /f "delims=" %%l in ('sphinx-build  --version') do (
     )
 )
 
+if /i "%SPHINX_VERSION%"=="" (
+    set ENV_SCRIPT=pipenv
+    set ENV_ARG=shell
+)
+
+
 :: JSON output
 echo {
-echo "build_tools": 
+echo "build_tools":
 echo [
 echo     {
 echo         "name": "Sphinx",
@@ -34,7 +42,8 @@ echo         "version_arg": "--version",
 echo         "version_regex": "^\\S+ (.*)",
 echo         "build_tool_exe": "sphinx-build",
 echo         "install_path": "",
-echo         "env_script": ""
+echo         "env_script": "%ENV_SCRIPT%"
+echo         "env_script_arg": "%ENV_ARG%"
 echo     }
 echo ]
 echo }
