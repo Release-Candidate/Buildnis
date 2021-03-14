@@ -56,12 +56,10 @@ jobs:
            cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
       - name: Run Buildnis
-        shell: cmd
         run: |
           pipenv shell /C python -m buildnis ./test_project/project_config.json -vv
 
       - name: Clean Buildnis
-        shell: cmd
         run: |
           pipenv shell /C python -m buildnis ./test_project/project_config.json -vv --clean
 

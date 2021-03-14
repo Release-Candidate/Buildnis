@@ -13,6 +13,8 @@ SetLocal EnableDelayedExpansion
 
 :: check if Sphinx is in the PATH
 
+call pipenv shell > nul 2>&1
+
 set SPHINX_VERSION=
 set ENV_SCRIPT=
 set ENV_ARG=
