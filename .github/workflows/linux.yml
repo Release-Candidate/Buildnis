@@ -1,4 +1,4 @@
-name: Linux
+name: Ubuntu 20.04
 
 # Controls when the action will run.
 on:
