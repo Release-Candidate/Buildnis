@@ -24,6 +24,15 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Cache pipenv
+        id: cache-pipenv
+        uses: actions/cache@v2
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+
       - name: Install Doxygen
         run: |
           sudo apt install doxygen
@@ -36,15 +45,6 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
            cd $GITHUB_WORKSPACE && python -m pipenv install --dev
-
-      - name: Cache pipenv
-        id: cache-pipenv
-        uses: actions/cache@v2
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pipenv-
 
       - name: Run Buildnis
         run: |
