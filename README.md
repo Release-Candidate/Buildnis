@@ -10,6 +10,7 @@
 [![Codecov badge](https://codecov.io/gh/Release-Candidate/Buildnis/branch/main/graph/badge.svg?token=E26YQKPZ0E)](https://codecov.io/gh/Release-Candidate/Buildnis)
 [![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Black action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/black.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/black.yml)
 
 Distributed, platform independent build system that can handle C++20 and Fortran modules and is flexible enough to build any language and handle (almost ;) any build step imaginable.
 
