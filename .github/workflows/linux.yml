@@ -38,6 +38,6 @@ jobs:
     steps:
       # Runs a single command using the runners shell
       - name: Run Buildnis
-        run: ls -l
+        run: ls -l 1>&2
 
 
