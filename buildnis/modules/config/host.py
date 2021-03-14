@@ -123,16 +123,16 @@ class Host(JSONBaseClass):
     ############################################################################
     def setConstants(self) -> None:
         """Set the host constants to use for configuration files."""
-        must_have_attrs = [
-            "os",
-            "cpu_arch",
-            "host_name",
-            "num_cores",
-            "num_logical_cores",
-        ]
+        must_have_attrs = {
+            "os": "",
+            "cpu_arch": "",
+            "host_name": "",
+            "num_cores": 1,
+            "num_logical_cores": 1,
+        }
         for attr in must_have_attrs:
             if not hasattr(self, attr):
-                setattr(self, attr, "")
+                setattr(self, attr, must_have_attrs[attr])
 
         config_values.HOST_OS = self.os
         config_values.HOST_CPU_ARCH = self.cpu_arch

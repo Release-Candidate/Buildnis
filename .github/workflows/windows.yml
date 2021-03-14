@@ -57,11 +57,11 @@ jobs:
 
       - name: Clean Buildnis
         run: |
-          cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
+          pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
 
       # - name: Re-Run Buildnis
       #   run: |
-      #     cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv
+      #     pipenv run python -m buildnis ./test_project/project_config.json -vv
 
   use-package:
     runs-on: ubuntu-20.04
