@@ -20,7 +20,7 @@ def getOSName() -> CmdOutput:
         CmdOutput: The output of the command, as a `CmdOutput` instance containing
                     `stdout` and `stderr` as attributes.
     """
-    return runCommand(exe_args=ExeArgs("sw_vers", ["-productVersion"]))
+    return runCommand(exe_args=ExeArgs("system_profiler", ["SPDisplaysDataType"]))
 
 
 ################################################################################
@@ -84,6 +84,17 @@ def getRAMSizeOSX() -> CmdOutput:
 
     Returns:
         CmdOutput: The output of the command, as a `CmdOutput` instance containing
+                    `stdout` and `stderr` as attributes.
+    """
+    return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.memsize"]))
+
+
+################################################################################
+def getGPUOSX() -> CmdOutput:
+    """Return the GPU names.
+
+    Returns:
+         CmdOutput: The output of the command, as a `CmdOutput` instance containing
                     `stdout` and `stderr` as attributes.
     """
     return runCommand(exe_args=ExeArgs("sysctl", ["-n", "hw.memsize"]))

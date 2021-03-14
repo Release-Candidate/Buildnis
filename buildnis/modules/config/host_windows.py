@@ -20,7 +20,7 @@ def getCPUInfo() -> CmdOutput:
         CmdOutput: The output of the command, as a `CmdOutput` instance containing
                     `stdout` and `stderr` as attributes.
     """
-    return runCommand(
+    ret_val = runCommand(
         exe_args=ExeArgs(
             "wmic",
             [
@@ -30,6 +30,10 @@ def getCPUInfo() -> CmdOutput:
             ],
         ),
     )
+
+    print(ret_val.err_out, ret_val.std_out)
+
+    return ret_val
 
 
 ################################################################################

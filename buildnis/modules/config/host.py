@@ -34,6 +34,7 @@ from buildnis.modules.config.host_linux import (
 )
 from buildnis.modules.config.host_osx import (
     getCPUNameOSX,
+    getGPUOSX,
     getL2CacheOSX,
     getL3CacheOSX,
     getNumCoresOSX,
@@ -368,6 +369,12 @@ class Host(JSONBaseClass):
             self.ram_total = int(ram_size.std_out)
 
             self.gpu = []
+            gpu_out = getGPUOSX()
+            self._logger(
+                "OSX GPU OUT: {out} {err}".format(
+                    out=gpu_out.std_out, err=gpu_out.err_out
+                )
+            )
 
         except Exception as excp:
             self._logger.error(
