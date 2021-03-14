@@ -38,6 +38,6 @@ jobs:
     steps:
       # Runs a single command using the runners shell
       - name: Run Buildnis
-        run: cd $GITHUB_WORKSPACE && python -m buildnis ./test_project/project_config.json -vv --gen conf_out --log
+        run: cd $GITHUB_WORKSPACE && ls -l && python -m buildnis ./test_project/project_config.json -vv --gen conf_out --log
 
 
