@@ -110,7 +110,12 @@ def runCommand(
 
     try:
         process_result = subprocess.run(
-            args=cmd_line_args, capture_output=True, text=True, check=False, timeout=120
+            args=cmd_line_args,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+            shell=True,
         )
     except Exception as excp:
         raise ExecuteException(excp)
