@@ -118,7 +118,22 @@ class Host(JSONBaseClass):
             )
             self._logger.error("")
 
-        # set global constants
+        self.setConstants()
+
+    ############################################################################
+    def setConstants(self) -> None:
+        """Set the host constants to use for configuration files."""
+        must_have_attrs = [
+            "os",
+            "cpu_arch",
+            "host_name",
+            "num_cores",
+            "num_logical_cores",
+        ]
+        for attr in must_have_attrs:
+            if not hasattr(self, attr):
+                setattr(self, attr, "")
+
         config_values.HOST_OS = self.os
         config_values.HOST_CPU_ARCH = self.cpu_arch
         config_values.HOST_NAME = self.host_name
