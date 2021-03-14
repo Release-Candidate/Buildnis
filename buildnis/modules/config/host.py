@@ -370,7 +370,7 @@ class Host(JSONBaseClass):
 
             self.gpu = []
             gpu_out = getGPUOSX()
-            self._logger(
+            self._logger.debug(
                 "OSX GPU OUT: {out} {err}".format(
                     out=gpu_out.std_out, err=gpu_out.err_out
                 )
