@@ -40,9 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pipenv-
 
-      - name: Install Doxygen
-        run: |
-          sudo apt install doxygen
+      # - name: Install Doxygen
+      #   run: |
+      #     sudo apt install doxygen
 
       - name: Setup pipenv
         run: python -m pip install --upgrade pipenv
