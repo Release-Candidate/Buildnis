@@ -49,36 +49,36 @@ call %ENV_SCRIPT% %CMD_ARG% > nul 2>&1
 
 SetLocal EnableDelayedExpansion
 
-for /f "delims=" %%l in ('icl /QV 2^>^&1') do (    
-    if /i "!ICL_VERSION!"=="" (        
+for /f "delims=" %%l in ('icl /QV 2^>^&1') do (
+    if /i "!ICL_VERSION!"=="" (
         set ICL_VERSION=%%l
         call :TRIM ICL_VERSION
     )
 )
 
-for /f "delims=" %%l in ('icx /QV 2^>^&1') do (    
-    if /i "!ICX_VERSION!"=="" (       
+for /f "delims=" %%l in ('icx /QV 2^>^&1') do (
+    if /i "!ICX_VERSION!"=="" (
         set ICX_VERSION=%%l
         call :TRIM ICX_VERSION
     )
 )
 
-for /f "delims=" %%l in ('ifort /QV 2^>^&1') do (    
-    if /i "!IFORT_VERSION!"=="" (        
+for /f "delims=" %%l in ('ifort /QV 2^>^&1') do (
+    if /i "!IFORT_VERSION!"=="" (
         set IFORT_VERSION=%%l
         call :TRIM IFORT_VERSION
     )
 )
 
-for /f "delims=" %%l in ('ifx /QV 2^>^&1') do (    
-    if /i "!IFX_VERSION!"=="" (        
+for /f "delims=" %%l in ('ifx /QV 2^>^&1') do (
+    if /i "!IFX_VERSION!"=="" (
         set IFX_VERSION=%%l
         call :TRIM IFX_VERSION
     )
 )
 
-for /f "delims=" %%l in ('python --version') do (    
-    if /i "!PYTHON_VERSION!"=="" (        
+for /f "delims=" %%l in ('python --version') do (
+    if /i "!PYTHON_VERSION!"=="" (
         set PYTHON_VERSION=%%l
         call :TRIM PYTHON_VERSION
     )
@@ -87,7 +87,7 @@ for /f "delims=" %%l in ('python --version') do (
 
 :: JSON output
 echo {
-echo "build_tools": 
+echo "build_tools":
 echo [
 echo     {
 echo         "name": "Intel C++ Classic",

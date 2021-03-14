@@ -20,9 +20,9 @@ for /f "delims=" %%l in ('java --version') do (
 )
 
 :: check JAVA_HOME, if not in PATH
-if /i "!JAVA_VERSION!"=="" (    
-    if exist "%JAVA_HOME%\bin\java.exe" (       
-        for /f "delims=" %%l in ('"%JAVA_HOME%\bin\java.exe" --version') do (           
+if /i "!JAVA_VERSION!"=="" (
+    if exist "%JAVA_HOME%\bin\java.exe" (
+        for /f "delims=" %%l in ('"%JAVA_HOME%\bin\java.exe" --version') do (
             if /i "!JAVA_VERSION!"=="" (
                 set JAVA_VERSION=%%l
                 set JAVA_PATH="%JAVA_HOME%\bin\"
@@ -36,7 +36,7 @@ if /i "%JAVA_PATH%"=="" set JAVA_PATH=""
 
 :: JSON output
 echo {
-echo "build_tools": 
+echo "build_tools":
 echo [
 echo     {
 echo         "name": "Java",

@@ -16,7 +16,7 @@ set INSTALL_PATH=%programFiles%\doxygen\bin\
 :: set this to the user friendly, official name of the program
 set PROGRAM_NAME=Doxygen
 
-:: set this to the cmad to call the executable with, the filename of the 
+:: set this to the cmad to call the executable with, the filename of the
 :: executable
 set EXE=doxygen
 
@@ -34,7 +34,7 @@ set VERSION_REGEX=(\\S+) \\(
 :: parse output of program to get this
 set PROGRAM_LONG_NAME=
 
-:: path to the environment script to call 
+:: path to the environment script to call
 set ENV_SCRIPT=
 :: argument to pass to the environment script
 set ENV_SCRIPT_ARG=
@@ -49,6 +49,10 @@ for /f "delims=" %%l in ('"%INSTALL_PATH%%EXE%" %VERSION_ARG% 2^>^&1') do (
     )
 )
 
+if /i not "%PROGRAM_LONG_NAME%" == "" (
+    set PROGRAM_LONG_NAME=%PROGRAM_LONG_NAME:\=\\%
+)
+
 if /i not "%INSTALL_PATH%" == "" (
     set INSTALL_PATH=%INSTALL_PATH:\=\\%
 )
@@ -60,7 +64,7 @@ if /i not "%ENV_SCRIPT%" == "" (
 
 :: JSON output
 echo {
-echo "build_tools": 
+echo "build_tools":
 echo [
 echo     {
 echo         "name": "%PROGRAM_NAME%",
