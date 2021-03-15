@@ -267,4 +267,5 @@ def doDistClean(
 
     logging.shutdown()
 
-    deleteLogfiles(commandline_args)
+    if commandline_args.do_clean:
+        deleteLogfiles(commandline_args)
