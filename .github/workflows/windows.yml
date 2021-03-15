@@ -39,7 +39,7 @@ jobs:
       - name: Cache pipenv
         uses: actions/cache@v2
         with:
-          path: ~/.local/share/virtualenvs
+          path: ~/.virtualenvs
           key: windows-2019-pipenv-${{ hashFiles('Pipfile.lock') }}
           restore-keys: |
             windows-2019-pipenv-
@@ -55,7 +55,7 @@ jobs:
         run: python -m pipenv install --dev
 
       - name: Run Buildnis
-        shell: cmd /C "echo {0}"
+        shell: cmd /C "type {0}"
         run: |
           python -m buildnis ./test_project/project_config.json -vv
 
