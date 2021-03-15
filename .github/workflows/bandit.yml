@@ -40,7 +40,6 @@ jobs:
           cd $GITHUB_WORKSPACE
           pipenv run bandit -r buildnis -f xml -o bandit_out.xml
 
-      - name: Upload Bandit Result
       - uses: actions/upload-artifact@v2
         with:
           name: Bandit XML
