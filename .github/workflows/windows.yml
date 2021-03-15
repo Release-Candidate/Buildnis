@@ -43,6 +43,8 @@ jobs:
           restore-keys: |
             windows-2019-pipenv-
 
+      # takes quite some time, is there a chance to cache something? - Problem is the
+      # registry and stuff ...
       - name: Install Doxygen
         run: |
           choco install doxygen.install

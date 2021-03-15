@@ -139,7 +139,7 @@ class Config(JSONBaseClass):
         self.module_cfgs = tmp_modules
         tmp_build_cfgs = []
 
-        self.redBuildCfgs()
+        self.readBuildCfgs()
 
         self.build_cfgs = tmp_build_cfgs
         self.reReadIfChangedOnDisk()
@@ -147,16 +147,27 @@ class Config(JSONBaseClass):
             module.reReadIfChangedOnDisk()
 
     ############################################################################
-    def redBuildCfgs(self) -> None:
+    def readBuildCfgs(self) -> None:
         """Reads the build configs from the generated JSON configuration.
         Rereads them if necessary.
         """
         for module in self.module_cfgs:
             for target in module.targets:
-                if hasattr(target, "build_tool"):
-                    tmp_bcfg = BuildCfg.fromReadJSON(target.build_tool)
-                    target.build_tool = tmp_bcfg
-                    target.build_tool.reReadIfChangedOnDisk()
+                self.readSingleTarget(target)
+
+    #############################################################################
+    @staticmethod
+    def readSingleTarget(target: object) -> None:
+        """Transforms the deserialized JSON object into a `BuildCfg` object.
+        Rereads the original from disk if it has changed.
+
+        Args:
+            target (object): The read deserialized build config object.
+        """
+        if hasattr(target, "build_tool"):
+            tmp_bcfg = BuildCfg.fromReadJSON(target.build_tool)
+            target.build_tool = tmp_bcfg
+            target.build_tool.reReadIfChangedOnDisk()
 
     ###########################################################################
     def parseModuleCfgs(self) -> None:
