@@ -183,21 +183,29 @@ class Host(JSONBaseClass):
         """Gets the CPU info, like cache sizes, number of cores."""
         cpu_info_cmd = getCPUInfo()
         for line in cpu_info_cmd.std_out.strip().split("\n"):
-            try:
-                if line != "" and "L2CacheSize" not in line:
-                    (
-                        level2_cache,
-                        level3_cache,
-                        num_cores,
-                        num_logical_cores,
-                    ) = line.split()
+            self.parseCPUInfoLine(line)
 
-                    self.level2_cache = int(level2_cache)
-                    self.level3_cache = int(level3_cache)
-                    self.num_cores = int(num_cores)
-                    self.num_logical_cores = int(num_logical_cores)
-            except Exception:
-                self.retryCPUInfo(line)
+    ############################################################################
+    def parseCPUInfoLine(self, line: str) -> None:
+        """Parses the output of the CPU info wmic command.
+
+        Args:
+            line (str): The line of output to parse.
+        """
+        try:
+            if line != "" and "L2CacheSize" not in line:
+                (
+                    level2_cache,
+                    level3_cache,
+                    num_cores,
+                    num_logical_cores,
+                ) = line.split()
+                self.level2_cache = int(level2_cache)
+                self.level3_cache = int(level3_cache)
+                self.num_cores = int(num_cores)
+                self.num_logical_cores = int(num_logical_cores)
+        except Exception:
+            self.retryCPUInfo(line)
 
     ############################################################################
     def retryCPUInfo(self, line: str) -> None:
@@ -236,13 +244,22 @@ class Host(JSONBaseClass):
         mem_info_cmd = getMemInfo()
         self.ram_total = 0
         for line in mem_info_cmd.std_out.strip().split("\n"):
-            if line != "" and "Capacity" not in line:
-                try:
-                    self.ram_total += int(line)
-                except Exception as excp:
-                    self._logger.error(
-                        'error "{error}" getting RAM size'.format(error=excp)
-                    )
+            self.parseRAMline(line)
+
+    ############################################################################
+    def parseRAMline(self, line: str) -> None:
+        """Parses a single line of output to get the RAM size.
+
+        Args:
+            line (str): The line of output to parse.
+        """
+        if line != "" and "Capacity" not in line:
+            try:
+                self.ram_total += int(line)
+            except Exception as excp:
+                self._logger.error(
+                    'error "{error}" getting RAM size'.format(error=excp)
+                )
 
     ############################################################################
     def getGPU(self) -> None:
