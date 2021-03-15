@@ -92,8 +92,7 @@ def main():
             'Not doing anything but deleting files, a "clean" argument ("--clean" or "--distclean") has been given!'
         )
 
-    # skipcq: FLK-E265
-    #! WARNING: no more logging after this function!
+    # ! WARNING: no more logging after this function!
     # Logger is shut down
     doDistClean(
         commandline_args=commandline_args,

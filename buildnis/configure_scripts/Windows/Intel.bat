@@ -160,4 +160,3 @@ GOTO :EOF
 :TRIMHELPER
 set helper_tmp=%*
 GOTO :EOF
-

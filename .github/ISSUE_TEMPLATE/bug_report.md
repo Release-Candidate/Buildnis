@@ -32,12 +32,12 @@ and attach the generated log file LOG_FILE
  - OS: [e.g. Linux]
  - OS version: [e.g. 0.4.8]
  - Python version: [e.g. 3.9.2]
- - Any additional information that may help us: 
+ - Any additional information that may help us:
 
 **Build Language  (please complete the following information):**
  - Language (or similar) of the part of the project that failed: [e.g. C++]
  - Compiler/Build tool used including version: [e.g. Clang 11.1.3]
- - Any additional information that may help us: 
+ - Any additional information that may help us:
 
 **Additional context**
 Add any other context about the problem here.

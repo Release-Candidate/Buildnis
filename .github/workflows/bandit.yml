@@ -44,4 +44,3 @@ jobs:
         with:
           name: Bandit Output
           path: bandit_out.txt
-

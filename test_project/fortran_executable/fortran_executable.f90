@@ -34,4 +34,3 @@ program fortran_executable
     call test_static%printMessage
 
 end program fortran_executable
-

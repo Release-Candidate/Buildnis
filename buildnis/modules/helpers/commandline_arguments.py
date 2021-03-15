@@ -67,6 +67,34 @@ class CommandlineArguments:
         Args:
             src (object): The object holding the parsed command-line arguments.
         """
+        self.setConfigs(src)
+        try:
+            self.log_file: FilePath = src.log_file
+        except AttributeError:
+            self.log_file: FilePath = ""
+        try:
+            self.log_level: int = src.log_level
+        except AttributeError:
+            self.log_level: int = logging.INFO
+
+        self.setStages(src)
+
+        try:
+            self.build_targets: List(str) = src.build_targets
+        except AttributeError:
+            self.build_targets: List(str) = None
+        try:
+            self.install_targets: List(str) = src.install_targets
+        except AttributeError:
+            self.install_targets: List(str) = None
+
+    ############################################################################
+    def setConfigs(self, src: object) -> None:
+        """Set configuration related arguments.
+
+        Args:
+            src (object): The original object holding the command line arguments.
+        """
         try:
             self.project_config_file: FilePath = src.project_config_file
         except AttributeError:
@@ -79,14 +107,14 @@ class CommandlineArguments:
             self.conf_scripts_dir: FilePath = src.conf_scripts_dir
         except AttributeError:
             self.conf_scripts_dir: FilePath = ""
-        try:
-            self.log_file: FilePath = src.log_file
-        except AttributeError:
-            self.log_file: FilePath = ""
-        try:
-            self.log_level: int = src.log_level
-        except AttributeError:
-            self.log_level: int = logging.INFO
+
+    ############################################################################
+    def setStages(self, src: object) -> None:
+        """Set arguments for the stages of the build.
+
+        Args:
+            src (object): The original object holding the command line arguments.
+        """
         try:
             self.do_configure: bool = src.do_configure
         except AttributeError:
@@ -99,6 +127,15 @@ class CommandlineArguments:
             self.do_install: bool = src.do_install
         except AttributeError:
             self.do_install: bool = False
+        self.setCleanStages(src)
+
+    ############################################################################
+    def setCleanStages(self, src: object) -> None:
+        """Set arguments for the clean stages of the build.
+
+        Args:
+            src (object): The original object holding the command line arguments.
+        """
         try:
             self.do_clean: bool = src.do_clean
         except AttributeError:
@@ -109,14 +146,6 @@ class CommandlineArguments:
                 self.do_clean = True
         except AttributeError:
             self.do_distclean: bool = False
-        try:
-            self.build_targets: List(str) = src.build_targets
-        except AttributeError:
-            self.build_targets: List(str) = None
-        try:
-            self.install_targets: List(str) = src.install_targets
-        except AttributeError:
-            self.install_targets: List(str) = None
 
     ############################################################################
     def checkTargetArgs(self, name: str) -> None:

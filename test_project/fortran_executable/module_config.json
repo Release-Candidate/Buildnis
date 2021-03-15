@@ -34,7 +34,7 @@
         },
         {
             "name": "f_executable_debug",
-            "alias": "f_exe-dbg",           
+            "alias": "f_exe-dbg",
             "build_type": "executable",
             "build_subtype": "debug",
             "build_tool_type": "Fortran",

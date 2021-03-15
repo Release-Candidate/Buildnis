@@ -10,16 +10,16 @@
     "copyright_info": "${../../copyright_info}",
     "web_url": "${../../web_url}",
     "email": "${../../email}",
-    "sources": 
+    "sources":
     [
         "*.cpp"
-    ],   
-    "targets": 
+    ],
+    "targets":
     [
         {
             "name": "shared_release",
-            "alias": "shared",            
-            "default": true,   
+            "alias": "shared",
+            "default": true,
             "build_type": "shared_library",
             "build_subtype": "release",
             "build_tool_type": "C++",
@@ -27,7 +27,7 @@
             "result_name": "cpp_shared_library",
             "build_directory": "./build",
             "sources": "${../../sources}",
-            "include_paths": 
+            "include_paths":
             [
                 "./"
             ],
@@ -37,7 +37,7 @@
         },
         {
             "name": "shared_debug",
-            "alias": "shared-dbg",           
+            "alias": "shared-dbg",
             "build_type": "shared_library",
             "build_subtype": "debug",
             "build_tool_type": "C++",

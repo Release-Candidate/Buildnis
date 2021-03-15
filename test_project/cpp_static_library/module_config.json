@@ -10,16 +10,16 @@
     "copyright_info": "${../../copyright_info}",
     "web_url": "${../../web_url}",
     "email": "${../../email}",
-    "sources": 
+    "sources":
     [
         "*.cpp"
-    ],   
-    "targets": 
+    ],
+    "targets":
     [
         {
             "name": "static_release",
-            "alias": "static",            
-            "default": true,   
+            "alias": "static",
+            "default": true,
             "build_type": "static_library",
             "build_subtype": "release",
             "build_tool_type": "C++",
@@ -27,7 +27,7 @@
             "result_name": "cpp_static_library",
             "build_directory": "./build",
             "sources": "${../../sources}",
-            "include_paths": 
+            "include_paths":
             [
                 "./"
             ],
@@ -37,7 +37,7 @@
         },
         {
             "name": "static_debug",
-            "alias": "static-dbg",           
+            "alias": "static-dbg",
             "build_type": "static_library",
             "build_subtype": "debug",
             "build_tool_type": "C++",

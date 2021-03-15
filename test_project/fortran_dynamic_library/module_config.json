@@ -10,16 +10,16 @@
     "copyright_info": "${../../copyright_info}",
     "web_url": "${../../web_url}",
     "email": "${../../email}",
-    "sources": 
+    "sources":
     [
         "*.f90"
-    ],   
-    "targets": 
+    ],
+    "targets":
     [
         {
             "name": "f_shared_release",
-            "alias": "f_shared",            
-            "default": true,   
+            "alias": "f_shared",
+            "default": true,
             "build_type": "shared_library",
             "build_subtype": "release",
             "build_tool_type": "Fortran",
@@ -27,7 +27,7 @@
             "result_name": "fortran_shared_library",
             "build_directory": "./build",
             "sources": "${../../sources}",
-            "include_paths": 
+            "include_paths":
             [
                 "./"
             ],
@@ -37,7 +37,7 @@
         },
         {
             "name": "f_shared_debug",
-            "alias": "f_shared-dbg",           
+            "alias": "f_shared-dbg",
             "build_type": "shared_library",
             "build_subtype": "debug",
             "build_tool_type": "Fortran",

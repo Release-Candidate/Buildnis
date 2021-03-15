@@ -23,7 +23,7 @@ for /f "delims=" %%l in ('python -V') do (
 
 :: JSON output
 echo {
-echo "build_tools": 
+echo "build_tools":
 echo [
 echo     {
 echo         "name": "Python",

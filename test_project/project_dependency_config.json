@@ -35,7 +35,7 @@
             "download_url": "",
             "download_dir": "",
             "install_cmd": "sphinx-quickstart",
-            "install_arguments": 
+            "install_arguments":
             [
                 "--project='${../../../../name}'",
                 "--author='${PROJECT_AUTHOR}'",

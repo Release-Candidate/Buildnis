@@ -864,7 +864,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = C:/Users/RC/Documents/code/Buildnis/test_project/cpp_dynamic_library C:/Users/RC/Documents/code/Buildnis/test_project/cpp_executable C:/Users/RC/Documents/code/Buildnis/test_project/cpp_static_library C:/Users/RC/Documents/code/Buildnis/test_project/fortran_dynamic_library C:/Users/RC/Documents/code/Buildnis/test_project/fortran_executable C:/Users/RC/Documents/code/Buildnis/test_project/fortran_static_library 
+INPUT                  = C:/Users/RC/Documents/code/Buildnis/test_project/cpp_dynamic_library C:/Users/RC/Documents/code/Buildnis/test_project/cpp_executable C:/Users/RC/Documents/code/Buildnis/test_project/cpp_static_library C:/Users/RC/Documents/code/Buildnis/test_project/fortran_dynamic_library C:/Users/RC/Documents/code/Buildnis/test_project/fortran_executable C:/Users/RC/Documents/code/Buildnis/test_project/fortran_static_library
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

@@ -7,7 +7,7 @@
 ################################################################################
 
 
-#/opt/AMD/aocc-compiler-2.3.0/setenv_AOCC.sh 
+#/opt/AMD/aocc-compiler-2.3.0/setenv_AOCC.sh
 ENV_SCRIPT=$(find /opt/AMD/aocc-* -name "setenv*")
 
 source ${ENV_SCRIPT} >/dev/null 2>&1

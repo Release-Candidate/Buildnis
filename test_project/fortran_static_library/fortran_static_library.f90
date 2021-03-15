@@ -74,6 +74,6 @@ module fortran_static_library
 
         ret_val%message = text
 
-    end function newStaticLib 
+    end function newStaticLib
 
 end module fortran_static_library

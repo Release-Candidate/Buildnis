@@ -153,4 +153,3 @@ the argument ``-h`` or ``--help``:
 .. code-block:: shell
 
     python -m buildnis --help
-

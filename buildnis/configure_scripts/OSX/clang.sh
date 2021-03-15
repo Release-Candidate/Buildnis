@@ -7,7 +7,7 @@
 ################################################################################
 
 
-# clang comes with XCode. 
+# clang comes with XCode.
 # https://developer.apple.com/xcode/resources/
 
 # assumes clang is in the PATH

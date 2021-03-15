@@ -105,24 +105,24 @@ if defined RESULT[!LOOP_IDX!].install_path (
     call set a=%%RESULT[!LOOP_IDX!].install_path%%\VC\Tools\Llvm\%%CLANG_PATH%%\bin
     for /f "delims=" %%l in ('"!a!\clang"  --version') do (
         call set b=%%CLANG_VERSION[!LOOP_IDX!]%%
-                
+
         if /i "!b!"=="" (
             set CLANG_VERSION[!LOOP_IDX!]=%%l
             call :TRIM CLANG_VERSION[!LOOP_IDX!]
-            
+
      )
     )
     for /f "delims=" %%l in ('"!a!\clang++"  --version') do (
         call set b=%%CLANGPP_VERSION[!LOOP_IDX!]%%
-        
+
         if /i "!b!"=="" (
             set CLANGPP_VERSION[!LOOP_IDX!]=%%l
-            call :TRIM CLANGPP_VERSION[!LOOP_IDX!]            
+            call :TRIM CLANGPP_VERSION[!LOOP_IDX!]
      )
     )
     set /a "LOOP_IDX+=1"
     goto :LOOP4
-)   
+)
 
 :: JSON output
 echo {
@@ -160,7 +160,7 @@ if defined RESULT[!LOOP_IDX!].install_path (
     call echo         "build_tool_exe": "cl",
     call echo         "install_path": "",
     call echo         "env_script": "%%RESULT[!LOOP_IDX!].env_script%%",
-    call echo         "env_script_arg": "%CMD_ARG%"    
+    call echo         "env_script_arg": "%CMD_ARG%"
     set /a "LOOP_IDX+=1"
     if defined RESULT[!LOOP_IDX!].install_path (
         echo     },

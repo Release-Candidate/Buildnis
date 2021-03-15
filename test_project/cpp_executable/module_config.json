@@ -34,7 +34,7 @@
         },
         {
             "name": "executable_debug",
-            "alias": "exe-dbg",           
+            "alias": "exe-dbg",
             "build_type": "executable",
             "build_subtype": "debug",
             "build_tool_type": "C++",

@@ -10,23 +10,23 @@
     "copyright_info": "${../../copyright_info}",
     "web_url": "${../../web_url}",
     "email": "${../../email}",
-    "sources": 
+    "sources":
     [
         "./*/*.cpp",
         "./*/*.hpp",
         "./*/*.f90"
-    ],   
-    "targets": 
+    ],
+    "targets":
     [
         {
-            "name": "doc",              
+            "name": "doc",
             "build_type": "documentation",
             "build_subtype": "HTML",
             "build_tool_type": "Doxygen & Sphinx",
             "result": "file",
             "result_name": "index.html",
             "build_directory": "${PROJECT_ROOT}/doc/",
-            "dependencies": "${../../sources}"           
+            "dependencies": "${../../sources}"
         },
         {
             "name": "install",
@@ -36,6 +36,6 @@
             "dependencies": "./doc/html",
             "install_source": "./doc/html"
         }
-        
+
     ]
 }

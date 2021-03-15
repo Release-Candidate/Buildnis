@@ -7,7 +7,7 @@
 ################################################################################
 
 # Intel OneAPI C++ and Fortran compilers and a Python implementation.
-# Download at 
+# Download at
 # https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit/download.html
 # and
 # https://software.intel.com/content/www/us/en/develop/tools/oneapi/hpc-toolkit.html

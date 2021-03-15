@@ -27,7 +27,7 @@ if /i "%1"=="x86" (set CMD_ARG=%I86_ARGUMENT%) & shift & goto :PARSE_ARGS
 :: set this to the user friendly, official name of the program
 set PROGRAM_NAME=
 
-:: set this to the cmad to call the executable with, the filename of the 
+:: set this to the cmad to call the executable with, the filename of the
 :: executable
 set EXE=
 
@@ -48,7 +48,7 @@ set INSTALL_PATH=
 :: parse output of program to get this
 set PROGRAM_LONG_NAME=
 
-:: path to the environment script to call 
+:: path to the environment script to call
 set ENV_SCRIPT=
 :: argument to pass to the environment script
 set ENV_SCRIPT_ARG=
@@ -74,7 +74,7 @@ if /i not "%ENV_SCRIPT%" == "" (
 
 :: JSON output
 echo {
-echo "build_tools": 
+echo "build_tools":
 echo [
 echo     {
 echo         "name": "%PROGRAM_NAME%",

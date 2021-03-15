@@ -62,4 +62,3 @@ module fortran_shared_lib
     end subroutine destructor
 
 end module fortran_shared_lib
-

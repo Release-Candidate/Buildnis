@@ -2,7 +2,3 @@
 
 Customizing Buildnis
 ====================
-
-
-
-

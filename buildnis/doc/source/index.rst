@@ -3,7 +3,7 @@ Welcome to Buildnis' documentation!
 
 Buildnis is a distributed, platform independent build system that can handle C++20 and
 Fortran modules and is flexible enough to build any language and handle (almost ;)
-any build step imaginable. It is written in Python and needs a Python interpreter, at 
+any build step imaginable. It is written in Python and needs a Python interpreter, at
 least version 3.9.
 
 The main goal is to have a build system with only the minimum needed configuration and specially
@@ -59,4 +59,3 @@ To get you started, short how-tos to get Buildnis up and running:
 
    genindex
    py-modindex
-
