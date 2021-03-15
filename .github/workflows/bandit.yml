@@ -38,10 +38,10 @@ jobs:
       - name: Run Bandit
         run: |
           cd $GITHUB_WORKSPACE
-          pipenv run bandit -r buildnis -f xml -o bandit_out.xml || true
+          pipenv run bandit -r buildnis -f txt -o bandit_out.txt || true
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Bandit XML
-          path: bandit_out.xml
+          name: Bandit Output
+          path: bandit_out.txt
 
