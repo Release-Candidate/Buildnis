@@ -49,24 +49,37 @@ jobs:
 
       - name: Install dependencies using pipenv
         run: |
-           cd $GITHUB_WORKSPACE && python -m pipenv install --dev
+           cd $GITHUB_WORKSPACE
+           python -m pipenv install --dev
 
       - name: Run Buildnis
         run: |
-          cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv --log-file log_file.txt
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
 
       - uses: actions/upload-artifact@v2
         with:
           name: Buildnis Debug Log
           path: log_file.txt
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Buildnis JSON Configs
+          path: test_project/conf_out/*.json
+
       - name: Clean Buildnis
         run: |
-          cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
 
       # - name: Re-Run Buildnis
       #   run: |
       #     cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv
+
+      - name: Dist-Clean Buildnis
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -vv --distclean
 
   use-package:
     runs-on: ubuntu-20.04
@@ -87,6 +100,6 @@ jobs:
       - name: Install buildnis package
         run: python -m pip install --upgrade buildnis
 
-      - name: Check if Works
+      - name: Check if Working
         run: |
           python -m buildnis --version
