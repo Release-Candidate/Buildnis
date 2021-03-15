@@ -183,22 +183,43 @@ class Host(JSONBaseClass):
         """Gets the CPU info, like cache sizes, number of cores."""
         cpu_info_cmd = getCPUInfo()
         for line in cpu_info_cmd.std_out.strip().split("\n"):
-            if line != "" and "L2CacheSize" not in line:
-                (
-                    level2_cache,
-                    level3_cache,
-                    num_cores,
-                    num_logical_cores,
-                ) = line.split()
-                try:
+            try:
+                if line != "" and "L2CacheSize" not in line:
+                    (
+                        level2_cache,
+                        level3_cache,
+                        num_cores,
+                        num_logical_cores,
+                    ) = line.split()
+
                     self.level2_cache = int(level2_cache)
                     self.level3_cache = int(level3_cache)
                     self.num_cores = int(num_cores)
                     self.num_logical_cores = int(num_logical_cores)
-                except Exception as excp:
-                    self._logger.error(
-                        'error "{error}" getting CPU info'.format(error=excp)
-                    )
+            except Exception:
+                self.retryCPUInfo(line)
+
+    ############################################################################
+    def retryCPUInfo(self, line: str) -> None:
+        """Retry getting the CPU info, this time ignore L2Cache (GitHub Windows
+        runners doesn't display L2 cache).
+
+        Args:
+            line (str): The line of output to parse.
+        """
+        try:
+            if line != "" and "L2CacheSize" not in line:
+                (
+                    level3_cache,
+                    num_cores,
+                    num_logical_cores,
+                ) = line.split()
+                self.level2_cache = 0
+                self.level3_cache = int(level3_cache)
+                self.num_cores = int(num_cores)
+                self.num_logical_cores = int(num_logical_cores)
+        except Exception as excp:
+            self._logger.error('error "{error}" getting CPU info'.format(error=excp))
 
     ############################################################################
     def collectWinCpuGpuRam(self):
