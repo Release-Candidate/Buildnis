@@ -42,5 +42,6 @@ jobs:
 
       - name: Publish Bandit Results
         uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
         with:
           files: bandit_out.xml
