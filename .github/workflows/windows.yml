@@ -48,7 +48,7 @@ jobs:
       #   run: |
       #     sudo apt install doxygen
 
-      # install sphinx using pip on Windows, somehow the pipenv environment doesn't 
+      # install sphinx using pip on Windows, somehow the pipenv environment doesn't
       # propagate to the command interpreter called from buildnis.
       - name: Setup pipenv
         run: python -m pip install --upgrade pipenv sphinx
@@ -59,6 +59,7 @@ jobs:
       - name: Run Buildnis
         shell: cmd
         run: |
+          wmic cpu
           call pipenv shell
           python -m buildnis ./test_project/project_config.json -vv
 
