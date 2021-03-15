@@ -107,27 +107,7 @@ class ProjectDependency(JSONBaseClass):
         """
         for dep in self.dependencies:
 
-            must_have_attrs = [
-                "name",
-                "website_url",
-                "download_url",
-                "download_dir",
-                "install_cmd",
-                "ok_if_exists",
-                "executable_check_regex",
-                "executable_argument",
-                "ok_if_executable",
-            ]
-
-            for attr in must_have_attrs:
-                if not hasattr(dep, attr):
-                    setattr(dep, attr, "")
-
-            if not hasattr(dep, "is_checked"):
-                setattr(dep, "is_checked", False)
-
-            if not hasattr(dep, "install_arguments"):
-                dep.install_arguments = []
+            self.setMustHaveAttribs(dep)
 
             if dep.is_checked is False or force_check is True:
                 if not self.isDependencyFulfilled(dep):
@@ -143,6 +123,35 @@ class ProjectDependency(JSONBaseClass):
         self.generated_at = datetime.datetime.now(tz=None).isoformat(
             sep=" ", timespec="seconds"
         )
+
+    ##################################################################
+    def setMustHaveAttribs(self, dep: object) -> None:
+        """Sets the attributes a dependency object instance must have.
+
+        Args:
+            dep (object): The object to check for must-have attributes.
+        """
+        del self  # to not get 'unused variable' warning
+        must_have_attrs = [
+            "name",
+            "website_url",
+            "download_url",
+            "download_dir",
+            "install_cmd",
+            "ok_if_exists",
+            "executable_check_regex",
+            "executable_argument",
+            "ok_if_executable",
+        ]
+        for attr in must_have_attrs:
+            if not hasattr(dep, attr):
+                setattr(dep, attr, "")
+
+        if not hasattr(dep, "is_checked"):
+            setattr(dep, "is_checked", False)
+
+        if not hasattr(dep, "install_arguments"):
+            dep.install_arguments = []
 
     ############################################################################
     def isDependencyFulfilled(self, dep: object) -> bool:
