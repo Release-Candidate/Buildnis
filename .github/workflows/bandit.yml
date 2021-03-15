@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Bandit
         run: |
-          pipenv run bandit -r buildnis -f xml-o bandit_out.xml
+          pipenv run bandit -r buildnis -f xml -o bandit_out.xml
 
       - name: Publish Bandit Results
         uses: EnricoMi/publish-unit-test-result-action@v1
