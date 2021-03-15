@@ -3,7 +3,7 @@ name: Bandit
 on: [push, pull_request]
 
 jobs:
-  check_format:
+  analyze:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,8 +40,9 @@ jobs:
           cd $GITHUB_WORKSPACE
           pipenv run bandit -r buildnis -f xml -o bandit_out.xml
 
-      - name: Publish Bandit Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
+      - name: Upload Bandit Result
+      - uses: actions/upload-artifact@v2
         with:
-          files: bandit_out.xml
+          name: Bandit XML
+          path: bandit_out.xml
+        if: always()
