@@ -3,7 +3,7 @@
 # Copyright (C) 2021 Roland Csaszar
 #
 # Project:  Buildnis
-# File:     test_install.bat
+# File:     test_install.sh
 # Date:     07.Mar.2021
 ################################################################################
 

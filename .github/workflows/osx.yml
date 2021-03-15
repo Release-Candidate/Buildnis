@@ -4,16 +4,15 @@ name: Mac OS X latest
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
   build:
     runs-on: macos-latest
 
@@ -22,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Cache pip
         uses: actions/cache@v2
@@ -49,7 +48,7 @@ jobs:
 
       - name: Install dependencies using pipenv
         run: |
-           cd $GITHUB_WORKSPACE && python -m pipenv install --dev
+          cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
       - name: Run Buildnis
         run: |
@@ -58,12 +57,12 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Buildnis Debug Log
+          name: OSX Buildnis Debug Log
           path: log_file.txt
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Buildnis JSON Configs
+          name: OSX Buildnis JSON Configs
           path: test_project/conf_out/*.json
 
       - name: Clean Buildnis
@@ -71,15 +70,25 @@ jobs:
           cd $GITHUB_WORKSPACE
           pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
 
-      # - name: Re-Run Buildnis
-      #   run: |
-      #     cd $GITHUB_WORKSPACE && pipenv run python -m buildnis ./test_project/project_config.json -vv
+      - name: Re-Run Buildnis
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX Buildnis Debug Log 2
+          path: log_file.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX Buildnis JSON Configs 2
+          path: test_project/conf_out/*.json
 
       - name: Dist-Clean Buildnis
         run: |
           cd $GITHUB_WORKSPACE
           pipenv run python -m buildnis ./test_project/project_config.json -vv --distclean
-
 
   use-package:
     runs-on: macos-latest
@@ -87,7 +96,7 @@ jobs:
     steps:
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Cache pip
         uses: actions/cache@v2
