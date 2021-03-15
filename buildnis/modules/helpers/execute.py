@@ -115,7 +115,6 @@ def runCommand(
             text=True,
             check=False,
             timeout=120,
-            shell=True,
         )
     except Exception as excp:
         raise ExecuteException(excp)
