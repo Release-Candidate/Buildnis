@@ -107,12 +107,10 @@ class ProjectDependency(JSONBaseClass):
         """
         for dep in self.dependencies:
 
-            self.setMustHaveAttribs(dep)
+            ProjectDependency.setMustHaveAttribs(dep)
 
             if dep.is_checked is False or force_check is True:
-                if not self.isDependencyFulfilled(dep):
-                    self.installDep(dep)
-                    dep.is_checked = self.isDependencyFulfilled(dep)
+                self.checkIFInstalled(dep)
             else:
                 self._logger.info(
                     'Project dependency "{name}" has already been checked OK'.format(
@@ -124,14 +122,25 @@ class ProjectDependency(JSONBaseClass):
             sep=" ", timespec="seconds"
         )
 
-    ##################################################################
-    def setMustHaveAttribs(self, dep: object) -> None:
+    ############################################################################
+    def checkIFInstalled(self, dep: object) -> None:
+        """Check if the dependency is installed, if not, install it and check again.
+
+        Args:
+            dep (object): The dependency object to check.
+        """
+        if not self.isDependencyFulfilled(dep):
+            self.installDep(dep)
+            dep.is_checked = self.isDependencyFulfilled(dep)
+
+    ############################################################################
+    @staticmethod
+    def setMustHaveAttribs(dep: object) -> None:
         """Sets the attributes a dependency object instance must have.
 
         Args:
             dep (object): The object to check for must-have attributes.
         """
-        del self  # to not get 'unused variable' warning
         must_have_attrs = [
             "name",
             "website_url",
@@ -170,42 +179,77 @@ class ProjectDependency(JSONBaseClass):
             'Checking if dependency "{name}" is installed ...'.format(name=dep.name)
         )
 
+        ret_val = False
+
         if dep.ok_if_exists != "":
-            try:
-                if (
-                    pathlib.Path(dep.ok_if_exists).is_file()
-                    or pathlib.Path(dep.ok_if_exists).is_dir()
-                ):
-                    self._logger.info(
-                        'Path "{path}" exists, dependency "{name}" is installed'.format(
-                            path=dep.ok_if_exists, name=dep.name
-                        )
-                    )
-                    dep.is_checked = True
-                    return True
-                self._logger.error(
-                    'Path "{path}" does not exist, dependency "{name}" not found!'.format(
-                        path=dep.ok_if_exists, name=dep.name
-                    )
-                )
-            except Exception as excp:
-                self._logger.error('error "{error}"'.format(error=excp))
+            ret_val = self.okIfExists(dep)
 
         if dep.ok_if_executable != "":
-            self._logger.info(
-                'Checking executable "{exe}"'.format(exe=dep.ok_if_executable)
-            )
-            dep.is_checked = self.isExecuteableDep(dep)
-            if dep.is_checked:
-                self._logger.info(
-                    'executable "{exe}" works, dependency "{name}" is installed'.format(
-                        exe=dep.ok_if_executable, name=dep.name
-                    )
-                )
-                return True
+            ret_val = self.okIfExecutable(dep)
+
+        if ret_val is True:
+            return ret_val
 
         self._logger.error('dependency "{name}" not found!'.format(name=dep.name))
         dep.is_checked = False
+        return ret_val
+
+    ############################################################################
+    def okIfExists(self, dep: object) -> bool:
+        """Check if the dependency is installed by checking the existence of a path.
+
+        Args:
+            dep (object): The object to check if it is installed.
+
+        Returns:
+            bool: `True`, if the path exists, `False` else.
+        """
+        try:
+            if (
+                pathlib.Path(dep.ok_if_exists).is_file()
+                or pathlib.Path(dep.ok_if_exists).is_dir()
+            ):
+                self._logger.info(
+                    'Path "{path}" exists, dependency "{name}" is installed'.format(
+                        path=dep.ok_if_exists, name=dep.name
+                    )
+                )
+                dep.is_checked = True
+                return True
+            self._logger.error(
+                'Path "{path}" does not exist, dependency "{name}" not found!'.format(
+                    path=dep.ok_if_exists, name=dep.name
+                )
+            )
+        except Exception as excp:
+            self._logger.error('error "{error}"'.format(error=excp))
+
+        return False
+
+    ############################################################################
+    def okIfExecutable(self, dep: object) -> bool:
+        """Check if the executable of the object is executable, that is, exists and
+        generates output.
+
+        Args:
+            dep (object): The object to check if it'S configured executable is actually
+                            executable.
+
+        Returns:
+            bool: `True`, if the configured executable is callable, `False` else.
+        """
+        self._logger.info(
+            'Checking executable "{exe}"'.format(exe=dep.ok_if_executable)
+        )
+        dep.is_checked = self.isExecuteableDep(dep)
+        if dep.is_checked:
+            self._logger.info(
+                'executable "{exe}" works, dependency "{name}" is installed'.format(
+                    exe=dep.ok_if_executable, name=dep.name
+                )
+            )
+            return True
+
         return False
 
     ############################################################################
@@ -216,46 +260,62 @@ class ProjectDependency(JSONBaseClass):
             dep (object): the dependency to install or download
         """
         if dep.download_url != "":
-            try:
-                self._logger.info(
-                    'Trying to download "{name}" from URL "{url}" to "{path}"'.format(
-                        name=dep.name, url=dep.download_url, path=dep.download_dir
-                    )
-                )
-                doDownload(url=dep.download_url, to=dep.download_dir)
-            except Exception as excp:
-                self._logger.error(
-                    'error "{error}" trying to download "{name}" from URL "{url}" to "{path}"'.format(
-                        error=excp,
-                        name=dep.name,
-                        url=dep.download_url,
-                        path=dep.download_dir,
-                    )
-                )
+            self.download(dep)
 
         if dep.install_cmd != "":
-            try:
-                self._logger.info(
-                    'trying to install "{name}" using command "{cmd}" with args "{args}"'.format(
-                        name=dep.name, cmd=dep.install_cmd, args=dep.install_arguments
-                    )
-                )
+            self.install(dep)
 
-                output = runCommand(
-                    exe_args=ExeArgs(dep.install_cmd, dep.install_arguments)
-                )
-                self._logger.debug(output.std_out)
-                self._logger.debug(output.err_out)
+    ############################################################################
+    def install(self, dep: object) -> None:
+        """Install the dependency.
 
-            except Exception as excp:
-                self._logger.error(
-                    'error "{error}" trying to install "{name}" using command "{cmd}" with args "{args}"'.format(
-                        error=excp,
-                        name=dep.name,
-                        cmd=dep.install_cmd,
-                        args=dep.install_arguments,
-                    )
+        Args:
+            dep (object): The dependency object to install.
+        """
+        try:
+            self._logger.info(
+                'trying to install "{name}" using command "{cmd}" with args "{args}"'.format(
+                    name=dep.name, cmd=dep.install_cmd, args=dep.install_arguments
                 )
+            )
+            output = runCommand(
+                exe_args=ExeArgs(dep.install_cmd, dep.install_arguments)
+            )
+            self._logger.debug(output.std_out)
+            self._logger.debug(output.err_out)
+        except Exception as excp:
+            self._logger.error(
+                'error "{error}" trying to install "{name}" using command "{cmd}" with args "{args}"'.format(
+                    error=excp,
+                    name=dep.name,
+                    cmd=dep.install_cmd,
+                    args=dep.install_arguments,
+                )
+            )
+
+    ############################################################################
+    def download(self, dep: object) -> None:
+        """Download the dependency.
+
+        Args:
+            dep (object): The dependency object to download.
+        """
+        try:
+            self._logger.info(
+                'Trying to download "{name}" from URL "{url}" to "{path}"'.format(
+                    name=dep.name, url=dep.download_url, path=dep.download_dir
+                )
+            )
+            doDownload(url=dep.download_url, to=dep.download_dir)
+        except Exception as excp:
+            self._logger.error(
+                'error "{error}" trying to download "{name}" from URL "{url}" to "{path}"'.format(
+                    error=excp,
+                    name=dep.name,
+                    url=dep.download_url,
+                    path=dep.download_dir,
+                )
+            )
 
     ############################################################################
     def isExecuteableDep(self, dep: object) -> bool:
