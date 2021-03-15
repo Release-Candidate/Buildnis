@@ -138,16 +138,25 @@ class Config(JSONBaseClass):
             tmp_modules.append(tmp_module)
         self.module_cfgs = tmp_modules
         tmp_build_cfgs = []
-        # TODO read build_cfg`s from their real locations
-        for build_cfg in self.build_cfgs:
-            tmp_bcfg = BuildCfg.fromReadJSON(build_cfg)
-            tmp_build_cfgs.append(tmp_bcfg)
+
+        self.redBuildCfgs()
+
         self.build_cfgs = tmp_build_cfgs
         self.reReadIfChangedOnDisk()
         for module in self.module_cfgs:
             module.reReadIfChangedOnDisk()
-        for build_cfg in self.build_cfgs:
-            build_cfg.reReadIfChangedOnDisk()
+
+    ############################################################################
+    def redBuildCfgs(self) -> None:
+        """Reads the build configs from the generated JSON configuration.
+        Rereads them if necessary.
+        """
+        for module in self.module_cfgs:
+            for target in module.targets:
+                if hasattr(target, "build_tool"):
+                    tmp_bcfg = BuildCfg.fromReadJSON(target.build_tool)
+                    target.build_tool = tmp_bcfg
+                    target.build_tool.reReadIfChangedOnDisk()
 
     ###########################################################################
     def parseModuleCfgs(self) -> None:

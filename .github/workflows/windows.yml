@@ -4,16 +4,15 @@ name: Windows 2019
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
   build:
     runs-on: windows-2019
 
@@ -22,10 +21,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
       - uses: actions/setup-java@v1
         with:
-          java-version: '13' # The JDK version to make available on the path.
+          java-version: "13" # The JDK version to make available on the path.
           java-package: jdk
 
       - name: Cache pip
@@ -64,12 +63,12 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Buildnis Debug Log
+          name: Windows Buildnis Debug Log
           path: log_file.txt
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Buildnis JSON Configs
+          name: Windows Buildnis JSON Configs
           path: test_project/conf_out/*.json
 
       - name: Clean Buildnis
@@ -78,10 +77,21 @@ jobs:
           call pipenv shell
           python -m buildnis ./test_project/project_config.json -vv --clean
 
-      # - name: Re-Run Buildnis
-      #   run: |
-      #     call pipenv shell
-      #     python -m buildnis ./test_project/project_config.json -vv
+      - name: Re-Run Buildnis
+        shell: cmd
+        run: |
+          call pipenv shell
+          python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Windows Buildnis Debug Log 2
+          path: log_file.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Windows Buildnis JSON Configs 2
+          path: test_project/conf_out/*.json
 
       - name: Dist-Clean Buildnis
         shell: cmd
@@ -95,7 +105,7 @@ jobs:
     steps:
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Cache pip
         uses: actions/cache@v2
