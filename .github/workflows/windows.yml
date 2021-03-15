@@ -44,9 +44,9 @@ jobs:
           restore-keys: |
             windows-2019-pipenv-
 
-      # - name: Install Doxygen
-      #   run: |
-      #     sudo apt install doxygen
+      - name: Install Doxygen
+        run: |
+          choco install doxygen.install
 
       # install sphinx using pip on Windows, somehow the pipenv environment doesn't
       # propagate to the command interpreter called from buildnis.
