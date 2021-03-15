@@ -44,4 +44,4 @@ jobs:
         with:
           name: Bandit XML
           path: bandit_out.xml
-        if: always()
+
