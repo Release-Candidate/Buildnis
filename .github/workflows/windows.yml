@@ -55,7 +55,7 @@ jobs:
         run: python -m pipenv install --dev
 
       - name: Run Buildnis
-        shell: pipenv run {0}
+        shell: cmd /C "echo {0}"
         run: |
           python -m buildnis ./test_project/project_config.json -vv
 
