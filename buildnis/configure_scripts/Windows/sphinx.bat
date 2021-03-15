@@ -17,7 +17,7 @@ set SPHINX_VERSION=
 set ENV_SCRIPT=
 set ENV_ARG=
 
-for /f "delims=" %%l in ('sphinx-build  --version') do (
+for /f "delims=" %%l in ('sphinx-build  --version 2^>^&1'') do (
     if /i "!SPHINX_VERSION!"=="" (
         set SPHINX_VERSION=%%l
         call :TRIM SPHINX_VERSION

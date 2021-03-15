@@ -55,7 +55,7 @@ jobs:
         run: python -m pipenv install --dev
 
       - name: Run Buildnis
-        shell: cmd /C "type {0} && cd && pipenv --venv"
+        shell: powershell
         run: |
           python -m buildnis ./test_project/project_config.json -vv
 
