@@ -57,8 +57,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Buildnis  Debug Log
-          path: test_project/log_file.txt
+          name: Buildnis Debug Log
+          path: log_file.txt
 
       - name: Clean Buildnis
         run: |
