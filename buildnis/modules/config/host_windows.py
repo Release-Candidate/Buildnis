@@ -31,8 +31,6 @@ def getCPUInfo() -> CmdOutput:
         ),
     )
 
-    print(ret_val.err_out, ret_val.std_out)
-
     return ret_val
 
 
