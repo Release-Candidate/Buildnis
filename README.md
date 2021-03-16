@@ -194,8 +194,6 @@ Documentation at [Read the Docs](https://buildnis.readthedocs.io/en/latest/)
 
 The PyPI (pip) package at [PyPI package](https://pypi.org/project/buildnis/)
 
-Continuos integration testing at [Travis CI](https://travis-ci.com/github/Release-Candidate/Buildnis)
-
 Report a bug or feature request at [GitHub report issue](https://github.com/Release-Candidate/Buildnis/issues/new/choose)
 
 Bug and other requests tracker at [GitHub issue tracker](https://github.com/Release-Candidate/Buildnis/issues)
