@@ -17,6 +17,7 @@
 [![Pycodestyle badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/pycodestyle.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/pycodestyle.yml)
 [![Pydocstyle badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/pydocstyle.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/pydocstyle.yml)
 [![Pyflakes badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/pyflakes.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/pyflakes.yml)
+[![Bandit badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/bandit.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/bandit.yml)
 
 Distributed, platform independent build system that can handle C++20 and Fortran modules and is flexible enough to build any language and handle (almost ;) any build step imaginable.
 
