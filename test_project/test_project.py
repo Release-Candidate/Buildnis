@@ -105,7 +105,7 @@ def sanitizePath(conf_out, arg_list) -> None:
 def test_getPathException() -> None:
     """Pass an invalid path to buildnis, should raise an exception."""
 
-    arg_list = ["-q", "--generated-conf-dir", "\x1f"]
+    arg_list = ["-q", "--generated-conf-dir", "\x1f\000"]
 
     with pytest.raises(expected_exception=OSError):
         runBuildnis(arg_list)

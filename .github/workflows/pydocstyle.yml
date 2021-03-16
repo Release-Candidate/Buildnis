@@ -38,7 +38,7 @@ jobs:
       - name: Run Pydocstyle
         run: |
           cd $GITHUB_WORKSPACE
-          pipenv run pydocstyle buildnis > pydocstyle_out.txt 2>&1
+          pipenv run pydocstyle buildnis test_project > pydocstyle_out.txt 2>&1
 
       - uses: actions/upload-artifact@v2
         with:
