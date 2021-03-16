@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import platform
 import runpy
 import sys
 from typing import List
@@ -100,14 +101,25 @@ def sanitizePath(conf_out, arg_list) -> None:
     arg_list.append(conf_out)
 
 
-# \x1f as path raises exception
+# \x1f as path raises exception, only on Windows.
 ################################################################################
 def test_getPathException() -> None:
     """Pass an invalid path to buildnis, should raise an exception."""
 
+    arg_list = ["-q", "--generated-conf-dir", "\x1f"]
+    if platform.system() == "Windows":
+        with pytest.raises(expected_exception=(OSError)):
+            runBuildnis(arg_list)
+
+
+# "\x1f\000" Null byte raises ValueError exception.
+################################################################################
+def test_getNullException() -> None:
+    """Pass an invalid path to buildnis, should raise an exception."""
+
     arg_list = ["-q", "--generated-conf-dir", "\x1f\000"]
 
-    with pytest.raises(expected_exception=OSError):
+    with pytest.raises(expected_exception=ValueError):
         runBuildnis(arg_list)
 
 
