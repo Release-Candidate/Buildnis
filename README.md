@@ -8,7 +8,6 @@
 [![Linux action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml)
 [![OS X action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml)
 [![Windows action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml)
-[![Travis CI Build Status](https://travis-ci.com/Release-Candidate/Buildnis.svg?branch=main)](https://travis-ci.com/Release-Candidate/Buildnis)
 [![Codecov badge](https://codecov.io/gh/Release-Candidate/Buildnis/branch/main/graph/badge.svg?token=E26YQKPZ0E)](https://codecov.io/gh/Release-Candidate/Buildnis)
 [![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
