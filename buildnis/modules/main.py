@@ -167,7 +167,7 @@ def setUpPaths(
         if checkIfIsFile(host_cfg_file) is True:
             list_of_generated_files.append(host_cfg_file)
             host_cfg_filename_exists = True
-    except Exception:
+    except Exception:  # nosec
         pass
 
     build_tools = setUpConfigFile(
@@ -230,7 +230,7 @@ def setUpConfigFile(
         if checkIfIsFile(config_filename) is True:
             list_of_generated_files.append(config_filename)
             config_filename_exists = True
-    except Exception:
+    except Exception:  # nosec
         pass
     return ConfigTuple(path=config_filename, exists=config_filename_exists)
 

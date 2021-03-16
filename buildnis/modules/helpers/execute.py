@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 import re
-import subprocess
+import subprocess  # nosec
 from typing import List, NamedTuple
 
 from buildnis.modules.config import CmdOutput, FilePath
@@ -109,7 +109,7 @@ def runCommand(
                 cmd_line_args.append(arg)
 
     try:
-        process_result = subprocess.run(
+        process_result = subprocess.run(  # nosec
             args=cmd_line_args,
             capture_output=True,
             text=True,
