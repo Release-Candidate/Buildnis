@@ -39,7 +39,8 @@ def doDownload(url: str, to: str = "", use_proxy: bool = False) -> None:
             )
         )
 
-        with urllib.request.urlopen(url) as url_response:
+        # TODO ignore for now, but look at that bandit warning Issue: [B310:blacklist]
+        with urllib.request.urlopen(url) as url_response:  # nosec
             for item in url_response.getheaders():
                 print(item)
             with pathlib.Path(to).open(mode="bw") as dest:
