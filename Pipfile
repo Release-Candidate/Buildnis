@@ -21,6 +21,7 @@ flake8 = "*"
 hypothesis = "*"
 pytest-xdist = "*"
 pytest-cov = "*"
+pathvalidate = "*"
 
 [requires]
 python_version = "3.9"

@@ -14,10 +14,10 @@ import runpy
 import sys
 from typing import List
 
+import pathvalidate
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
-
-# import pytest
 
 
 ################################################################################
@@ -62,7 +62,7 @@ def test_runHelp() -> None:
 
 
 ################################################################################
-@settings(max_examples=50, deadline=None)
+@settings(max_examples=5, deadline=None)
 @given(
     arg=st.sampled_from(elements=["-q", "", "-v", "-vv"]), conf_out=st.text(max_size=20)
 )
@@ -78,12 +78,37 @@ def test_runFirstTime(arg: str, conf_out: str) -> None:
         if arg != "":
             arg_list.append(arg)
         if conf_out != "":
-            arg_list.append("--generated-conf-dir")
-            arg_list.append(conf_out)
+            sanitizePath(conf_out, arg_list)
 
         runBuildnis(arg_list)
     except SystemExit as excp:
         assert str(excp) == "0"  # nosec
+
+
+################################################################################
+def sanitizePath(conf_out, arg_list) -> None:
+    """Sanitize the given path `conf_out`, we want random paths, but not invalid ones.
+
+    Args:
+        conf_out ([type]): The path to sanitize.
+        arg_list ([type]): The list to append the sanitized path to.
+    """
+    sanitized_conf = pathvalidate.sanitize_filename(conf_out)
+    if sanitized_conf != conf_out:
+        conf_out = sanitized_conf
+    arg_list.append("--generated-conf-dir")
+    arg_list.append(conf_out)
+
+
+# \x1f as path raises exception
+################################################################################
+def test_getPathException() -> None:
+    """Pass an invalid path to buildnis, should raise an exception."""
+
+    arg_list = ["-q", "--generated-conf-dir", "\x1f"]
+
+    with pytest.raises(expected_exception=OSError):
+        runBuildnis(arg_list)
 
 
 ################################################################################
@@ -96,7 +121,7 @@ def test_runClean() -> None:
 
 
 ################################################################################
-@settings(max_examples=50, deadline=None)
+@settings(max_examples=10, deadline=None)
 @given(arg=st.sampled_from(elements=["-q", "", "-v", "-vv"]))
 def test_runSecondTime(arg: str) -> None:
     """Run Buildnis for the second time.
@@ -121,9 +146,3 @@ def test_runDistClean() -> None:
         runBuildnis(["--distclean"])
     except SystemExit as excp:
         assert str(excp) == "0"  # nosec
-
-
-################################################################################
-if __name__ == "__main__":
-    test_runVersion()
-    test_runHelp()

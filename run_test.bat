@@ -6,4 +6,7 @@
 :: Date:     16.Mar.2021
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
+::pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
+:: pytest --hypothesis-show-statistics --no-cov --show-capture=no
+
+pytest --hypothesis-show-statistics --no-cov
