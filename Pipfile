@@ -18,6 +18,8 @@ pylama = "*"
 black = "*"
 pre-commit = "*"
 flake8 = "*"
+hypothesis = "*"
+pytest-xdist = "*"
 
 [requires]
 python_version = "3.9"
