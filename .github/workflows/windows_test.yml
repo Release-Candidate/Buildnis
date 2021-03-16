@@ -61,7 +61,7 @@ jobs:
         shell: cmd
         run: |
           call pipenv shell
-          python -m pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
+          pipenv run pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
