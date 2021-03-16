@@ -1,4 +1,4 @@
-name: Ubuntu 20.04
+name: Tests Ubuntu 20.04
 
 # Controls when the action will run.
 on:
@@ -54,7 +54,7 @@ jobs:
       - name: Run Tests
         run: |
           cd $GITHUB_WORKSPACE
-          python -m pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
+          pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
