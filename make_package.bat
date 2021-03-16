@@ -20,9 +20,11 @@ rmdir /S /Q dist
 rmdir /S /Q example_pkg_Release_Candidate_Username.egg-info
 rmdir /S /Q buildnis.egg-info
 
-pipenv run python -m build
+::pipenv run python -m build
+echo Do not build the package under Windows, the file permissions are lost, shell
+echo scripts are no longer executable!
 
 
 :: pipenv run twine upload --repository testpypi dist/* --config-file %APPDATA%\pip\pip.ini
 
-pipenv run twine upload --repository pypi dist/* --config-file %APPDATA%\pip\pip.ini
+:: pipenv run twine upload --repository pypi dist/* --config-file %APPDATA%\pip\pip.ini

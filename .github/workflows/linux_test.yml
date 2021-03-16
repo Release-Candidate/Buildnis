@@ -115,39 +115,18 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           rm -rf buildnis/
-          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+          pipenv run pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
 
-      - uses: actions/upload-artifact@v2
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        if: ${{ always() }}
         with:
-          name: Linux Buildnis Package Debug Log
-          path: log_file.txt
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Linux Buildnis Package JSON Configs
-          path: test_project/conf_out/*.json
-
-      - name: Clean Buildnis
-        run: |
-          cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
-
-      - name: Re-Run Buildnis
-        run: |
-          cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Linux Buildnis Package Debug Log 2
-          path: log_file.txt
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Linux Buildnis Package JSON Configs 2
-          path: test_project/conf_out/*.json
-
-      - name: Dist-Clean Buildnis
-        run: |
-          cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -vv --distclean
+          token: ${{ secrets.CODECOV_SECRET }}
+          files: ./coverage.xml
+          directory: ./coverage/reports/
+          # flags: unittest
+          env_vars: OS,PYTHON
+          name: Linux-Test-Src
+          fail_ci_if_error: false
+          path_to_write_report: ./coverage/codecov_report.txt
+          verbose: true
