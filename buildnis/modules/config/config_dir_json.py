@@ -9,8 +9,10 @@
 from __future__ import annotations
 
 import os
+import sys
 from typing import List
 
+from buildnis.modules import EXT_ERR_DIR
 from buildnis.modules.config import CFG_DIR_NAME, FilePath
 from buildnis.modules.config.json_base_class import JSONBaseClass
 from buildnis.modules.helpers.files import checkIfIsFile, makeDirIfNotExists
@@ -70,6 +72,7 @@ class ConfigDirJson(JSONBaseClass):
                         error=excp, path=file_name
                     )
                 )
+                sys.exit(EXT_ERR_DIR)
 
         try:
             makeDirIfNotExists(self.cfg_path)
@@ -79,6 +82,7 @@ class ConfigDirJson(JSONBaseClass):
                     error=excp, path=cfg_path
                 )
             )
+            sys.exit(EXT_ERR_DIR)
 
     ############################################################################
     def writeJSON(self, json_path: FilePath = "", to_ignore: List[str] = None) -> None:

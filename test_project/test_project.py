@@ -47,19 +47,17 @@ def runBuildnis(cmd_line_args: List[str]) -> None:
 ################################################################################
 def test_runVersion() -> None:
     """Run `buildnis` with the argument `--version` to show the version information."""
-    try:
+    with pytest.raises(expected_exception=SystemExit) as excp:
         runBuildnis(["--version"])
-    except SystemExit as excp:
-        assert str(excp) == "0"  # nosec
+    assert excp.value.args[0] == 0  # nosec
 
 
 ################################################################################
 def test_runHelp() -> None:
     """Run `buildnis` with the argument `--help` to show the usage information."""
-    try:
+    with pytest.raises(expected_exception=SystemExit) as excp:
         runBuildnis(["--help"])
-    except SystemExit as excp:
-        assert str(excp) == "0"  # nosec
+    assert excp.value.args[0] == 0  # nosec
 
 
 ################################################################################
@@ -74,7 +72,7 @@ def test_runFirstTime(arg: str, conf_out: str) -> None:
         arg (str): The verbosity argument.
         conf_out (str): The path to the generated configuration directory.
     """
-    try:
+    with pytest.raises(expected_exception=SystemExit) as excp:
         arg_list = []
         if arg != "":
             arg_list.append(arg)
@@ -82,8 +80,7 @@ def test_runFirstTime(arg: str, conf_out: str) -> None:
             sanitizePath(conf_out, arg_list)
 
         runBuildnis(arg_list)
-    except SystemExit as excp:
-        assert str(excp) == "0"  # nosec
+    assert excp.value.args[0] == 0  # nosec
 
 
 ################################################################################
@@ -107,7 +104,7 @@ def test_getPathException() -> None:
     """Pass an invalid path to buildnis, should raise an exception."""
     arg_list = ["-q", "--generated-conf-dir", "\x1f"]
     if platform.system() == "Windows":
-        with pytest.raises(expected_exception=(OSError)):
+        with pytest.raises(expected_exception=(OSError, SystemExit)):
             runBuildnis(arg_list)
 
 
@@ -117,17 +114,16 @@ def test_getNullException() -> None:
     """Pass an invalid path to buildnis, should raise an exception."""
     arg_list = ["-q", "--generated-conf-dir", "\x1f\000"]
 
-    with pytest.raises(expected_exception=ValueError):
+    with pytest.raises(expected_exception=(ValueError, SystemExit)):
         runBuildnis(arg_list)
 
 
 ################################################################################
 def test_runClean() -> None:
     """Run `buildnis` with the argument `--clean` to remove generated build data"""
-    try:
+    with pytest.raises(expected_exception=SystemExit) as excp:
         runBuildnis(["--clean"])
-    except SystemExit as excp:
-        assert str(excp) == "0"  # nosec
+    assert excp.value.args[0] == 0  # nosec
 
 
 ################################################################################
@@ -139,20 +135,20 @@ def test_runSecondTime(arg: str) -> None:
     Args:
         arg (str): The verbosity argument.
     """
-    try:
+    with pytest.raises(expected_exception=SystemExit) as excp:
         arg_list = []
         if arg != "":
             arg_list.append(arg)
 
         runBuildnis(arg_list)
-    except SystemExit as excp:
-        assert str(excp) == "0"  # nosec
+
+    assert excp.value.args[0] == 0  # nosec
 
 
 ################################################################################
 def test_runDistClean() -> None:
     """Run `buildnis` with the argument `--distclean` to remove  all generated data"""
-    try:
+    with pytest.raises(expected_exception=SystemExit) as excp:
         runBuildnis(["--distclean"])
-    except SystemExit as excp:
-        assert str(excp) == "0"  # nosec
+
+    assert excp.value.args[0] == 0  # nosec
