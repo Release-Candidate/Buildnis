@@ -18,8 +18,8 @@ Supported OSes
 In alphabetical order:
 
 * Linux (tested with Fedora Rawhide, RedHat, Suse Tumbleweed and Ubuntu)
-* Mac OS X (tested with Bug Sur)
-* Windows (tested using Windows 10)
+* Mac OS X (tested with Big Sur and Catalina)
+* Windows (tested using Windows 10 and WIndows Server 2019)
 
 Supported C++ Compilers
 -----------------------

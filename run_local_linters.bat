@@ -3,7 +3,7 @@
 ::
 :: Project:  Buildnis
 :: File:     run_local_linters.bat
-:: Date:     07.Mar.2021
+:: Date:     15.Mar.2021
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: Runs the local linters
