@@ -50,6 +50,11 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE && python -m pipenv install --dev
 
+      - name: Check if Working
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis --version
+
       - name: Run Buildnis
         run: |
           cd $GITHUB_WORKSPACE
@@ -94,6 +99,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: "3.9"
@@ -109,6 +115,51 @@ jobs:
       - name: Install buildnis package
         run: python -m pip install --upgrade buildnis
 
-      - name: Check if Working
+      - name: Delete Source
+        run: |
+          cd $GITHUB_WORKSPACE
+          rm -rf buildnis/
+
+      - name: Check if Pkg Working
         run: |
           python -m buildnis --version
+
+      - name: Run Buildnis Pkg
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX Buildnis Pkg Debug Log
+          path: log_file.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX Buildnis Pkg JSON Configs
+          path: test_project/conf_out/*.json
+
+      - name: Clean Buildnis Pkg
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
+
+      - name: Re-Run Buildnis Pkg
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX Buildnis Pkg Debug Log 2
+          path: log_file.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX Buildnis Pkg JSON Configs 2
+          path: test_project/conf_out/*.json
+
+      - name: Dist-Clean Buildnis Pkg
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m buildnis ./test_project/project_config.json -vv --distclean
