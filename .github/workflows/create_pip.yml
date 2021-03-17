@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  package:
     runs-on: ubuntu-20.04
 
     steps:
@@ -61,6 +61,7 @@ jobs:
           pipenv run twine upload --repository pypi dist/*
 
       - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: Tar Archive Artifact
           path: ./dist/*
