@@ -153,7 +153,7 @@ class ProjectDependency(JSONBaseClass):
             "is_checked": False,
             "install_arguments": [],
         }
-        setAttrIfNotExist(instance=dep, attr=must_have_attrs)
+        setAttrIfNotExist(instance=dep, attributes=must_have_attrs)
 
     ############################################################################
     def isDependencyFulfilled(self, dep: object) -> bool:
