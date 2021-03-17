@@ -42,13 +42,20 @@ jobs:
           cd $GITHUB_WORKSPACE
           python -m pipenv install --dev
 
-      - name: Build and Upload
+      - name: Generate Documentation
+        run: |
+          cd $GITHUB_WORKSPACE
+          cd ./buildnis/doc && pipenv run make html
+
+      - name: Build Package
+        run: |
+          cd $GITHUB_WORKSPACE
+          pipenv run python -m build
+
+      - name: Upload
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PIP_TOKEN }}
         run: |
           cd $GITHUB_WORKSPACE
-          cd ./buildnis/doc && pipenv run make html
-          cd $GITHUB_WORKSPACE
-          pipenv run python -m build
           pipenv run twine upload --repository pypi dist/*
