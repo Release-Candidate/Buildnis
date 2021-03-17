@@ -167,8 +167,12 @@ def setUpPaths(
         if checkIfIsFile(host_cfg_file) is True:
             list_of_generated_files.append(host_cfg_file)
             host_cfg_filename_exists = True
-    except Exception:  # nosec
-        pass
+    except Exception as excp:
+        host_cfg._logger.error(
+            'error "{error}" trying to check file "{path}"'.format(
+                error=excp, path=host_cfg_file
+            )
+        )
 
     build_tools = setUpConfigFile(
         project_cfg_dir=project_cfg_dir,
@@ -230,8 +234,13 @@ def setUpConfigFile(
         if checkIfIsFile(config_filename) is True:
             list_of_generated_files.append(config_filename)
             config_filename_exists = True
-    except Exception:  # nosec
-        pass
+    except Exception as excp:
+        host_cfg._logger.error(
+            'error "{error}" trying to check file "{path}"'.format(
+                error=excp, path=config_filename
+            )
+        )
+
     return ConfigTuple(path=config_filename, exists=config_filename_exists)
 
 
