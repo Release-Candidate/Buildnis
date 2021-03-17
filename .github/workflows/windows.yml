@@ -137,6 +137,7 @@ jobs:
           choco install doxygen.install
 
       - name: Delete Source
+        shell: cmd
         run: |
           rmdir /S /Q buildnis
 
