@@ -56,7 +56,7 @@ class ProgramVersion(NamedTuple):
         )
 
 
-VERSION = ProgramVersion(major=0, minor=1, patch=9)
+VERSION = ProgramVersion(major=0, minor=1, patch=10)
 
 MODULE_DIR_PATH = os.path.abspath(os.path.dirname(__file__) + "/../")
 
