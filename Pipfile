@@ -23,6 +23,10 @@ pytest-cov = "*"
 pathvalidate = "*"
 pytest = "*"
 colorama = "*"
+pytest-clarity = "*"
+pytest-picked = "*"
+radon = "*"
+flake8-polyfill = "*"
 
 [requires]
 python_version = "3.9"

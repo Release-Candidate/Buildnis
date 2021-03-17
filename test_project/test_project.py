@@ -45,6 +45,8 @@ def runBuildnis(cmd_line_args: List[str]) -> None:
 
 
 ################################################################################
+@pytest.mark.fast
+@pytest.mark.run_program
 def test_runVersion() -> None:
     """Run `buildnis` with the argument `--version` to show the version information."""
     with pytest.raises(expected_exception=SystemExit) as excp:
@@ -53,6 +55,8 @@ def test_runVersion() -> None:
 
 
 ################################################################################
+@pytest.mark.fast
+@pytest.mark.run_program
 def test_runHelp() -> None:
     """Run `buildnis` with the argument `--help` to show the usage information."""
     with pytest.raises(expected_exception=SystemExit) as excp:
@@ -61,6 +65,8 @@ def test_runHelp() -> None:
 
 
 ################################################################################
+@pytest.mark.slow
+@pytest.mark.run_program
 @settings(max_examples=5, deadline=None)
 @given(
     arg=st.sampled_from(elements=["-q", "", "-v", "-vv"]), conf_out=st.text(max_size=20)
@@ -100,6 +106,8 @@ def sanitizePath(conf_out, arg_list) -> None:
 
 # \x1f as path raises exception, only on Windows.
 ################################################################################
+@pytest.mark.fast
+@pytest.mark.run_program
 def test_getPathException() -> None:
     """Pass an invalid path to buildnis, should raise an exception."""
     arg_list = ["-q", "--generated-conf-dir", "\x1f"]
@@ -110,6 +118,8 @@ def test_getPathException() -> None:
 
 # "\x1f\000" Null byte raises ValueError exception.
 ################################################################################
+@pytest.mark.fast
+@pytest.mark.run_program
 def test_getNullException() -> None:
     """Pass an invalid path to buildnis, should raise an exception."""
     arg_list = ["-q", "--generated-conf-dir", "\x1f\000"]
@@ -119,6 +129,7 @@ def test_getNullException() -> None:
 
 
 ################################################################################
+@pytest.mark.run_program
 def test_runClean() -> None:
     """Run `buildnis` with the argument `--clean` to remove generated build data"""
     with pytest.raises(expected_exception=SystemExit) as excp:
@@ -127,6 +138,8 @@ def test_runClean() -> None:
 
 
 ################################################################################
+@pytest.mark.slow
+@pytest.mark.run_program
 @settings(max_examples=10, deadline=None)
 @given(arg=st.sampled_from(elements=["-q", "", "-v", "-vv"]))
 def test_runSecondTime(arg: str) -> None:
@@ -146,6 +159,7 @@ def test_runSecondTime(arg: str) -> None:
 
 
 ################################################################################
+@pytest.mark.run_program
 def test_runDistClean() -> None:
     """Run `buildnis` with the argument `--distclean` to remove  all generated data"""
     with pytest.raises(expected_exception=SystemExit) as excp:
