@@ -3,13 +3,10 @@
 [![MIT license badge](https://img.shields.io/github/license/Release-Candidate/Buildnis)](https://github.com/Release-Candidate/Buildnis/blob/main/LICENSE)
 [![Python version badge](https://img.shields.io/pypi/pyversions/buildnis)](https://www.python.org/downloads/)
 [![PIP version badge](https://img.shields.io/pypi/v/buildnis)](https://pypi.org/project/buildnis/)
+[![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
 [![Code Climate Maintainability badge](https://api.codeclimate.com/v1/badges/c5e672a62eeaba8e6fdf/maintainability)](https://codeclimate.com/github/Release-Candidate/Buildnis/maintainability)
 [![DeepSource Issue badge](https://deepsource.io/gh/Release-Candidate/Buildnis.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Release-Candidate/Buildnis/?ref=repository-badge)
-[![Linux action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml)
-[![OS X action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml)
-[![Windows action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml)
 [![Codecov badge](https://codecov.io/gh/Release-Candidate/Buildnis/branch/main/graph/badge.svg?token=E26YQKPZ0E)](https://codecov.io/gh/Release-Candidate/Buildnis)
-[![ReadTheDocs badge](https://readthedocs.org/projects/buildnis/badge/?version=latest&style=flat)](https://buildnis.readthedocs.io/en/latest/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Black action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/black.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/black.yml)
 [![Flake8 badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/flake8.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/flake8.yml)
@@ -17,6 +14,12 @@
 [![Pydocstyle badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/pydocstyle.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/pydocstyle.yml)
 [![Pyflakes badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/pyflakes.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/pyflakes.yml)
 [![Bandit badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/bandit.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/bandit.yml)
+[![Linux action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux.yml)
+[![OS X action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx.yml)
+[![Windows action badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows.yml)
+[![Tests Ubuntu 20.04 badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux_test.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/linux_test.yml)
+[![Tests Mac OS X latest badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx_test.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/osx_test.yml)
+[![Tests Windows 2019 badge](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows_test.yml/badge.svg)](https://github.com/Release-Candidate/Buildnis/actions/workflows/windows_test.yml)
 
 Distributed, platform independent build system that can handle C++20 and Fortran modules and is flexible enough to build any language and handle (almost ;) any build step imaginable.
 
