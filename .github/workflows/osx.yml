@@ -112,8 +112,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-buildnis
 
+      - name: Install Doxygen
+        run: |
+          brew install doxygen
+
       - name: Install buildnis package
         run: python -m pip install --upgrade buildnis
+
+      - name: Install Sphinx
+        run: python -m pip install --upgrade sphinx
 
       - name: Delete Source
         run: |
@@ -127,7 +134,7 @@ jobs:
       - name: Run Buildnis Pkg
         run: |
           cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+          python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
 
       - uses: actions/upload-artifact@v2
         with:
@@ -142,12 +149,12 @@ jobs:
       - name: Clean Buildnis Pkg
         run: |
           cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -vv --clean
+          python -m buildnis ./test_project/project_config.json -vv --clean
 
       - name: Re-Run Buildnis Pkg
         run: |
           cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
+          python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
 
       - uses: actions/upload-artifact@v2
         with:
@@ -162,4 +169,4 @@ jobs:
       - name: Dist-Clean Buildnis Pkg
         run: |
           cd $GITHUB_WORKSPACE
-          pipenv run python -m buildnis ./test_project/project_config.json -vv --distclean
+          python -m buildnis ./test_project/project_config.json -vv --distclean

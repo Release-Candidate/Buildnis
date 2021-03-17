@@ -127,6 +127,15 @@ jobs:
       - name: Install buildnis package
         run: python -m pip install --upgrade buildnis
 
+      - name: Install Sphinx
+        run: python -m pip install --upgrade sphinx
+
+      # takes quite some time, is there a chance to cache something? - Problem is the
+      # registry and stuff ...
+      - name: Install Doxygen
+        run: |
+          choco install doxygen.install
+
       - name: Delete Source
         run: |
           rmdir /S /Q buildnis
@@ -138,7 +147,6 @@ jobs:
       - name: Run Buildnis Pkg
         shell: cmd
         run: |
-          call pipenv shell
           python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
 
       - uses: actions/upload-artifact@v2
@@ -154,13 +162,11 @@ jobs:
       - name: Clean Buildnis Pkg
         shell: cmd
         run: |
-          call pipenv shell
           python -m buildnis ./test_project/project_config.json -vv --clean
 
       - name: Re-Run Buildnis Pkg
         shell: cmd
         run: |
-          call pipenv shell
           python -m buildnis ./test_project/project_config.json -v --log-file log_file.txt --gen conf_out
 
       - uses: actions/upload-artifact@v2
@@ -176,5 +182,4 @@ jobs:
       - name: Dist-Clean Buildnis Pkg
         shell: cmd
         run: |
-          call pipenv shell
           python -m buildnis ./test_project/project_config.json -vv --distclean
