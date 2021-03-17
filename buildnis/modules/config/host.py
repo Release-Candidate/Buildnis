@@ -131,9 +131,7 @@ class Host(JSONBaseClass):
             "num_cores": 1,
             "num_logical_cores": 1,
         }
-        for attr in must_have_attrs:
-            if not hasattr(self, attr):
-                setattr(self, attr, must_have_attrs[attr])
+        self.addAttributesIfNotExist(must_have_attrs)
 
         config_values.HOST_OS = self.os
         config_values.HOST_CPU_ARCH = self.cpu_arch

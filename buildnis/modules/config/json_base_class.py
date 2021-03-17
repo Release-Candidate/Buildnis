@@ -226,3 +226,18 @@ class JSONBaseClass:
             name=self.config_name,
             config=pprint.pformat(getJSONDict(self), indent=4, sort_dicts=False),
         )
+
+
+################################################################################
+def setAttrIfNotExist(instance: object, attributes: Dict[str, object]) -> None:
+    """Check if the given object has each of the given attributes, if not, set it to
+    the given value.
+
+    Args:
+        instance (object): The instance to check for attributes.
+        attributes (Dict[str, object]): The dictionary of attributes and attribute
+                                        values.
+    """
+    for attr in attributes:
+        if not hasattr(instance, attr):
+            setattr(instance, attr, attributes[attr])

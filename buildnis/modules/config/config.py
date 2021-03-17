@@ -86,19 +86,17 @@ class Config(JSONBaseClass):
 
         self.project_cfg_dir = os.path.abspath(os.path.dirname(self.config_path))
 
-        must_have_attrs = [
-            "config_path",
-            "email",
-            "web_url",
-            "copyright_info",
-            "company",
-            "author",
-            "version",
-            "name",
-        ]
-        for attr in must_have_attrs:
-            if not hasattr(self, attr):
-                setattr(self, attr, "")
+        must_have_attrs = {
+            "config_path": "",
+            "email": "",
+            "web_url": "",
+            "copyright_info": "",
+            "company": "",
+            "author": "",
+            "version": "",
+            "name": "",
+        }
+        self.addAttributesIfNotExist(must_have_attrs)
 
         self.setProjectConstants()
 

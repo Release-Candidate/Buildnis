@@ -57,9 +57,7 @@ class ModuleCfg(JSONBaseClass):
             self.readJSON(json_path=read_config_path)
 
             must_have_attrs = {"name": "", "targets": []}
-            for attr in must_have_attrs:
-                if not hasattr(self, attr):
-                    setattr(self, attr, must_have_attrs[attr])
+            self.addAttributesIfNotExist(must_have_attrs)
 
     ##############################################################################
     @classmethod

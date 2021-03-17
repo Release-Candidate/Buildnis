@@ -14,7 +14,7 @@ import pathlib
 from typing import List
 
 from buildnis.modules.config import PROJECT_DEP_FILE_NAME, FilePath
-from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.config.json_base_class import JSONBaseClass, setAttrIfNotExist
 from buildnis.modules.helpers.execute import (
     ExeArgs,
     RunRegex,
@@ -89,8 +89,7 @@ class ProjectDependency(JSONBaseClass):
 
         self.readJSON(json_path=read_config_path)
 
-        if not hasattr(self, "dependencies"):
-            self.dependencies = []
+        self.addAttributesIfNotExist({"dependencies", []})
 
     ############################################################################
     def checkDependencies(self, force_check: bool = False) -> None:
@@ -141,26 +140,20 @@ class ProjectDependency(JSONBaseClass):
         Args:
             dep (object): The object to check for must-have attributes.
         """
-        must_have_attrs = [
-            "name",
-            "website_url",
-            "download_url",
-            "download_dir",
-            "install_cmd",
-            "ok_if_exists",
-            "executable_check_regex",
-            "executable_argument",
-            "ok_if_executable",
-        ]
-        for attr in must_have_attrs:
-            if not hasattr(dep, attr):
-                setattr(dep, attr, "")
-
-        if not hasattr(dep, "is_checked"):
-            setattr(dep, "is_checked", False)
-
-        if not hasattr(dep, "install_arguments"):
-            dep.install_arguments = []
+        must_have_attrs = {
+            "name": "",
+            "website_url": "",
+            "download_url": "",
+            "download_dir": "",
+            "install_cmd": "",
+            "ok_if_exists": "",
+            "executable_check_regex": "",
+            "executable_argument": "",
+            "ok_if_executable": "",
+            "is_checked": False,
+            "install_arguments": [],
+        }
+        setAttrIfNotExist(instance=dep, attr=must_have_attrs)
 
     ############################################################################
     def isDependencyFulfilled(self, dep: object) -> bool:

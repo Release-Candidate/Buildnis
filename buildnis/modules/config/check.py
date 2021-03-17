@@ -25,7 +25,7 @@ from buildnis.modules.config import (
     FilePath,
     OSName,
 )
-from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.config.json_base_class import JSONBaseClass, setAttrIfNotExist
 from buildnis.modules.helpers.execute import (
     EnvArgs,
     ExeArgs,
@@ -198,17 +198,15 @@ class Check(JSONBaseClass):
                 )
                 return False
 
-        attribute_list = [
-            "name_long",
-            "version",
-            "install_path",
-            "env_script",
-            "env_script_arg",
-            "version_arg",
-        ]
-        for attribute in attribute_list:
-            if not hasattr(cfg, attribute):
-                setattr(cfg, attribute, "")
+        must_have_attribs = {
+            "name_long": "",
+            "version": "",
+            "install_path": "",
+            "env_script": "",
+            "env_script_arg": "",
+            "version_arg": "",
+        }
+        setAttrIfNotExist(instance=cfg, attributes=must_have_attribs)
 
         return True
 

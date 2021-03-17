@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import List
 
 from buildnis.modules.config import BUILD_FILE_NAME, FilePath
-from buildnis.modules.config.json_base_class import JSONBaseClass
+from buildnis.modules.config.json_base_class import JSONBaseClass, setAttrIfNotExist
 from buildnis.modules.helpers.file_compare import FileCompare
 from buildnis.modules.helpers.files import returnExistingFile
 
@@ -69,9 +69,7 @@ class BuildCfg(JSONBaseClass):
             "os": [],
             "stages": [],
         }
-        for attr in must_have_attrs:
-            if not hasattr(self, attr):
-                setattr(self, attr, must_have_attrs[attr])
+        self.addAttributesIfNotExist(must_have_attrs)
 
         if self.stages != []:
             self.initStages()
@@ -85,9 +83,7 @@ class BuildCfg(JSONBaseClass):
             "results": [],
         }
         for item in self.stages:
-            for attr in must_have_attrs:
-                if not hasattr(item, attr):
-                    setattr(item, attr, must_have_attrs[attr])
+            setAttrIfNotExist(instance=item, attributes=must_have_attrs)
 
     ############################################################################
     @classmethod
