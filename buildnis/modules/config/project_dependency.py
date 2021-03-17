@@ -89,7 +89,7 @@ class ProjectDependency(JSONBaseClass):
 
         self.readJSON(json_path=read_config_path)
 
-        self.addAttributesIfNotExist({"dependencies", []})
+        self.addAttributesIfNotExist({"dependencies": []})
 
     ############################################################################
     def checkDependencies(self, force_check: bool = False) -> None:
