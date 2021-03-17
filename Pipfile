@@ -27,6 +27,7 @@ pytest-clarity = "*"
 pytest-picked = "*"
 radon = "*"
 flake8-polyfill = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.9"
