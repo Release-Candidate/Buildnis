@@ -59,3 +59,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           pipenv run twine upload --repository pypi dist/*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Tar Archive Artifact
+          path: ./dist/*
