@@ -8,7 +8,6 @@
 
 from __future__ import annotations
 
-import os
 import pathlib
 import platform
 import runpy
@@ -19,6 +18,26 @@ import pathvalidate
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
+
+import tests
+
+
+################################################################################
+def setup_module(test_project) -> None:
+    """Set the path to write the generated documentation to."""
+
+
+################################################################################
+def teardown_module(test_project) -> None:
+    """Delete the whole directory including the generated files."""
+    if pathlib.Path(tests.config_dir_abs).exists():
+
+        for directory in pathlib.Path(tests.config_dir_abs).glob("*"):
+            for config in pathlib.Path(directory).glob("*"):
+                pathlib.Path(config).unlink()
+            pathlib.Path(directory).rmdir()
+
+        pathlib.Path(tests.config_dir_abs).rmdir()
 
 
 ################################################################################
@@ -32,10 +51,6 @@ def runBuildnis(cmd_line_args: List[str]) -> None:
     Args:
         cmd_line_args (List[str]): The arguments to pass to `buildnis`.
     """
-    test_project_path = pathlib.Path(__file__).parent.absolute()
-    root_dir = os.path.normpath(test_project_path.parent.absolute())
-    sys.path.insert(0, root_dir)
-
     sys_argv_list = [""]
     sys_argv_list.extend(cmd_line_args)
     sys_argv_list.append("./test_project/project_config.json")
@@ -101,7 +116,7 @@ def sanitizePath(conf_out, arg_list) -> None:
     if sanitized_conf != conf_out:
         conf_out = sanitized_conf
     arg_list.append("--generated-conf-dir")
-    arg_list.append(conf_out)
+    arg_list.append("/".join([tests.config_dir, conf_out]))
 
 
 # \x1f as path raises exception, only on Windows.

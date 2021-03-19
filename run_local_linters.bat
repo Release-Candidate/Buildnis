@@ -7,10 +7,10 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: Runs the local linters
-black buildnis test_project tests
-pyflakes buildnis test_project tests
-pycodestyle buildnis test_project tests
-pydocstyle buildnis test_project tests
-flake8 buildnis test_project tests
-isort buildnis test_project tests
-bandit -r buildnis test_project tests
+black buildnis tests
+pyflakes buildnis tests
+pycodestyle buildnis tests
+pydocstyle buildnis tests
+flake8 buildnis tests
+isort buildnis tests
+bandit -r buildnis tests

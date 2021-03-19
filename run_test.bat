@@ -9,4 +9,10 @@
 ::pytest --hypothesis-show-statistics --cov=./ --cov-report=xml
 :: pytest --hypothesis-show-statistics --no-cov --show-capture=no
 
-pytest --hypothesis-show-statistics --no-cov -n 12
+:: to get a list of tests ...
+pytest --collect-only
+
+:: do not run tests that run the whole program in parallel, the configuration files will
+:: be deleted when a instance is still runnig.
+pytest --hypothesis-show-statistics --no-cov -m "not run_program" -n 12 %1
+::pytest --hypothesis-show-statistics --no-cov -m "run_program" %1
