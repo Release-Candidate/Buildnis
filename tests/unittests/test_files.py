@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import ctypes
 import os
 import pathlib
 import platform
@@ -137,7 +138,10 @@ def test_checkIfIsLink() -> None:
         )
 
         # on Windows you need administrator privileges to link
-        if platform.system() == "Windows":
+        if (
+            platform.system() == "Windows"
+            and ctypes.windll.shell32.IsUserAnAdmin() == 0
+        ):
             with pytest.raises(expected_exception=OSError) as excp:
                 os.symlink(src=link_target, dst=file_path1)
             assert excp  # nosec
